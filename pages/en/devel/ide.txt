@@ -1,0 +1,25 @@
+====== Production Environment ======
+
+If you want to contribute to this project, it's recommended to install some applications.
+
+===== Development in Java =====
+
+Java applications are developed in [[http://www.netbeans.org/|NetBeans IDE]] using [[http://gradle.org|Gradle build system]].
+
+You will need:
+
+  * Java JDK 8 (SDK) or later from [[http://java.sun.com/javase/downloads/]]
+  * NetBeans 8.0.1 or later from [[http://netbeans.org/community/releases/80/]]
+  * Gradle Support Plugin for NetBeans [[http://plugins.netbeans.org/plugin/44510/gradle-support]] or via NetBeans menu -> Tools/Plugins -> Available Plugins -> Search: Gradle
+
+Alternatively you can use other IDEs like for example [[http://eclipse.org|Eclipse]] or [[http://jetbrains.com/idea/|IntelliJ IDEA]] for non-swing projects.
+
+===== Development in PHP =====
+
+PHP applications are currently developed as plain text.
+
+You will need (for development server):
+
+  * Apache [[http://httpd.apache.org/download.cgi]]
+  * PHP [[http://www.php.net/downloads.php]]
+  * MySQL [[http://dev.mysql.com/downloads/]]

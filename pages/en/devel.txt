@@ -1,0 +1,34 @@
+====== How to Join ======
+
+This project is currently in early development stage with Java prototype implementation under development. If you are interested, read this page further to see how you can take a look on up-to-date source code or how to participate on development.
+
+===== Source Codes =====
+
+You can browse and download source codes from GitHub repository: [[http://github.com/xbup]]
+
+===== Communication =====
+
+Following communication channels are available for developers:
+
+  * Project's IRC channel [[irc://irc.freenode.net/xbup|#xbup]] on [[http://www.freenode.net|freenode.net]] or alternative [[http://webchat.freenode.net/?channels=xbup|webchat]]
+  * [[http://sourceforge.net/p/xbup/discussion/|Public forums]] or [[http://sourceforge.net/p/xbup/mailman/|mailing list]] on [[http://www.sourceforge.net|sourceforge.net]].
+  * Follow [[http://twitter.com/xbup|#XBUP]] on [[http://twitter.com|twitter.com]]
+
+===== Getting Started With the Project =====
+
+If you want to contribute to this project, you should consider taking some of the following actions:
+
+  * If you don't have it yet, [[https://sourceforge.net/account/registration/|register]] your own SourceForge account
+  * [[http://sourceforge.net/u/hajdam/profile/send_message|Send]] a request to become member of the development team and wait till you will be accepted and added to the project
+  * [[https://sourceforge.net/forum/forum.php?thread_id=3338711&forum_id=317000|Introduce yourself]] to other members of the team (optional)
+  * Prepare your [[en:devel:ide|development environment]]
+  * [[http://webchat.freenode.net/?channels=xbup|Discuss]] on #xbup channel on freenode.net about what you would like to work on (optional)
+  * Start working!
+
+===== Editing This Wiki Pages =====
+
+This wiki uses [[doku>|DokuWiki]] and covers various parts of project's documentation.
+
+  * I you don't have account yet, you can [[this>?wiki&do=register|register]] new account.
+  * To edit this wiki you shall [[this>?wiki&do=login|login]] to this wiki.\\
+  * Also check out [[wiki:syntax]] for more information about how edit wiki pages.
