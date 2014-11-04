@@ -1,0 +1,106 @@
+====== Tree Structure (Level 0) ======
+
+Lowest protocol's level defines basic tree structure using two primitive types.
+
+  * Binary blob (sequence of bytes)
+  * Natural non-negative integer number
+
+===== UBNumber Encoding =====
+
+UBNumber is encoding used for representation of instance of countable infinite set stored as one or more bytes (similar to UTF-8 encoding). 
+
+First, non-zero bits are counted for length and then rest of bits is used as value while value is also incremented so that there is only one code for each number.
+
+Most native encoding using UBNumber is UBNatural for representation of a natural non-negative integer number.
+
+//Examples of the UBNatural codes (sequence of bits = represented value)://
+
+<html><pre class="code">
+ <span style="color:green">0</span>0000000                             = 0
+ <span style="color:green">0</span>0000001                             = 1
+ <span style="color:green">0</span>0000010                             = 2
+ <span style="color:green">0</span>0000011                             = 3
+ ...
+ <span style="color:green">0</span>1111111                             = 7Fh = 127
+ <span style="color:green">10</span>000000 00000000                    = 80h = 128
+ <span style="color:green">10</span>000000 00000001                    = 81h = 129
+ ...
+ <span style="color:green">10</span>111111 11111111                    = 407Fh = 16511
+ <span style="color:green">110</span>00000 00000000 00000000           = 4080h = 16512
+ ...
+</pre></html>
+
+Various interpretations can be mapped on UBNumber encoding. For this level there are defined two:
+
+  * UBNatural encoding using directly value from UBNumber
+  * UBENatural where value 7Fh is reserved for infinity constant and higher values are shifted by one
+
+===== Document =====
+
+Document starts with 6 bytes long blob called "Document Header" followed by a single block called "Root Block" and optional blob called "Extended Area".
+
+Header for current version of protocol is (hexadecimal):
+
+<code>
+FE 00 58 42 00 02
+</code>
+
+===== Block =====
+
+Each block starts with single value:
+
+  UBNatural attributePartSize
+
+If **attributePartSize = 0** then this block is called "Terminator" and block ends. Otherwise it is followed by value:
+
+  UBENatural dataPartSize
+
+If **attributePartSize = count of bytes used by dataPartSize** then this block is called "Data Block" and binary blob follows which has length in bytes specified by dataPartSize value and block ends.
+
+If **attributePartSize > count of bytes used by dataPartSize** then this block is called "Node Block" and a sequence of attributes follows until **sum of count of bytes used by attributes = attributePartSize - count of bytes used by dataPartSize**.
+
+  UBNumber attribute
+
+After attributes, sequence of blocks follows until **sum of block sizes = dataPartSize** and block ends.
+
+If **dataPartSize = infinity** for data block then binary blob is ended by a sequence of two zero bytes. A sequence of two bytes where first is zero followed by a non zero byte is considered a sequence of nonstoping zero bytes. The non zero byte defines the length of the sequence.
+
+If **dataPartSize = infinity** for node block then sequence of data blocks is ended by the terminator.
+
+//See following picture for clarification://
+{{ en:doc:spec:images:block_structure.png?400 |Block Structure}}
+
+=== Document Parsing Grammar ===
+
+When ignoring infinite data part size and terminators, it's possible to simplify grammar to following rules:
+
+<code>
+Document ::= header + Block + data
+Block ::= begin + Attributes + Blocks + end | begin + data + end
+Blocks ::= Block + Blocks | epsilon
+Attributes ::= attribute + Attributes | epsilon
+</code>
+
+The following chart reflects the basic graph of the occurrence of events in the sequential document parsing.
+
+Explanation:
+
+a - block attribute (blockAttribute)\\
+b - begin of the block (blockBegin)\\
+d - data part of block (blockData)\\
+e - end of block (blockEnd)
+
+{{ en:doc:devel:progress:images:graph-1.png |Event occurrence graph}}
+
+Graph source file {{en:doc:devel:progress:images:graph-1.graphml|graph-1.graphml}}
+
+==== Correct Document ====
+
+Binary stream is structured correctly as XBUP document (well-formed) if the following conditions are met. Description of invalid state is also included for each condition.
+
+  * Optional: Stream header must be present (Corrupted or missing header)
+  * Optional: Header version must be in supported range (Unsupported header)
+  * In each block the end of last attribute corresponds to the end of the attribute part (Attribute Overflow)
+  * In each block the end of last subblock corresponds to the end of the data block part (Block Overflow)
+  * The terminal block is present only in blocks where it belongs to (Unexpected Terminator)
+  * End of file is after the end of the root block (Unexpected End)

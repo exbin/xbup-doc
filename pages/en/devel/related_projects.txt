@@ -1,0 +1,10 @@
+====== Related Projects ======
+
+Following projects are planned to be worked on as a part of the XBUP project, based on XBUP protocol.
+
+===== List of Projects =====
+
+  * [[http://progjazy.xbup.org|ProgJazy]] - Programming language with XBUP based AST source code representation
+  * Alternative to CSV - XBUP protocol based format usable for representation of structured relational data
+  * Alternative to MKV - Video container based on XBUP protocol (primary for testing purposes)
+  * Database-like storage solution - Storage service for data stored in XBUP protocol based on XBUP framework

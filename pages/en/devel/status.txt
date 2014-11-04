@@ -1,0 +1,29 @@
+====== Project Status ======
+
+XBUP project is currently in prototype phase with experimental protocol design and proof-of-concept implementation in construction.
+
+===== Next Release =====
+
+Next release should be work release 24 (0.1.24) around January 2015.
+
+Next version should include:
+
+  * Improved catalog management
+  * Additional examples of types
+
+===== Planned Functionality =====
+
+  * Creation of framework
+
+===== Development =====
+
+This project is currently in early development stage with prototype implementation under development.
+
+See list of [[en:devel:authors|authors]].
+
+===== Implementations =====
+
+  * Java - undergoing, basic libraries, set of sample GUI tools, catalog web browser
+  * C++ - started, but postponed until further development of prototype
+  * Delphi - obsolete, basic libraries and set of sample GUI tools
+  * PHP - temporary, simple catalog browser only

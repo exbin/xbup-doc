@@ -1,6 +1,8 @@
 ====== How to Join ======
 
-This project is currently in early development stage with Java prototype implementation under development. If you are interested, read this page further to see how you can take a look on up-to-date source code or how to participate on development.
+This project is currently in early development stage with Java prototype implementation under development. See [[en:devel:status|project status]].
+
+If you are interested, read this page further to see how you can take a look on up-to-date source code or how to participate on development.
 
 ===== Source Codes =====
 

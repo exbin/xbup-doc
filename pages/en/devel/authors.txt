@@ -1,0 +1,24 @@
+====== List of Authors ======
+
+This page should include list of people who participated on this project.
+
+See separate page for [[en:about:logos|logo design]].
+
+===== Developers =====
+
+==== Miroslav Hajda (HajdaM) ====
+
+  * Position: Web admin, project admin, developer
+  * Location: Czech Republic
+  * Personal Homepage: [[http://hajdam.zdechov.net]]
+  * Email: bomi//@//centrum.cz (please write "XBUP:" in subject)
+
+==== Pkrasnop - Inactive ====
+
+  * Position: C++ developer
+  * (please fill this out)
+
+==== Lukáš Krejčí - Inactive ====
+
+  * Position: XBUP-catalog developer in early Java version
+  * Location: Czech Republic

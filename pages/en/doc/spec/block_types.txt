@@ -1,0 +1,36 @@
+====== Block Types (Level 1) ======
+
+Level 1 introduces block types and catalog. For this level all non-listed attributes in node blocks are considered zero.
+
+See complete [[en:doc:spec:tree_structure|specification of block types]].
+
+===== Block Type =====
+
+First two attributes in node block are interpreted as follows:
+
+  UBNatural - TypeGroup
+  UBNatural - BlockType
+
+Blocks types are organized into **Groups**. Type group with value 0 is called **Basic Group** and it's meaning is build-in and defined in the protocol itself.
+
+TypeGroup value specifies to which group each block belongs. BlockType value specifies particular block in the corresponding group where meaning of single groups and block types is defined in document using basic blocks.
+
+===== Basic Group =====
+
+Basic group uses TypeGroup = 0. Basic blocks provides ability to store block type definitions and links to catalog.
+
+==== Undefined (BlockType 0) ====
+
+This block is used for unknown block types or data padding.
+
+==== Type Declaration (BlockType 1) ====
+
+Type declaration block provides ability to specify allowed range of type groups. This block is typically root block in regular document. It has following values:
+
+UBNatural - GroupsReserved\\
+UBPointer - GroupSpecList\\
+UBPointer - DocumentRoot\\
+UBNatural - PreserveCount\\
+
+FIXME
+

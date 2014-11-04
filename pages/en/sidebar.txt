@@ -1,0 +1,29 @@
+About the XBUP project
+  * [[this>?about|Introduction to the project]]
+  * [[en:about:goals|Project goals]]
+  * [[en:about:architecture|Architecture and principles]]
+  * [[this>?about/videos|Video presentations]]
+
+Download
+  * [[this>?download|Current release]]
+  * [[this>?download/screenshots|Screenshots]]
+
+Documentation
+  * [[en:doc|Project's documentation]]
+  * [[en:doc:spec:overview|Protocol's specification]]
+  * [[en:doc:impl:java|Implementation in Java]]
+
+Get involved
+  * [[en:devel|How to join]]
+  * [[en:devel:status|Status of the development]]
+  * [[en:devel:related_projects|Related projects]]
+
+Services
+  * [[http://catalog.xbup.org|Catalog of types]]
+  * [[http://catalog-php.xbup.org|Catalog of types (PHP)]]
+
+Follow us on
+  * [[https://github.com/xbup|XBUP on GitHub]]
+  * [[https://twitter.com/xbup|XBUP on Twitter]]
+  * [[http://www.ohloh.net/projects/xbup|XBUP on OHLOH]]
+  * [[http://www.sourceforge.net/projects/xbup|XBUP on SourceForge]]
