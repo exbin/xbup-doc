@@ -1,0 +1,257 @@
+====== Documentation: Data Stream Structure ======
+
+This document is part of the eXtensible Binary Universal Protocol project documentation. Provides description of the data stream structure and as a sequence of blocks.
+
+===== Data Stream Architecture =====
+
+In the case of specification of the structure of the data stream the proposal was even less direct than in the number's encoding. So far, the final solution has not been established and alternative solutions are still reconsidered. But the basis is still the same block-tree structure.
+
+==== Declared Conditions ====
+
+The objectives set for this project mostly relate to the data stream structure. Especially there is focus on compatibility and scalability of the implementation.
+
+//Requirements://
+
+  * **Bit organization by clusters** - As with the encoding of the numbers, it is required that the individual elements should be addressable by n-tuples of bits.
+  * **Realization of any large data sequences** - This requirement, similar to the requirement for encoding of indefinitely large numbers, is seeking to force to provide ability to code indefinitely large sequence of data blobs. These data can then have any meaning, but usually specified by metadata.
+  * **Establishment of normal form** - Mainly because of the possibility of comparing the two files it would be useful to provide ability to convert the stream to a standard default form, not compressed or encrypted.
+  * **Processibility** - If we want to process the data created by XBUP protocol, it should be possible to easily skip parts that are not relevant for our current needs.
+  * **Minimalisation** - Block should contain the basic form with as least information as possible. Other attributes should be optional, or should expand by adding new subblocks. This disallow, for example, the use of control checksums, such as the CRC, or MD5 Hash. It is also prohibited to use reservation areas for later use. Still the format will not be in the basic standard form able to compete with current widely used specialized binary formats in size.
+
+==== Data Sequence ====
+
+Certainly, it will be necessary to store sequence of values in the UBNumber encoding. It will be necessary to provide limiting for such sequences. There are, for example, for example, the following options:
+
+  * **Statically defined number of items** - One option is to use static defined sequence of items with a defined meaning.
+  * **Use of indentation** - The sequence ends with a special terminal symbol.
+  * **Including count of items** - At the beginning of the sequence there will be value, indicating the number of the following items belonging to the sequence.
+  * **Including length of used space** - At the beginning of the sequences there will be indicate of used amount of space, which item occupies.
+
+The first approach would mean, for example, that the block would begin with one or two items that define the type and one item determining the length of subsequent data blob. This very simple concept is used for example in EBML. Disadvantage and at the same time advantage is that each value would have to be enclosed in a separate block. The drawbacks of this otherwise full solutions include:
+
+  * The findings about block requires to process an unknown number of subblock (tree)
+  * Encapsulation of the UBNumber types is redundant, since these values include their length themselves
+
+Although there are currently not available strong arguments against this, it will postponed for a later revaluation.
+
+The disadvantage is the second approach is the necessity to read all items, even if only want to skip them. Most probably the third of these options is the best, making it easier to skip the entire sequence, if we are not interested in it. Occupied space should be in best case referenced as count of used data clusters. Indentation is useless in this case because there are used all the codes and it would cause some limitation. Also I believe that infinity sequence of these values will be addressed by other solution.
+
+To store data, we need a sequence of bits and generally of various length. This sequence can be identified vy one value, determining the length, or reading till indentation is reached. Finally, UBENatural type value for length was chosen to declare length of the sequence with constant for infinity marking the end by indentation block. This option is especially appropriate to be used when there is not yet identified and therefore unknown length of bit sequences. Another way could be to use the value of zero to identify data terminated by indentation block. Empty block will be used as indentation.
+
+==== Block Structure ====
+
+Sequences of values should be organized into blocks. In addition to the relationship "to be subblock" there can exist other types of relationships between the blocks. These relationships can be expressed in several ways:
+
+  * **Indexed sequence of blocks** - The blocks are given one followed by another, and relations between them are declared using index. This approach causes a large overhead in search of links between blocks, the need to browse through all the blocks, or to introduce two-way links between the blocks.
+  * **Tree structure** - This type of organization allows to express relations between blocks by providing "to be subblock" relation. Finally, this solution was selected since it allows to express sufficient dependency while maintaining good proccessibility.
+  * **Sequence of block with static order**
+
+Any data representation could also provide a fixed order of block sequence, but that would avoid many of the required characteristics, and worsen extensibility and this could also cause conflicts between the realization and the logical structure of data.
+
+==== Tree Structure ====
+
+Apparently there must be a block to allow a general store of any sequence of bits that can be interpreted as subblock or better sequence of subblocks. If there would not exist such a block it would have to be known size of all sublocks along, which prevents the document streaming generating.
+
+Thus begins block with a sequence of UBNumber type values, known as block attributes, which will be followed by a data part block to be interpreted as a sequence of subblocks. So there is a value at the beginning:
+
+    UBNatural - AttribPartLength
+
+Which is the length of the UBNumber value sequence.
+
+That the value is of the UBNatural type means that the data stream has to known not only the count but also space used by attributes onward. This can cause problems for large sequences of attributes. The aim, however, is that the number of attributes should be as minimal as possible and all the relevant values should be stored as separate blocks. Also it is necessary to determine what type of block somehow.
+
+The structure of the document encoded using XBUP is structured as follows:
+
+<html><div align="center"><table border="1" cellpadding="4" cellspacing="0" style="border-color: gray" width="200" bgcolor="#FFFFCC" align="center"><tr><td width="100%" style="border-color: gray; text-align:center;">
+  File Header
+</td></tr><tr><td width="100%" style="border-color: gray">
+  <table border="1" cellpadding="4" cellspacing="0" style="border-color: gray" width="100%" bgcolor="#CCFFFF"><tr><td width="100%" style="border-color: gray; text-align:center;">
+    Attribute Part
+  </td></tr><tr><td width="100%" style="border-color: gray; text-align:center;">
+    Data Part
+    <table border="1" cellpadding="0" cellspacing="0" style="border-color: gray" width="100%" bgcolor="#FFCCCC"><tr><td style="border-color: gray; text-align:center; color: #808080;" width="100%">
+      Subblock's Attribute Part
+    </td></tr><tr><td width="100%" style="border-color: gray; text-align:center; color: #808080;">
+      Subblock's Data Part<br/>
+      ...
+    </td></tr></table>
+    ...
+  </td></tr></table>
+</td></tr><tr><td width="100%" style="border-color: gray; text-align:center;">
+  Extended Area
+</td></tr></table>
+</div></html>
+
+=== Terminal Block ===
+
+AttribPartLength value = 0 means that there are no more UBNumber values in the block and that this is a terminal block. This allows to limit the infinite sequence subblocks in combination with node block.
+
+=== Data Block ===
+
+When data of the block are interpreted as additional blocks or as a simple binary data can be determined several ways:
+
+  * **Block has a single attribute only** - If the block has only one attribute, and thus it determines the length of the data and cannot represent the block type, only using additional parent blocks.
+  * **All the attributes of the block are zero** - Another option is to allow free attributes, which essentially allows to allocate any free space.
+  * **The first block attributes are zero** - Another option is to reserve some identification for start of data block of and use the remainder for further information on the data block.
+  * **Data blocks are declared in block type declarations** - This solution makes it impossible to provide general processing and the document view.  
+
+Data block may not contain any other attributes which may be included in the parent blocks, and so far this option appears to be sufficient. Therefore there is only one attribute in the attribute part:
+
+    UBENatural - DataPartLength
+
+This attribute specifies the length of a sequence of bit clusters, which follows. This sequence is interpreted as a bit sequence without any further meaning. Also there is support for the infinity value which indicates unlimited size of the block, which allows to generate data stream without knowing the amount of data. This raises the problem of the end of this type of block:
+
+  * **Do not close** - This options is probably inappropriate solution, and means not to detect end of infinite blocks. This would, however, the block lost a sense of hierarchy and became the expanded area.
+  * **Store as UBNatural** - Another option is to express binary data as an UBNatural value, and the following bits consider to be zero. For such purposes, it is possible to apply directly block with single attribute.
+  * **Sequence of chunks** - Data is represented as sequence of blobs where before each blob there is single UBNatural value representing length of the following chunk. Last chunk would have length zero.
+  * **Bit flag** - First bit would represented information about whether there is end of data. Rest of the bits would be shifted.
+  * **Zero terminated** - Blob would be terminated by zero byte. It's similar to terminated node block, but there would be necessary to specify how to represent zero bytes (collision with terminator).
+  * **Double zero terminated** - Data blob would be terminated with the sequence of two zero bytes. Single zero byte followed by non-zero length value would represent sequence of zero bytes of the given length.
+
+Termination using zero cluster brings another the problem about how the bit sequences should express the sequence of zeros:
+
+  * **Exclusion** - One option is to ignore that and the similar to zero-terminated string allow only non-zero values. However, this solution is unsatisfactory, especially for the smaller sizes of the cluster.
+  * **Direct conversion** - Is it possible to include the direct conversion of the base value of 255 at the base 256, but it requires to read all the values to get resulting bit sequence.
+  * **Limited conversion** - Previous variant may be limited to a single bit, and the conversion performed only in selected bits.
+  * **Conditional Shifting** - As an acceptable alternative solution it appears to be possible to use shifting throughout the bits. If the value of the cluster is 0, concerning the termination sequence, to 1, then take only 7 bits as valid and in all other cases, take all the bits. That means that the zero sequence and the sequence with bits 1 for an interval of the cluster length are coded very inefficiently. But it is relatively acceptable compromise to the complexity of the conversion.
+
+This issue has not have been decided properly yet. For the time being the variant using two zero bytes is chosen for the prototype implementation.
+
+=== Node Block ===
+
+If there is given more than one attribute, then block is considered to be a **node block** or **leaf block**. The first value is in both cases:
+
+UBENatural - SubPartLength
+
+Non-zero value determines the length of a sequence of bits clusters, which follows. This is then interpreted as a sequence of blocks.
+
+=== Leaf Block ===
+
+Special case of node block is a block with DataPartLength = 0, which means that the block has no subblocks. This block store the information only in the form of attributes.
+
+==== Correctness Argumentation ====
+
+Similar to number's encoding, also here should be considered arguments supporting the chosen realization of the tree structure.
+
+  * **Omission of the length of the block** - This principle is based on the constant for infinity, is necessary because there is not always known the size of subblocks ahead and in some cases it may be assumed that the sequence of subblocks should never end.
+  * **The sequence of values** - Probably each block must begin with at least one UBNumber value, which must specify the length of the block.
+  * **Order of parts** - Attribute part of the block should preceed data section, since the attributes can be, among other things, critical to whether the data of the block will not be processed.
+  * **Order of attributes** - Perhaps the length of the attribute part must preceed the length of the data part. If not, it will not bring the order of the block parts. Also the length of the data part should be included among other attributes, as it is in essence an block's attribute.
+  * **Length of attribute part** - Provide infinite sequence of attributes in attribute part does not make sense, since such attributes should be implemented as blocks.
+  * **Document as single block** - Document is represented as a single root block and data, which is located behind this block are interpreted as a data block. This allows the realization of an infinite continuous data block without any necessary detection for identation and use XBUP protocol as a header for such stream (eg MPEG, MP3).
+
+==== Protocol's Grammar ====
+
+Protocol has form of the language over the alphabet {0,1}, which is generally the type 0. However, it is possible to include guidance for the presence of various structures such as protocol grammar without the need to establish a direct relationship with the binary expression.
+
+=== Simplified Grammar ===
+
+For the expression and understanding of the basic block structure of the protocol following grammar could be useful. Words written in lowercase letters are terminals.
+
+<code>
+Document ::= filehead + Block
+Block ::= Attributes + Blocks | datablock
+Attributes ::= Attributes + attribute | epsilon
+Blocks ::= Blocks + Block | epsilon
+</code>
+
+This context-free grammar express that the entire document consists of a single block, each block is either a data block, or have two separate parts, any count of attributes and subblocks. Attributes are listed as the first block and the blocks are defined recursively. The grammar can be extended up to provide various other characteristics.
+
+=== Grammar with Terminal Blocks ===
+
+This grammar adds description of the use of terminator.
+
+<code>
+Document ::= filehead + Block
+Block ::= Stdblock | Stdtermblock | Datablock | Datatermblock
+Stdblock ::= Attributes + Blocks
+Stdtermblock ::= Attributes + Blocks + terminator
+Datablock ::= datablob
+Datatermblock ::= datablob + terminator
+Blocks ::= Block + Blocks | epsilon
+Attributes ::= attribute + Attributes | epsilon
+</code>
+
+=== Document Parsing Grammar ===
+
+Especially when parsing the blocks occurring in the limited order, which can also reduce the grammar, which is then context-free.
+
+<code>
+Document ::= Block
+Block ::= blockBegin + Attributes + Blocks + blockEnd | blockBegin + blockData + blockEnd
+Blocks ::= Block + Blocks | epsilon
+Attributes ::= blockAttribute + Attributes | epsilon
+</code>
+
+The following chart reflects the basic graph of the occurrence of events in the sequential document parsing.
+
+Explanation:
+
+a - block attribute (blockAttribute)\\
+b - begin of the block (blockBegin)\\
+d - data part of block (blockData)\\
+e - end of block (blockEnd)
+
+{{ en:doc:protocol:images:graph-1.png |Event occurrence graph}}
+
+Graph source file {{en:doc:protocol:images:graph-1.graphml|graph-1.graphml}}
+
+Alternatively, you can use the following automate transitional system, a regular grammars, whose language is close superset to the previous language:
+
+{{ en:doc:devel:progress:images:graph-2.png |Event occurrence graph}}
+
+Graph source file {{en:doc:devel:progress:images:graph-2.graphml|graph-2.graphml}}
+
+=== Finer Grammar ===
+
+In the case of large data blocks may be their processed problematic and memory demanding. For this reason, it is possible and even advisable to use finer division of the individual bytes. Between the two types of grammars direct conversion of the corresponding events exist.
+
+Explanation:\\
+
+a - block attribute (blockAttribute)\\
+b - begin of the block (blockBegin)\\
+d - single byte of block data part (blockData)\\
+e - end of block (blockEnd)
+
+{{ en:doc:devel:progress:images:graph-3.png |Event occurrence graph}}
+
+Graph source file {ben:doc:devel:progress:images:graph-3.graphml|graph-3.graphml}}
+
+Since the data event here represents exactly one byte, it was necessary to establish a direct transition at the end of the data block with an empty data sections.
+
+Divide the attributes to individual bytes does not seems to be meaningful, as well as a split of the data to bits.
+
+=== Rougher Grammar ===
+
+On the other hand, it is possible to merge some events, for example include attributes and data block as a part of block begin.
+
+Explanation:\\
+
+b - begin of the block with attributes (blockBegin)\\
+d - data block with data blob (blockData)\\
+e - end of block (blockEnd)
+
+{{ en:doc:devel:progress:images:graph-4.png |Event occurrence graph}}
+
+Graph source file {{en:doc:devel:progress:images:graph-4.graphml|graph-4.graphml}}
+
+==== Correct Well-formness ====
+
+Stream is created correctly (well-formed) if the following conditions holds. Names of exceptional invalid states are also listed for the case given condition is not met.
+
+  * In each block the end of last attribute corresponds to the end of the attribute part (Attribute Overflow)
+  * In each block the end of last subblock corresponds to the end of the data block part (Block Overflow)
+  * End of file is after the end of the root block (Unexpected End)
+  * The terminal block is present only in blocks where it belongs to (Unexpected Terminator)
+
+==== Introduction of the Levels ====
+
+During the creation of a draft of the structure it has proved to be more appropriate to introduce multiple levels of the data realization. The reason is the ability to process the document at various levels of complexity and, in particular, to carry out inspections of the various conditions, according to the availability of specifications.
+
+Encoding a basic block structure is known as Level 0. It is not a fully fledged protocol variant, since it only specifies the method of using the organization without implementing the transfer of the information. It shows the individual blocks without the interpretation of their content, just as blocks of 4 basic types. Is it possible to validate compliance with the block structure (syntax check).
+
+Next levels extends interpretation of blocks introducing their type.
+
+There is further declared the method of the type specification and basic blocks. Further extension would provide the permitted range for attributes, allowed subblocks and order of their sequence, transition and manner of the definition of their meaning. At higher levels it will be possible to validate a document according to the required extension level.
+
+Possible levels are described in separate parts of the documentation [[en:doc:devel:issues:levels|focused on the levels]].

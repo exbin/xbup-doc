@@ -1,11 +1,23 @@
-====== Tree Structure (Level 0) ======
+====== Specification Overview ======
+
+This is an overview of specification of the eXtensible Binary Universal Protocol as it is defined in work release 0.1.23 (WR-23).
+
+This should be usable for example to get idea how is the internal structure of protocol defined.
+
+This document is not final and it's also incomplete.
+
+For full specification, please see other parts of [[en:doc:catalog|specification]] in documentation section.
+
+===== Tree Structure (Level 0) =====
 
 Lowest protocol's level defines basic tree structure using two primitive types.
 
   * Binary blob (sequence of bytes)
   * Natural non-negative integer number
 
-===== UBNumber Encoding =====
+See complete [[en:doc:protocol:tree_structure|specification of tree structure]].
+
+==== UBNumber Encoding ====
 
 UBNumber is encoding used for representation of instance of countable infinite set stored as one or more bytes (similar to UTF-8 encoding). 
 
@@ -35,7 +47,7 @@ Various interpretations can be mapped on UBNumber encoding. For this level there
   * UBNatural encoding using directly value from UBNumber
   * UBENatural where value 7Fh is reserved for infinity constant and higher values are shifted by one
 
-===== Document =====
+==== Document ====
 
 Document starts with 6 bytes long blob called "Document Header" followed by a single block called "Root Block" and optional blob called "Extended Area".
 
@@ -45,7 +57,7 @@ Header for current version of protocol is (hexadecimal):
 FE 00 58 42 00 02
 </code>
 
-===== Block =====
+==== Block ====
 
 Each block starts with single value:
 
@@ -68,39 +80,48 @@ If **dataPartSize = infinity** for data block then binary blob is ended by a seq
 If **dataPartSize = infinity** for node block then sequence of data blocks is ended by the terminator.
 
 //See following picture for clarification://
-{{ en:doc:spec:images:block_structure.png?400 |Block Structure}}
+{{ en:doc:protocol:images:block_structure.png?400 |Block Structure}}
 
-=== Document Parsing Grammar ===
+===== Block Types (Level 1) =====
 
-When ignoring infinite data part size and terminators, it's possible to simplify grammar to following rules:
+Level 1 introduces block types and catalog. For this level all non-listed attributes in node blocks are considered zero.
 
-<code>
-Document ::= header + Block + data
-Block ::= begin + Attributes + Blocks + end | begin + data + end
-Blocks ::= Block + Blocks | epsilon
-Attributes ::= attribute + Attributes | epsilon
-</code>
+See complete [[en:doc:protocol:block_types|specification of block types]].
 
-The following chart reflects the basic graph of the occurrence of events in the sequential document parsing.
+==== Block Type ====
 
-Explanation:
+First two attributes in node block are interpreted as follows:
 
-a - block attribute (blockAttribute)\\
-b - begin of the block (blockBegin)\\
-d - data part of block (blockData)\\
-e - end of block (blockEnd)
+  UBNatural - TypeGroup
+  UBNatural - BlockType
 
-{{ en:doc:devel:progress:images:graph-1.png |Event occurrence graph}}
+Blocks types are organized into **Groups**. Type group with value 0 is called **Basic Group** and it's meaning is build-in and defined in the protocol itself.
 
-Graph source file {{en:doc:devel:progress:images:graph-1.graphml|graph-1.graphml}}
+TypeGroup value specifies to which group each block belongs. BlockType value specifies particular block in the corresponding group where meaning of single groups and block types is defined in document using basic blocks.
 
-==== Correct Document ====
+==== Basic Group ====
 
-Binary stream is structured correctly as XBUP document (well-formed) if the following conditions are met. Description of invalid state is also included for each condition.
+Basic group uses TypeGroup = 0. Basic blocks provides ability to store block type definitions and links to catalog.
 
-  * Optional: Stream header must be present (Corrupted or missing header)
-  * Optional: Header version must be in supported range (Unsupported header)
-  * In each block the end of last attribute corresponds to the end of the attribute part (Attribute Overflow)
-  * In each block the end of last subblock corresponds to the end of the data block part (Block Overflow)
-  * The terminal block is present only in blocks where it belongs to (Unexpected Terminator)
-  * End of file is after the end of the root block (Unexpected End)
+=== Undefined (BlockType 0) ===
+
+This block is used for unknown block types or data padding.
+
+=== Type Declaration (BlockType 1) ===
+
+Type declaration block provides ability to specify allowed range of type groups. This block is typically root block in regular document. It has following values:
+
+UBNatural - GroupsReserved\\
+UBPointer - GroupSpecList\\
+UBPointer - DocumentRoot\\
+UBNatural - PreserveCount\\
+
+FIXME
+
+==== Catalog ====
+
+FIXME
+
+===== Transformations (Level 2) =====
+
+FIXME

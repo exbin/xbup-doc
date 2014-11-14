@@ -1,0 +1,181 @@
+====== Documentation: Block Transformation ======
+
+This document is part of the eXtensible Binary Universal Protocol project documentation. Provides techniques and specification for block transformation.
+
+===== Transformation =====
+
+Transformation represents the extension of the block types of the possibility of data processing by conversion. Transformation operations are transferring data from one form to another (not necessarily equivalent) and allow to define parameters, that means allowed allowed types of subblocks. Data should be transferred to different forms automatically as necessary, and usually without the need for user intervention.
+
+Individual blocks are regarded as a functions that additionally to its own type which return has also defined type of transformation and subblocks have also defined the default type.
+
+The fundamental transformation include the transfer to the ancestors (type inheritance):
+
+  * Generalization / Specialization - For blocks which have fixed attribute or subblock compare to it's parent (for example UTF-String -> String).
+  * Parametric types - It is also possible to use ancestor type (for example List of pictures -> List).
+
+Another type is isomorphism / homomorphism (equivalence). Examples can be compression, encryption, links, or for example mathematical representation of the graph neigbour matrix, or a list of neighbors.
+
+For the purposes of implementation it is necessary to define:
+
+  * Getting a list of blocks to which can be transformed - For given block there should be defined way to determine the blocks, to which can it be algorithmically converted to and that both for when it is maintained all the information, and also even if part of it is lost.
+  * Transformation application and transmission of the result - Sometimes it is possible to generate result simultaneously, sometimes it may be necessary to construct the entire result in memory.
+  * Transformation chaining - It is possible to perform multiple transformations in a row as a sequence, also to determine the sequence (the use of lattices?).
+  * General transformation - It would be appropriate to distinguish the general manipulation blocks, which allow to transform any data to a different form from the transformation of data from one representation to another.
+
+Transformation relation is reflexive and transitive.
+
+==== Default Transformation ====
+
+Some of the transformation should be prioritized as the default.
+
+To the usual transformations belong:
+
+  * The transformation of older versions of a document to later one, and vice versa
+  * Compression and decompression
+  * Encryption and decryption
+  * Insertion of parts of documents from other sources
+  * Blocks with fixed attributes
+  * Child to parent transformation
+
+For inheritance there is possible that more to the count of attributes in the block it is also possible to determine its compatible parent. This principle is particularly appropriate to use when we want, that the application would be able to partially process the block where not the complete document definition is known.
+
+==== Transformation Graph ====
+
+In the case that we are able to make a transformation, it is possible to build chain of transformations and thus extend the list of possible resulting blocks. In general case, it is also possible that the result will lead to more than one possible sequence (multiple paths in the graph).
+
+Because the search in the graph can be potentially very complex, it will be appropriate to introduce order of the transformations. Then it should be possible to limit the search in the lattices and the desired transformation would then be constructed from the found bound (either upper or lower). It should be possible to achieve this and such result for each transformation will be the transformation up or down. The problem of the direction decision is nontrivial and likely will be implemented in accordance with demands of transformation and the complexity class.
+
+=== Transformation Interface ===
+
+Functional interface allows to define possible inputs and input modules for XBUP document processing. In the current case, it is possible to obtain the input from the list of supported formats and get a list output of the defined output formats from output interface. Modules are chaining together with other implicit transformation into the transformation graph.
+
+==== Limitation Rules ====
+
+Since the transformations can be generally defined only for a subset of the possible inputs compare to what can be defined by the block type, it seems appropriate to introduce a restrictive definition of the conditions to set down rules which must be satisfied by the block in addition to the rules laid down in the definition. These conditions, however, could be used for other purposes than just transformations, for example, document specification variants with limited values, or limited subblock types.
+
+Possible ways of block representation with limitations:
+
+  * A separate block for each variant of restriction - One option is the declaration of the block with restriction defined as a separate declaration. This approach would allow easy variant processing, because both groups would of the declarations would be technically equal and it would thus be possible to link them in a uniform manner.
+  * The inclusion of restrictions in the block type definition - The block is defined by several types of bonds, which could be extended to restrictive conditions. Also in this case there would be a single block type for each variant and limitations would be defined as additional definition issue, and thus it would be possible to transferr restrictions from the components on the composite block types.
+  * Separated Declaration of Restrictions - Another option is to allow to define several variants according to established limits for every type. This approach has several advantages and disadvantages. Since the structure of the block is distinguished by the type of block, it wouldn't be easy to recognize in the document, which restrictive rules is the block suppose to comply with and it would have to process the declaration first.
+
+Thus far, the third option was chosen as solution, because the previous two options would have functioned poorly as an extension of the existing model and it would increase the number of block types while bearing the same information, differing only in certain limits. More suitable might be to define a single block type, including the name and description, and only declare additional sets of restrictions. It would also be appropriate in any way the possibility of applying restrictions on other block types.
+
+Restrictions may form a hierarchy (lattice) and can be combined. However, this will be left to deal with up to a higher protocol's level, including the definition of constraints. Limits are expressed using a single index, similar to the block type, and are likely to have the same set of extensions (such as name, description).
+
+=== Definition of the Limitation Rules ===
+
+And for how restrictive the conditions are expressed, it will be appropriate to consider several aspects:
+
+  * Limiting value as constant or enumeration constraints
+  * Limiting size of the attribute part
+  * Limiting size of the data part
+  * Limiting count or type of subblocks
+  * Method to limit data block
+  * Exclusion or enforcement of the block with infinite length blocks (using block terminator)
+  * Problem with computation complexity of the limitations
+  * Way and direction of the bit sequences and parameter values
+
+In the case of restrictions of parameter values it is possible to define limitation using regular expressions, which have sufficient expression power to express simple conditions, such as = &lt; &gt; and various finite enumerations. Expression of the condition "lesser than" would be require a large number of states in the definition. A more appropriate definition should be reconsidered later and leave their implementation on the applications.
+
+===== Transformation Function =====
+
+For the needs of transformation it seems appropriate to allow the definition of functions. For simplicity, consider the function as code which declares what element of the output set is returned for given element of input set. Therefore existence of negative issues, such as function side effects should be avoid. Again, it is possible to select one from several possible options:
+
+  * A separate block type for each function - This option would allow to extend the concrete block on the function declaration. The advantage is that these blocks represent the actual function.
+  * Define a list of features as part of the definition of the type - In this variant if would be associated with the specific function block type, and by referring to them through this type.
+
+For now the first option was choosen, as it has the ability to to effectively define the functional requirements. In addition, it is possible to determine the input parameters such as n-tuple entity, without necessity to bind to particular type of block.
+
+Function is defined as an extension of the block's definition adding the list of function's results, parameterized by error condition. Result of this function can always be just of single type, but it also dependent on the error condition and can be also of compound kind. In addition, it can have limitations for both input and output sets.
+
+==== Data Transformations ====
+
+A specific case is the support for the transformation blocks providing data manipulations. Such blocks allow to transform data block to another block using specific algorithm and there should be support for such manipulations on certain protocol's level providing transparent processing environment to work with such blocks. These transformations has not defined either type of input or output, which is interpreted for just single data block.
+
+Following basic block is available. It has following values:
+
+UBPointer - TransformMethod\\
+UBPointer - DataSource
+
+DataSource pointer links to a data block which is a source of data for the transformation and TransformMethod pointer links to the method that is used for the transformation. This block can be used instead of the data block, and transformation is at the 2nd level implicitly performed. Unless the transformation method is declared, the data are used directly.
+
+=== Compression ===
+
+The aim of compression methods is to reduce the size of the data, usually by reducing the redundancy of data, or by using statistical methods... (there is some term I can't remember right now).
+
+Note: There should be later an implementation of the algorithms in the PROGJAZY language.
+
+=== Encryption ===
+
+The goal of encryption is to avoid reading of the data without the knowledge of the access key. Thus to allow the secure transmission of data, or verification of identity and indisputability of the delivery, or other services.
+
+==== Extraction Blocks ====
+
+A higher form is the extraction of the tree from the data block, and it has the same attributes as a transformation block, but they have got differ meaning:
+
+UBPointer - DataSource\\
+UBPointer - ExtractMethod
+
+The result of the extraction is a sequence of blocks in XBUP protocol, encoded in standard form. This block is to be used to encrypt the entire document subtree.
+
+=== Direct Extraction ===
+
+If the extraction method is not defined (value 0), the input data block is directly interpreted as a sequence of blocks in the XBUP format.
+
+=== Fragmentation Block ===
+
+Another possible use is to construct a data block so that data from the data block from data which are connected before the direct extraction using the specific scheme. This allows that the data block can be fragmented into smaller pieces and therefore smaller change will not cause necessarily to overwrite the contents of the whole document. Useful might be for example option with input data block placed into extended area of the document.
+
+==== Validation Blocks ====
+
+These blocks provides another ability, to access data content of the subtree and convert it to a virtual data block using an optional algorithm. it can be used for example for the block validity control sums.
+
+UBPointer - DataSource\\
+UBPointer - ExtractMethod
+
+=== Younger Siblings Check ===
+
+Node: It probably would not be much useful if it would be possible to check the validity of the entire document, but without the validity of the control block. This would be possible to verify, for example, through a procedure where the data entry for control block has been created from the data content of the blocks, which are his younger siblings.
+
+==== Conversion Blocks ====
+
+Last variant of manipulation block is intended to convert block into block structure to another form.
+
+UBPointer - DataSource\\
+UBPointer - ExtractMethod
+
+=== Linking Blocks ===
+
+Further are defined the fundamental basic building blocks, where full support is recommended for all applications, which claims that support XBUP protocol level 1 or higher. These blocks allow the expansion of the basic types of blocks and several other functions.
+
+== Link (6) ==
+
+Link allows to address other block of the same stream. Individual blocks are numbered in the standard order (according to the order they are listed) so that the value of 0 refers to the data of the block itself and higher indexes on the individual sub-blocks. In the extended versions it might be possible to address any data structure, any block in the same or another file, either in the local folder, or elsewhere in the local network or the Internet. (As analogy of URL) In the basic version there is a method for obtaining full block left to the application, and therefore whether if block will downloaded from the Internet, or version stored in the local cache will be used should not be important. For address entries in the file, values are as follows:
+
+UBPath - LinkPath\\
+UBNatural - UpCount\\
+UBPointer - LinkRoot\\
+
+These values uniquely determine the path of the block. For LinkRoot = 0 it is an internal reference in the stream. UpCount value = 0 corresponds to the reference to a parent block. If the value exceeds UpCount depth of the root depth of the file, or if any of the values PathPointer exceeds the number of block at reffered level, the link is considered void. There should be also mentioned the case when the link refers to another link, which is generally prohibited. In this case, it is necessary to verify the sequence of links on the looping. In general case, the length of path is not limited.
+
+For the positive value of a pointer it should be interpreted as the link of the root. If pointed another block of link type, then type 0 followed by references and links of different types are considered as the root of the path.
+
+In case that type of referenced block is not recognizes, a reference is void with the fault UnknownLinkRoot.
+
+Note: Is it appropriate to distinguish a reference to one block / whole subtree?
+
+== Internet Catalog Root Node (7) ==
+
+Including this block as a target indicates that linked definition of block are available through an Internet catalog.
+
+==== Document Analysability ====
+
+Document can be classed as analyzable, if the application has available all the necessary resources for a complete reading of the document to the level 0. In the case of the compression this includes availability of compression algorithms, like in the case of encryption on the knowledge of the requested secrets.
+
+Notes:
+
+  * Define the type of items including, for example, UBPointer on the next level + relevant types linked subblocks\\
+  * "system blocks" to rename on something more intelligent\\
+  * Argumentation for the order of the system blocks \\
+  * Argumentation for attribute order\\

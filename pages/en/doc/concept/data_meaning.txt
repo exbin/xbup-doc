@@ -1,0 +1,23 @@
+====== Documentation: Data Meaning ======
+
+This document is part of the eXtensible Binary Universal Protocol project documentation. Provides description of the data meaning declarations represented by single block.
+
+===== Data Meaning =====
+
+Other levels of document specification introduce a declaration of the data meaning. For this purpose, will be used various kind logics and declarative terms will be used. Meaning is in close relation with the transformations, because on the basis of the declared meaning there is often possible to construct a transformation.
+
+==== Propositional and Predicate Logic ====
+
+Classic propositional and predicate logic will be used as the basis. (including higher orders?)
+
+==== Transparent Intensional Logic ====
+
+Transparent intensional logic is extended logic, which operates over five-dimension vector space, the three classical dimensions of space, time, boolean value and parallel dimensions. This logic allows to define expressions like: If I had a car, I would visit you tomorrow.
+
+===== Links =====
+
+The list of resources, literature and relevant links:
+
+**RDF** - Resource Description Framework [[http://www.w3.org/RDF/|http://www.w3.org/RDF/]]\\
+**Ontologie** - [[http://en.wikipedia.org/wiki/Ontology_%28computer_science%29|http://en.wikipedia.org/wiki/Ontology_%28computer_science%29]]\\
+**SPARQL** - SPARQL Protocol and RDF Query Language [[http://en.wikipedia.org/wiki/SPARQL|http://en.wikipedia.org/wiki/SPARQL]]\\

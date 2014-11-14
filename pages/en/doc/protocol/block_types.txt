@@ -2,7 +2,7 @@
 
 Level 1 introduces block types and catalog. For this level all non-listed attributes in node blocks are considered zero.
 
-See complete [[en:doc:spec:tree_structure|specification of block types]].
+See complete [[en:doc:protocol:tree_structure|specification of block types]].
 
 ===== Block Type =====
 

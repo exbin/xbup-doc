@@ -1,21 +1,19 @@
-====== Encoding ======
-
-An encoding defines a mapping from a value sequence to a bit/byte sequence and vice versa. Protocol defines bottom-up methods how to represent various simple and or complex data in it.
-
-===== Level 0 =====
+====== Tree Structure (Level 0) ======
 
 Lowest protocol's level defines basic tree structure using two primitive types.
 
   * Binary blob (sequence of bytes)
-  * Natural non-negative integer number (encoded using UBNumber encoding)
+  * Natural non-negative integer number
 
-==== UBNumber Encoding ====
+===== UBNumber Encoding =====
 
-UBNumber encoding is used for representation of a natural non-negative integer number stored as one or more bytes (similar to UTF-8 encoding).
+UBNumber is encoding used for representation of instance of countable infinite set stored as one or more bytes (similar to UTF-8 encoding). 
 
 First, non-zero bits are counted for length and then rest of bits is used as value while value is also incremented so that there is only one code for each number.
 
-//Examples of the UBNumber codes (sequence of bits = represented value)://
+Most native encoding using UBNumber is UBNatural for representation of a natural non-negative integer number.
+
+//Examples of the UBNatural codes (sequence of bits = represented value)://
 
 <html><pre class="code">
  <span style="color:green">0</span>0000000                             = 0
@@ -35,9 +33,9 @@ First, non-zero bits are counted for length and then rest of bits is used as val
 Various interpretations can be mapped on UBNumber encoding. For this level there are defined two:
 
   * UBNatural encoding using directly value from UBNumber
-  * UBENatural where value 7Fh is reserved for infinity constant and higher values are decreased by one
+  * UBENatural where value 7Fh is reserved for infinity constant and higher values are shifted by one
 
-==== Document ====
+===== Document =====
 
 Document starts with 6 bytes long blob called "Document Header" followed by a single block called "Root Block" and optional blob called "Extended Area".
 
@@ -47,7 +45,7 @@ Header for current version of protocol is (hexadecimal):
 FE 00 58 42 00 02
 </code>
 
-==== Block ====
+===== Block =====
 
 Each block starts with single value:
 
@@ -70,32 +68,39 @@ If **dataPartSize = infinity** for data block then binary blob is ended by a seq
 If **dataPartSize = infinity** for node block then sequence of data blocks is ended by the terminator.
 
 //See following picture for clarification://
-{{ en:doc:spec:images:block_structure.png?400 |Block Structure}}
+{{ en:doc:protocol:images:block_structure.png?400 |Block Structure}}
 
-===== Level 1 =====
+==== Document Parsing Grammar ====
 
-Level 1 introduces block types and catalog. For this level all non-listed attributes in node blocks are considered zero.
+When ignoring infinite data part size and terminators, it's possible to simplify grammar to following rules:
 
-==== Block Type ====
+<code>
+Document ::= header + Block + data
+Block ::= begin + Attributes + Blocks + end | begin + data + end
+Blocks ::= Block + Blocks | epsilon
+Attributes ::= attribute + Attributes | epsilon
+</code>
 
-First two attributes in node block are interpreted as follows:
+The following chart reflects the basic graph of the occurrence of events in the sequential document parsing.
 
-  UBNatural - BlockGroup
-  UBNatural - BlockType
+Explanation:
 
-Blocks types are organized into **Groups**. Group of blocks with value 0 is called **Basic group** and it's meaning is build-in and defined in the protocol itself.
+a - block attribute (blockAttribute)\\
+b - begin of the block (blockBegin)\\
+d - data part of block (blockData)\\
+e - end of block (blockEnd)
 
-BlockGroup value tells to which group each block belongs. BlockType value specify particular block in the corresponding group where meaning of single groups and block types is defined in document using basic blocks.
+{{ en:doc:protocol:images:graph-1.png |Event occurrence graph}}
 
-==== Basic Group ====
+Graph source file {{en:doc:protocol:images:graph-1.graphml|graph-1.graphml}}
 
-Basic group uses BlockGroup = 0. Basic blocks provides ability to store block type definitions and links to catalog.
+==== Correct Document ====
 
-=== Control Block (BlockType 1) ===
+Binary stream is structured correctly as XBUP document (well-formed) if the following conditions are met. Description of invalid state is also included for each condition.
 
-Control Block provides ability to specify allowed range of block groups. This block is usualy root block in regular document. It has following values:
-
-UBNatural - GroupsReserved\\
-UBPointer - GroupSpecList\\
-UBPointer - DocumentRoot\\
-UBNatural - PreserveCount\\
+  * Optional: Stream header must be present (Corrupted or missing header)
+  * Optional: Header version must be in supported range (Unsupported header)
+  * In each block the end of last attribute corresponds to the end of the attribute part (Attribute Overflow)
+  * In each block the end of last subblock corresponds to the end of the data block part (Block Overflow)
+  * The terminal block is present only in blocks where it belongs to (Unexpected Terminator)
+  * End of file is after the end of the root block (Unexpected End)

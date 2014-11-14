@@ -1,0 +1,45 @@
+====== Concept: Order of Steps ======
+
+This document is part of eXtensible Binary Universal Protocol project documentation. It contains explanation of steps and order of their observance.
+
+===== Scheduling Steps =====
+
+While doing this project it was necessary do schedule suitable sequence of steps to progress development. Original intention was to adopt existing solutions for own purposes, but such solution was not found. Therefore it was inevitable to start from bottom level to build it. There is effort to prove, that final solution created by this project cover all goals and properties in requested range or it is impossible to prove such things. Possible way how to reach this is to show, that every single step is correct and then complete procedure is correct as well.
+
+As a final method for development was to choose building from primitives bottom-up, because opposite way might be unable to detect real problems soon enough. Both direction building with conversion might lead to problems with joining both development layers into one. On high abstraction layer, there is lot of solid theories and it should be possible to use it as needed in later phases of development. Current order is following:
+
+  * Number Encoding
+  * Block Structure
+  * Item Types
+  * Catalog
+  * Block Transformations
+  * Scripting
+
+===== Basic Principles =====
+
+It was necessary to develop some new ways how to encode data. Decision to go as abstract way as possible was made. As first it seems to be necessary to declare unified numbers encoding which enables possibility to do platform independent encoding of numbers of any size. As next step it was needed to discover suitable block structure, preserving compatibility, extensibility and so on. Next it would be nice to prove correctness of chosen concepts, formally if possible. That is most likely not accomplish-able, but at least some parts should be possible to verify that way. For example preserving usage of numbers of any size is necessary, because we would border size of files with any declared maximum value and therefore we would have to change it sooner or later or use just another format. Such solution would not be fully forward compatible and that is against declared goals. For other similar arguments you can visit other parts of this document as number encoding or block structure. It would be useful to have some arguments about higher data structures too, but it's assumable, that there won't be such argumentation out of questions and therefore design will be result of compromise.
+
+==== Requirements Validation ====
+
+With proper validation it should be possible to verify correctness of given goals and properties.
+
+  * universality - If we assume, that we want to create good protocol, it should allow to store everything (in extreme meaning). Protocol should be able to represent any information of any kind.
+  * extensibility - Ability to extend is implied from universality. If we want universal protocol, we must assure ability to add new structures, not only declare limited range of information representation which can never span everything, because there is infinity. Question is, what we can include as an extension.
+  * compatibility - Preserving forward and backward compatibility imply from extensibility. Good protocol should allow not just to extend itself, but it should preserve previous formats.
+
+==== Data Encoding ====
+
+Data must be encoded into bit sequence because of following reasons:
+
+  * bit is basic unit of information - bit as a smallest and basic unit from theory of information should be basis for data interchange
+  * sequence of items of same type - Even it is possible to have items of different types, it is not practical and much more nice seems to be using sequence of items of same type.
+
+Into that sequence its needed to convert higher data types. For that purposes it is important to choose proper encoding and block structure. Used encoding and reasons for it are described into [[en:doc:devel:progress:encoding|number encoding]] chapter and way how to express block structure is in [[en:doc:devel:progress:structure|block structure]] chapter.
+
+==== Data Abstraction ====
+
+Unless own encoding it is necessary to attach data abstraction like for example data type identification and relationship's information. For that purposes there would be catalog defined, which should be able to store such metainformation. Because of big complexity protocol should be probably scaled into multiple levels. About that, there are relevant parts as [[en:doc:devel:progress:types|item types]] chapter, [[en:doc:devel:progress:transform|block transformation]] and [[en:doc:devel:progress:catalog|specifications catalog]] chapter.
+
+==== Data Processing ====
+
+As next step way of processing data should be considered, like different kind of transformations to different forms for example. This should include processing instruction, programming and scripting codes and other ways how to manage correct way how to process metainformation.

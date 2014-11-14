@@ -1,0 +1,50 @@
+====== Remote Procedure Calling ======
+
+Specification for Remote Procedure Calling (RPC) specify interface for service provider and application how to communicate and perform execution of specific procedures and functions using XBUP protocol.
+
+Protocol for remote procedure calls defines the way how to transmit parameters for remote procedure calls and how to return results. The goal is to provide a foundation for XBUP-based communication protocol built as an alternative to protocols like [[#Links|HTTP]], [[#Links|XML-RPC]], [[#Links|WSDL]] and more.
+
+===== Remote Command Execution =====
+
+XBUP framework service is typically running on network port 22594. When connected, it's expecting RPC request. When RPC request is received, it runs requested procedure and returns result when finished.
+
+Basic block for requesting method execution is Execute block with following parameters:
+
+Any procedureCall
+Any executionConditions
+
+Remote server then responds with Execution block:
+
+Any executionResult
+
+Typically execution block should be sent as soon as possible as request is processed and execution result can be returned later.
+
+===== Procedure Call =====
+
+Procedure call is typically block specification with definition specifying requested parameters.
+
+===== Execution Result =====
+
+Typicall execution result is ExecutionSuccess result optionally with returned data:
+
+Any returnedData
+
+In other cases ExecutionFail block can be returned with additional description of failure.
+
+Any failureInfo
+
+===== Service Discovery =====
+
+Interface to identify available functions provided by remote interface.
+
+FIXME
+
+===== Links =====
+
+The list of related links:
+
+**RPC** - Remote Procedure Call [[http://en.wikipedia.org/wiki/Remote_procedure_call|http://en.wikipedia.org/wiki/Remote_procedure_call]]\\
+**HTTP** - HyperText Transfer Protocol [[http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol|http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol]]\\
+**WSDL** - Web Services Description Language [[http://en.wikipedia.org/wiki/Web_Services_Description_Language|http://en.wikipedia.org/wiki/Web_Services_Description_Language]]\\
+**CRUD** - \\
+
