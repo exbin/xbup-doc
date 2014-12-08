@@ -1,4 +1,4 @@
-====== Remote Procedure Calling ======
+====== Level 1: Remote Procedure Calling ======
 
 Specification for Remote Procedure Calling (RPC) specify interface for service provider and application how to communicate and perform execution of specific procedures and functions using XBUP protocol.
 
@@ -41,10 +41,14 @@ FIXME
 
 ===== Links =====
 
-The list of related links:
+**RPC** - Remote Procedure Call\\
+[[http://en.wikipedia.org/wiki/Remote_procedure_call]]
 
-**RPC** - Remote Procedure Call [[http://en.wikipedia.org/wiki/Remote_procedure_call|http://en.wikipedia.org/wiki/Remote_procedure_call]]\\
-**HTTP** - HyperText Transfer Protocol [[http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol|http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol]]\\
-**WSDL** - Web Services Description Language [[http://en.wikipedia.org/wiki/Web_Services_Description_Language|http://en.wikipedia.org/wiki/Web_Services_Description_Language]]\\
-**CRUD** - \\
+**HTTP** - HyperText Transfer Protocol\\
+[[http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol]]
 
+**WSDL** - Web Services Description Language\\
+[[http://en.wikipedia.org/wiki/Web_Services_Description_Language]]
+
+**CRUD** - Create, Replace, Update, Delete\\
+[[http://en.wikipedia.org/wiki/Create,_read,_update_and_delete]]

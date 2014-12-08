@@ -1,24 +1,22 @@
-====== Documentation: Data Stream Structure ======
+====== Concept: Data Structure ======
 
-This document is part of the eXtensible Binary Universal Protocol project documentation. Provides description of the data stream structure and as a sequence of blocks.
-
-===== Data Stream Architecture =====
-
-In the case of specification of the structure of the data stream the proposal was even less direct than in the number's encoding. So far, the final solution has not been established and alternative solutions are still reconsidered. But the basis is still the same block-tree structure.
+Data structure concept describes protocol how to store any data in binary stream. Technically it's block-tree organized structure.
 
 ==== Declared Conditions ====
 
-The objectives set for this project mostly relate to the data stream structure. Especially there is focus on compatibility and scalability of the implementation.
+Requiremens on the structure are derived from project requrements with additional focus on compatibility and scalability of the implementation.
 
 //Requirements://
 
   * **Bit organization by clusters** - As with the encoding of the numbers, it is required that the individual elements should be addressable by n-tuples of bits.
-  * **Realization of any large data sequences** - This requirement, similar to the requirement for encoding of indefinitely large numbers, is seeking to force to provide ability to code indefinitely large sequence of data blobs. These data can then have any meaning, but usually specified by metadata.
-  * **Establishment of normal form** - Mainly because of the possibility of comparing the two files it would be useful to provide ability to convert the stream to a standard default form, not compressed or encrypted.
-  * **Processibility** - If we want to process the data created by XBUP protocol, it should be possible to easily skip parts that are not relevant for our current needs.
-  * **Minimalisation** - Block should contain the basic form with as least information as possible. Other attributes should be optional, or should expand by adding new subblocks. This disallow, for example, the use of control checksums, such as the CRC, or MD5 Hash. It is also prohibited to use reservation areas for later use. Still the format will not be in the basic standard form able to compete with current widely used specialized binary formats in size.
+  * **Realization of any large data sequences** - This requirement, similar to the requirement for encoding of indefinitely large numbers, is seeking to enforce to provide ability to code indefinitely large sequence of data blobs. These data can then have any meaning, but usually specified by metadata.
+  * **Establishment of normal form** - Mainly because of the possibility of comparing the two files it would be useful to provide ability to convert the stream to a standard plain form, which would be for example not compressed or encrypted.
+  * **Processibility** - If we want to process the data created by XBUP protocol, it should be possible to easily skip parts that are not relevant for our current needs (random access).
+  * **Minimalism** - Block should contain the basic form with as few information as possible. Other attributes should be optional, or should be expandable by adding new subblocks. This precludes, for example, the use of control checksums, such as the CRC, or MD5 Hash. It is also prohibited to use empty reservation areas for later use.
 
 ==== Data Sequence ====
+
+FIXME
 
 Certainly, it will be necessary to store sequence of values in the UBNumber encoding. It will be necessary to provide limiting for such sequences. There are, for example, for example, the following options:
 

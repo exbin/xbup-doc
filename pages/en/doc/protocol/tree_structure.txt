@@ -1,13 +1,13 @@
-====== Tree Structure (Level 0) ======
+====== Level 0: Tree Structure ======
 
 Lowest protocol's level defines basic tree structure using two primitive types.
 
   * Binary blob (sequence of bytes)
-  * Natural non-negative integer number
+  * Non-negative integer number with unlimited dynamic length
 
 ===== UBNumber Encoding =====
 
-UBNumber is encoding used for representation of instance of countable infinite set stored as one or more bytes (similar to UTF-8 encoding). 
+UBNumber is encoding used for representation of single instance from well-sorted countable infinite set. Value is stored as one or more bytes (similar to UTF-8 encoding).
 
 First, non-zero bits are counted for length and then rest of bits is used as value while value is also incremented so that there is only one code for each number.
 

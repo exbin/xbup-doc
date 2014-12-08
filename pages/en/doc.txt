@@ -1,14 +1,26 @@
 ====== Project's Documentation ======
 
-Documentation covers various parts of the project. Documents are divided into several sections. Stroked links are currently not available.
+Documentation is partial / work in progress. Documents are divided into several sections. Red links are currently not available.
 
 ===== Content =====
 
-  * [[en:doc:spec|Specification]] - basic specification of currently approved variant
-    * [[en:doc:spec:goals|Project Goals]]
-    * [[en:doc:spec:spec|Protocol Specification]]
-    * [[en:doc:spec:levels|List of Levels]]
-    * [[en:doc:spec:ifaces|Interface Specifications]]
+  * [[en:doc:protocol|Protocol Specification]] - Currently used specification of the XBUP protocol
+    * [[en:doc:protocol:overview|Specification Overview]]
+    * [[en:doc:protocol:tree_structure|Level 0: Tree Structure]]
+    * [[en:doc:protocol:block_types|Level 1: Block Types]]
+    * [[en:doc:protocol:rpc|Level 1: Remote Procedure Calling]]
+    * [[en:doc:protocol:catalog_interface|Level 1: Catalog Interface]]
+    * [[en:doc:protocol:transformations|Level 2: Transformations]]
+    * [[en:doc:protocol:data_meaning|Level 3: Data Meaning]]
+    * [[en:doc:protocol:operations|Level 3: Operations]]
+  * [[en:doc:framework|Framework Service]] - Documentation of framework service and related topics
+    * [[en:doc:framework:structure|Framework Structure]]
+    * [[en:doc:framework:services|Framework Services]]
+    * [[en:doc:framework:interface|Framework Interface]]
+  * [[en:doc:concept|Project Concepts]] - Documentation of various issues and proposed concepts of project's characteristics
+    * [[en:doc:concept:development_steps|Development Steps]]
+    * [[en:doc:concept:numerical_encoding|Numerical Encoding]]
+    * [[en:doc:concept:data_structure|Data Structure]]
   * [[en:doc:format|Protocol Formats]] - Documentation of various protocol format's issues
     * [[en:doc:format:overview|Format's Overview]]
     * [[en:doc:format:visual|Visual Formats]]
@@ -20,20 +32,5 @@ Documentation covers various parts of the project. Documents are divided into se
     * [[en:doc:format:physic|Physical Data Formats]]
     * [[en:doc:format:society|Society Data Formats]]
     * [[en:doc:format:rules|The Rules for Creating New Blocks]]
-  * [[en:doc:support|Support]] - documentation of development libraries and demonstration applications
-    * [[en:doc:support:support|Support Implementation]]
-    * [[en:doc:support:libs|Support Libraries]]
-    * [[en:doc:support:tools|Tools]]
-    * [[en:doc:support:services|Services]]
-  * [[en:doc:devel|Protocol Development]] - project creation, information about current problems and proposed project's characteristics
-    * [[en:doc:devel:status|Project State]]
-    * [[en:doc:devel:motivation|Project's Motivation]]
-    * [[en:doc:devel:progress|Development Progress]]
-    * [[en:doc:devel:issues|Considered Aspects]]
-    * [[en:doc:devel:formal|Protocol's Formalization]]
-    * [[en:doc:devel:projects|Related Projects]]
-    * [[en:doc:devel:convents|Used Conventions]]
-    * [[en:doc:devel:comparison|Comparision]]
-    * [[en:doc:devel:questions|Asked Questions]]
-    * [[en:doc:devel:references|Links]]
-  * [[en:doc:disclaimer|License Terms]]
+  * [[en:doc:impl|Implementations]] - List of available implementations
+    * [[en:doc:impl:java|Java Implementation]]

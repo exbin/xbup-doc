@@ -4,6 +4,6 @@ This document is part of the eXtensible Binary Universal Protocol project docume
 
 ===== Content =====
 
-  * [[en:doc:concept:development_speps|Development Steps]]
-  * [[en:doc:concept:numbers_encoding|Numbers Encoding]]
-  * [[en:doc:concept:block_structure|Block Structure]]
+  * [[en:doc:concept:development_steps|Development Steps]]
+  * [[en:doc:concept:numerical_encoding|Numerical Encoding]]
+  * [[en:doc:concept:data_structure|Data Structure]]

@@ -1,6 +1,6 @@
 ====== XBUP Framework Documentation ======
 
-This document is part of the eXtensible Binary Universal Protocol project documentation. It contains description of concepts which are then applied to project itself.
+This document is part of the eXtensible Binary Universal Protocol project documentation. It contains description of framework service.
 
 ===== Content =====
 
