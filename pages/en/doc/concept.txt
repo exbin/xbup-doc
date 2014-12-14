@@ -7,3 +7,23 @@ This document is part of the eXtensible Binary Universal Protocol project docume
   * [[en:doc:concept:development_steps|Development Steps]]
   * [[en:doc:concept:numerical_encoding|Numerical Encoding]]
   * [[en:doc:concept:data_structure|Data Structure]]
+  * [[en:doc:concept:type_system|Type System]]
+
+  FIXME
+
+  * [[en:doc:concept:transformations|Transformations]]
+  * [[en:doc:concept:constraints|Constraints]]
+  * [[en:doc:concept:data_meaning|Data Meaning]]
+
+  More:
+
+  Compression
+  Encryption
+  Filesystem
+  Random Access
+  Correctness and self-repair
+
+  Parsing
+  Serialization
+  Streaming
+  

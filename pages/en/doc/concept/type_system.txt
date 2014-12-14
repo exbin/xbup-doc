@@ -1,290 +1,51 @@
-====== Documentation: Introduction of the Types ======
+====== Concept: Type System ======
 
-This document is part of the eXtensible Binary Universal Protocol project documentation. Provides description declaration of block and attribute types and way how to use them.
-
-===== Type Introduction =====
-
-In the previous parts of the documentation encoding numbers and block tree structure was described, where blocks has the sequences of attributes. We can described as an existence of certain duality between attributes and subblocks, since the attributes can be expressed as subblocks, but attributes are limited to finite value. In order to process the data, it is necessary to define the meaning of individual attributes and subblocks. Since the definition must be finite, it is necessary to limit to the finite number of items of both types, yet allow to realize high enumerable sequences of attributes. It is also necessary to consider how exactly will be expressed the relationships such as generalization / specialization. It seems appropriate to consider for example:
-
-  * Units - Is the length in meters of the same type as the length in feet?
-  * Level of Detail - Is the width in meters the same type as the height in meters?
-  * Values Connections - Is the length of the car the same type as the length of the aircraft?
-
-In the first case, these blocks can be considered as different, because using a different unit of measurement, although in many programming languages and databases there are still used only the basic expressions of the values without mentioning any specific units. In the second and third case it will be probably more appropriate to express the relationship rather as link to supobject, because such differentiation would lead to using huge count of types.
+With data structure defined using only blocks with attributes or blobs, next step should define a way how to use them and distinguish what certain values represents. First step related to this will be introduced in this concept and it's definition of type system.
 
 ==== Block Type ====
 
-In the following part there will be described a way how to recognize the meaning of data contained in the individual blocks. Few alternatives should be considered again:
+For all non-data block, first two attributes are reserved for block type:
 
-  * Static structure of blocks - One option is to define the meaning while using the appropriate table and then to comply with the specific structure. This option, however, goes against the requirement of scalability, which should then be addressed on the level of the table itself. This table could not be described in the protocol because it would require some extension of the format which wouldn't been static itself.
-  * Identification based on attributes - Another variant assumes that the meaning of the block will be defined using the block attributes. This would mean that it wouldn't be possible to define meaning for the data blocks. This approach preserve the implementation of extensibility and does not require any special blocks. This option is still considered as the most acceptable.
-  * The combined approach - It is also possible to combine both variants. This could lead to a reduction in spatial claims. There are also available other methods which should allow to reach a similar reduction. (see the compression and condensation)
+  UBNatural - TypeGroup
+  UBNatural - BlockType
 
-Perhaps the best way is to identify the type of data that represents the block using its attributes. Single types of blocks should be divided into groupsof by the importance.
-
-  * Using a single attribute - Identification of the type of block could be implemented so that different groups of blocks were assigned to a numerical ranges. This technique could, however, encounter some problems when attempting to changes in scope. For example, it is necessary to recalculate the new added / removed group, or to handle fragmentation.
-  * Using two attributes - A much more acceptable method is to use two values for coding a group of blocks and block of the group. This makes possible to add and replace the group without causing any major problems and is therefore sufficient to address extensibility.
-  * The use of multiple attributes - It seems that using more attributes would be unnecessary and it would be inefficient for each block to indicate the full path to its definition.
-
-Obviously these attributes should be placed in the block as the first ones. Therefore if the block has at least two attributes, the first two values are known as UBBlockType and are as follows:
-
-1 UBNatural - BlockGroup\\
-2 UBNatural - BlockType
-
-Blocks are organized by type into groups (Groups) and the BlockGroup value determines to which group the block belongs to. The value 0 means that it is a basic block, which is a block that is natively processible by programs using build-in support. The BlockType determines the specific type of block in the group. Allowed ranges of values and thus the meaning of groups of blocks, determines the definition block.
-
-If the block has less than two attributes, it is possible to select several variants how to use such incomplete blocks:
-
-  * Apply the principle of implicit zero (see. below) and handle everything the same (currently preferred)
-  * Apply the principle of implicit zero on the blocks, including data block and reserve for it (0,0) - It is contrary to the architecture level
-  * Use of block with only single attribute for other purposes - Is it possible to use the block for another specific purpose - see. following paragraph
-
-Special case of single-attribute block can be used several ways:
-
-  * Numeric block - The value of attribute is the UBNatural type and stores unspecified number. This would allow to encode a separate numeric value for the purposes of their representation outside attribute part and without the necessity of special type. On the other hand, this may lead to the situation where the meaning of this value will bear allw the necessary information. For this block should be defined, in which cases it can be used. Alternatively, you can extend the meaning to any single-attributed UBNumber type.
-  * Group's Manipulator - This block could also provide some operations above groups (first attribute is the type index). An example could be the release of the group index, or shift of the index value, or UBInteger for shift in both directions. Most of these operations can be managed other ways and, moreover, are not used too often.
-  * Short jump - Block could also be used as a jump to block of the given the index in the same area.
+Blocks are organized by type into groups and the **TypeGroup** value determines to which group the block belongs to. The value 0 means that it is a basic group is used, which built-in group accesible all the time. The **BlockType** determines the specific type of block in the group. Allowed ranges of block type values for other than basic group and therefore the meaning of groups of blocks is defined using declaration block, which is in basic group.
 
 ==== Document Type ====
 
-Also for recognition of the document as a whole, or for the type of the stream, it is possible to consider several options:
+First value at the beginning of the stream is a sequence of bits that specifies used numerical encoding cluster size.
 
-  * Identification using file extension - This classical approach has lof of design flaws. Extensions are easily readable to humans, but it is difficult to manage them. Yet it may be easily used for basic recognition of the content type, at least for the files.
-  * Identification string, or a special structure at the beginning of the stream - Another less suitable ways is to reserve a special area at the beginning of the file. This solution is unsuitable at first sight, because it is against the principles of the Protocol.
-  * Identification using root block - Another option is to use the root block as a file content identifier. Although the file will usually contain several different types of data, some will be the main for the file. This approach is most appropriate because it is in accordance with the structure of the document.
+Byte - ClusterSize = FEh (11111110 in bit stream)
 
-In addition to its own blocks there should be at the beginning of the stream a sequence of bits that would indicate the used method of coding. As mentioned in part relevant to coding, it is necessary to at least determine the size of the used cluster.
+This value is unary encoded, which means ClusterSize = 7, but effectively defines cluster with size 8 bits.
 
-Byte - ClusterSize = FEh
+For development purposes the header of the file next contains few identification chars.
 
-In order to determine the ClusterSize value, which may be of any value, it must be introduced at the beginning of the file, since the encoding on of the following values depends on it. This value is due to the universality encrypted unary. The advantage is that its code has the same as the cluster, usually for ClusterSize = 7. Using this value also exclude the use of purely unary coding.
+  UBNatural - ProtocolVersion = 00h
+  DWord(4xUBNatural) - ProtocolSignature = 58 42 00 XXh ("XB" + development version)
 
-For development purposes the header of the file is enriched by several other chars. Text characters are placed in the header for compatibility with existing operating systems and are readable only for ClusterSize 8x + 7 The existence of these values is a purely technical nature and they may be removed in later releases.
+Protocol version 0 is reserved for the protocol development stage. The development version then specify particular structure of the file and any incompatible changes shall be reflected in a change to this value. The header can be interpreted as a 32-bit identification number and 16-bit version number. It is assumed that the final version will have different file headers.
 
-UBNatural - ProtocolVersion = 00h\\
-DWord(4xUBNatural) - ProtocolSignature = 58 42 00 XXh ("XB" + development version)
+Data is then processed as a single block, and data after that block are called **extended area**, which is cosidered as general, potentially infinite data blob. 
 
-Protocol version 0 is reserved for the protocol development stage. The development version then specify particular structure of the file and any incompatible changes in shall be reflected in a change to this value.
+===== Block Declaration =====
 
-If the file contains no other data, then it's called an empty file. Otherwise, the data is processed as a single block, and data after that block are called as extended area. This should allow the use of protocol for the specifications of XBUP bitstream of generally infinite length. One reason is that in some operating systems file name extension is not used to distinguish the type of file, but just the first characters of the content are usually accessed. The header can be interpreted as a 32-bit identification number and 16-bit version number. It is assumed that the final version will have different file headers.
+To define block, there are two kinds of possible operations available. **Consist operation** defines type of next subblock, while **join operation** performs inclusion of definition for both attributes and subblocks from given block type. Same two operations can be used for declaration of format and group.
 
-==== The principle of Default Zero ====
+For the block specification, target block types for these two operations are not required and there are also defined two additional operations for finite and infinite list, which means there is 8 operations in total:
 
-One of the interesting features in the block attributes interpretation is the possibility of using the principle of implied zero, which says that if there is not the attribute present in the attribute part, it is equivalent to the state as if it had been present and had zero value. This principle can be used to shorten the length of the whole block where the attributes which are usually 0 can be place at the end of a sequence of attributes and in the practical application of them they will be removed. This principle can be also used as an argument for declaring the order of the block attributes.
+  * Consist - Adds single child block having declared type
+  * Join - Merges current block with given block appending attributes and child types
+  * Any - Adds one general child block (consist operation on undefined block)
+  * Attribute - Adds one single general attribute (join operation on undefined block)
+  * Infinite list - Adds UBENatural attribute with count and list of of potential infinite subblocks having declared type
+  * Finite list - Adds UBNatural attribute and merges list of declared types using join operation.
+  * Any list - Adds potentially infinite list of subblocks of undeclared type (infinite list of undefined block)
+  * Attributes list - Adds finite list of genera attributes (finite list of undefined block)
 
-This technique also helps with the implementation of compatibility realized as an extension of the previous version providing new attributes with special meaning. Also, it would be appropriate to use this principle while defining the rules for the construction of attributes order.
+FIXME
 
-In the case of the use of this technique it is possible establish a clear record, which indicates the minimum number of attributes, which means that it presents the only attributes to the last non-zero value, followed by zero values only, which are not present in the block.
-
-==== Groups of Blocks ====
-
-Another consideration is trying to solve the problem how to organize the groups.
-
-  * Static variant - One option is to determine some unique identification number for each group and it will be assigned as required. This approach has a number of disadvantages, particularly, it would have to allocate the value of by some organization. Perhaps change could be in the allocation of the entire range subsets, such as starting a sequence of bits and the like. However, this option is inappropriate as well as the use of a single attribute to determine the type of block.
-  * Dynamic variant - Another solution is to allocate ranges, as needed, and define only one group of basic blocks, which primarily ensure the allocation. In addition to stream processing, it should be possible to ensure this not only at the beginning of the stream, but also inside as needed.
-  * Hybrid variant - With combination of the two solutions it is possible to create tree of dynamic specifications in which the individual subtree branches would be managed by organizations using access accounts. Tree architecture also allows to organize the type hierarchy defined in accordance with the hierarchy from other areas. In addition to the following way to define groups, it is necessary to allow the definition independent of the catalog tree, such as using external definitions linked from public sources, or directly included to the own document itself. (preferred)
-
-The count of blocks in the group may be hypothetically infinite. However, it is appropriate to comply with the final number, in a negligent manner not save the value in the endless sequence of definitions.
-
-==== Relations Between Blocks ====
-
-Between the blocks in the tree there is defined the basic relation of a parent-child as the tree of definition's goes, which may not fully cover the needs of data representation. An important aspect here is for example, is a dynamic context, which allows to replace the various blocks between each other. Block relations to other individual data items (parameters) can be addressed in several ways:
-
-  * Static order - the block defined an static order of parametrized descendants (for example, in the definition).
-  * Type recognition - Block has defined types of parametrized descendants and search its descendants for match.
-  * Full referencing - Each parameter block is referred by using a relative path - see. link]].
-  * Direct linking - Link to descendants can be implemented using one attribute as an index of the child. A reference to another block in the document would then be made a separate block of the link type.
-  * Difference Method - Small alternation of the the previous version could be the use of the difference from the previous parameters. In an implicit mode the sequence of linked blocks would be represented as a sequence of 0 values, which would then be possible to reduce using the principle of default zero, under certain conditions.
-
-Since the protocol is designed as a dynamic, static variant requires existence of the dynamics on the definitions side, which is not viable. Variant using block type recognition would need to scan data and therefore possibly to cache, as it might be required to return to them. Full or direct referencing raises the demand for data capacity, but also contradicts the concept of a blob of data and require extence of links which are not necessary. Direct references could provide the necessary momentum for a reasonable price of single attribute per parameter.
-
-As the solution static option was chosen, which best suits the concept of a data block as a blob. For the need to create a list of blocks is, however, expanded on the possibility of using the attribute to determine the number of items of the same type in sequence of subblocks. Reordering can be implemented using links. It's possible to handle types of parameters using a number of ways, such as:
-
-  * The set of allowed types - One option is to define a complete set of allowed types. But This approach is not sufficiently dynamic.
-  * Single type only - A second option is to define only one single type and other types should be handled through the transformation process. (preferred)
-
-==== Revision ====
-
-To ensure backward / forward compatibility, it is useful to allow to support the addition of new definitions in the specification, while maintaining the existing ones. It is possible to provide either a higher level protocol or to define a revision already at this level. The revision technique defines how the document is processed so that the application can handle the newer / older revisions.
-
-Possible approaches for the definition of a block type:
-
-  * Add new attribute - One option is to allow adding new attributes while maintaining the definition of the type of block. The new attribute would then have the backwards compatibility to ensure equivalent behavior at zero values.
-  * Adding a parameter (subblock) - Similarly, it is possible to include the definition of a new group / block / parameter.
-  * Expanding the possible blocks for parameter - Might be defined on the next level of protocol.
-  * Allowing the use of newer revision groups / blocks / subblocks - Is it possible to expand the existing definition? This expansion increases the demand for processing document and requires complete knowledge of the new specifications.
-  * Adding restrictions - Another option is to remove attributes
-
-===== Attribute Types =====
-
-The next step is the introduction of the types of attributes.
-
-  * Single attribute as single value - One option is to convert any value to just one attribute. Because it is possible to convert both the sequence of constant or variable length, this solution is hypothetically possible.
-  * The final sequence of attributes only - Limiting to the final sequence, it is possible to achieve a solid number of attributes, endless sequence could then be addressed as subblocks, or converted to a single attribute.
-  * Allow compound types - In this case, the disadvantage is that one type can be sequence of more attributes, like for example UBPath has variable size. Still, there is some sense in this approach too.
-
-In the case of multivalued attributes the question is how to deal with unlimited large sequence. Also here you can specify the size of the used area, but in this case using the number of attributes seems more appropriate, also thanks to the possible conflict with the principle implicit zero.
-
-There is also possibility of introducing some connection between attributes and blocks, which represents just one value. In this comparison the attribute would represent a block without parameters and types of attributes could be presented as a sequence of such blocks. It is also appropriate to consider whether it is possible to apply tree hierarchy  on the attributes just like on the blocks.
-
-==== Attribute Type Examples ====
-
-As a simple attributes can mentioned sequences of UBNumber values with the fixed number of elements. The basic and already mentioned types are UBNatural, UBInteger and their variants expanded for the infinity constants and UBRatio type. These types can then be extended to the meaninf of defined specification, for example, using units or any other specific meaning.
-
-=== Pointer ===
-
-This type (UBPointer) is the basic for the solution to the problem of linking the documents. Unlike the XML it is not appropriate here for the internal links in the document to use subnodes search, because especially with regard to possible transformation it could be a problem to identify a specific node. It is possible to choose between several possible solutions:
-
-  * Use of static order - One of the options is to use static sequence of nodes. This solution would not require any added attributes and the necessary information would be stored in the description of the specification, which is not an appropriate solution. Moreover, the omission of nodes would cause the need for the use of some empty block.
-  * use of linking to subnodes by index - Another possible solution is to create a attribute for each required subnode to refer to the index. This solution would require to know indexes of these items ahead and could cause problems for stream generation of the document. Null value could represent the absence of the subnode. Furthermore, the need to validate for existence of such linked nodes would raise. The disadvantage is the need to know relevant index ahead. Still, this variant was chosen so far.
-  * Use of linking to subnodes position - Another variant of the previous solution is to refer directly to the location in the file. This solution requires advanced knowledge of the size of subblocks, although there may be a relatively efficient way how to calculate this. Still it unnecessarily increases the demand.
-  * Search in subnodes - It is possible to perform search and get selected node as the first suitable, or to introduce typing of elements in the case of the transformation. This approach would increase demands for processing and could cause problems if there is more subnodes of the same type.
-  * Combined solution - A possible solution is a combination of the above. For example, the use of UBENatural with a constant indicating the infinity searching instead of link to subnode.
-
-The chosen solution for the UBPointer attribute type is realized as the following value:
-
-UBNatural - SubBlockIndex
-
-Value is used for referring to his own subblock using the index value of the order between subblocks. In the case when referenced block is not present, a corresponding error WrongPointer is raised. Blocks are indexed from 1 and value 0 means empty pointer.
-
-An alternative approach is the UBAccPointer, which is similar to the previous option only in the case of zero assuming the position next from the last position of UBAccPointer in this node.
-
-=== Boolean Type ===
-
-Simple values UBNatural has restrictions on the value to 0 and 1 and was established as the UBBoolean type for storing logical values.
-
-Alternatively, you can use the value of UBBitField, which gives array of bits for bits of UBNatural value.
-
-=== Fractions ===
-
-Target here is to enable the implementation of the fractional values. These values are determined by calculation and therefore should not be included as the basic types.
-
-UBFraction type is used for the implementation of the fraction in the interval &lt;0,1&gt; with non-negative integer values and without division by zero. From the perspective of the respective real values have a repeating values. Values are stored following sequence:
-
-1/1, 1/2, 2/2, 1/3, 2/3, 3/3, 1/4, 2/4, 3/4, 4/4, ...\\
-Sequence[n=1..][m=1..n](m/n)\\
-
-UBIntFraction type is an extension for the whole members.
-
-==== Attribute Sequences ====
-
-Because of the need for complex blocks it was necessary to define a specific sequence of attributes showing compound information. Single items have their own names and forms a certain hierarchy.
-
-There is more possible ways how to deal with such attribute groups:
-
-  * Ignore Multi-value types and manipulate with their single values - The problem occurs if you fail to order these parts, since there is no request for it. Likewise, at an abstract level it would not be useful to manipulate with the items this way.
-  * Introduce the interpretation of the sequence of attributes as a single item already at this level and also declare types here
-  * Multivalued attribute to introduce a new level, which is to be supported - To consider these groups it may be necessary to define a level 2, which will differentiate between the sequence of attributes as separate items and groups, as defined. For these groups there is a different validation as well as the possibility of unlimited long group of attributes which means that it can not be generally limited in the block the static count of specific attributes.
-  * Merge multivalued attributes into a single value using specific interpretation of the sequence - This solution violates the natural encoding and could lead to very large values.
-
-Whether this encoding should introduce a new level, or possibly merge some characteristics into one level it is not yet entirely clear and will be decided later. In the meantime, it is possible to continue without a solution to this problem.
-
-Examples of some types of multivalued attributes will be included. Some of them were already mentioned in part about encoding, or in this document in part about BlockType.
-
-=== Real and Complex Numbers ===
-
-Real number UBReal is already described in the section dealing with the encoding:
-
-UBInteger - Base\\
-UBInteger - Mantis
-
-There are also complex numbers available:
-
-UBReal - RealPart\\
-UBReal - IrationalPart
-
-It is also possible to use the extension of those types including constants for infinity, which is UBEReal, and UBEComplex. Alternatively, use of those types can be restricted on the positive, or integer variants, such as UBPositiveReal (UBCutInteger / UBTruncate).
-
-=== Version of Block ===
-
-Blocks which is the compatibility required are declared using the following UBVersion type, which is the sequence of two attributes to determine the version of the block:
-
-UBNatural - MajorVersion\\
-UBNatural - MinorVersion
-
-If both values are zero, assuming that there is not a version of the block. MajorVersion = 0 value is a test version. For an expanded version of UBVersionExt there is usually followed attribute:
-
-UBPointer - AlternativeBlock
-
-It is a reference to the other blocks of the same type but with a different version. For the realization of the version it is the same as in the case of the need for two values. The first value determines backward and the other forward compatibility. For the same value MajorVersion there must be guaranteed increasing value of MinorVersion that the sequence of attributes is only extended to include new items.
-
-=== List ===
-
-List **UBList** is the structure defining the final list of attributes:
-
-UBNatural - ItemsCount\\
-UBNumber - Value 1\\
-..\\
-UBNumber - Value n
-
-//Alternatively, allow UBENatural ItemsCount?//
-
-==== Dynamic Sequences of Attributes ====
-
-It seems to be appropriate to allow the creation of items represented using a variable number of attributes. Implementation of these sequences is somewhat problematic:
-
-  * To identify the type of attribute it requires finding the content of certain attributes
-  * To change the values of certain attributes alters the meaning of other attributes
-
-=== Path ===
-
-This type is called UBPath and is defined as a sequence of UBNatural type values and is intended primarily for the implementation of the path in the tree.
-
-UBNatural - PathCount\\
-UBPointer - Path0Node\\
-UBPointer - Path1Node\\
-UBPointer - Path2Node\\
-...
-
-=== Link ===
-
-Using the previous type there can be constructed UBLink as reference to another block in the document.
-
-UBNatural - UpCount\\
-UBPath - LinkPath
-
-=== List of Linked Items ===
-
-The following UBPointerList type is similar to the UBList type, where various items of the list are referenced using the UBPointer type value, which allows putting them in a different order than those defined in the index. It is also possible to insert additional blocks between the individual items.
-
-UBNatural - ItemsCount\\
-UBPointer - Item0\\
-UBPointer - Item1\\
-UBPointer - Item2\\
-...
-
-==== Attribute Types Hierarchy ====
-
-Specification of the block from the previous level of the document can define a list referring to the blocks representing the various attributes. Block, representing the attribute should allow to specify the type attribute as follows.
-
-Attributes are defined as well as blocks in the tree structure. Root type of attribute is the UBNumber. The current proposed structure of attributes is as follows:
-
-  * UBNumber
-    * UBNatural
-      * UBPointer
-    * UBInteger
-    * UBRatio
-    * UBBoolean
-    * UBSequence
-      * UBVersion
-      * UBReal
-      * UBList
-      * UBPath
-        * UBPointerList
-
-===== Type System =====
-
-Currently selected variant is used to define type construction list, which defines the list of items which are of two possible kinds of operations, either to connect (JOIN) or to add (consist), while the addition will add another item to the end of the subtype, but the connection will add all items referenced by the definition of the same type. These lists link together the three types of items defining the format, group, and block of the document. Each of these definitions is defined by a list of revisions defining the number of operations. For the block specification there are also defined operations for finite and infinite list.
-
-In addition, the design of the block allows other exceptions:
-
-  * Attribute - Adds one single general attribute. Defined as JOIN operation to unknown item
-  * Data block - Adds one data block. Defined as CONSIST operation to unknown item
-  * General block - Adds one general block. Defined as undefined operation
-  * Finite list - Joins list of general blocks. Defined as own operation of the JOIN type
-  * Infinite list - Joins list of potential infinite list of blocks. Defined as own operation of CONSIST type
-
-The block definition allows to define the attributes and parameters. This makes it possible to partially address the duality between the attributes and subblocks, which is defined under one definition of a list of attributes and at the same time as a block that uses these attributes.
+The block definition allows to define the attributes and parameters.
 
 The definition of a type system are stored in the [[en:doc:devel:progress:catalog|catalog of types]], where it is possible to use your own definitions using the built in basic blocks and later it should be possible to add the definition from any source.
 
@@ -293,158 +54,6 @@ The following chart shows the ER diagram of the type definition in the catalog o
 {{ en:doc:devel:progress:images:diagram4.png |Type definition's ER diagram}}
 
 Diagram source file {{en:doc:devel:progress:images:diagram4.dia|diagram4.dia}}
-
-As other alternatives, it should be considered to define the two separate lists and express the connection other way. ...
-
-So, there are special block for which we need to distinguish what type of block means what. It was also noted that the document type can be determined from the contents of the root block. There are again several ways to interpret the block type:
-
-  * Use of static table - One of the options is to define the table of groups and blocks, and then allocated ranges to clients. This solution is inappropriate and lead to a gradual increase of value, obsolescence and other negative issues.
-  * Specify the meaning dynamically - A better option is to specify the meaning of the document providing values dynamically as needed.
-
-Probably for the document specification, it is necessary that there will be fixed blocks, which would allow at least to define the meaning of other blocks in the document. For these blocks there is reserved range of value with BlockGroup = 0 and the full support of these blocks is required for all applications that support level 1 and higher levels of the XBUP protocol.
-
-On the layout of the basic blocks there are set similar requirements as to the structure:
-
-  * **Stream type recognition** - It should be possible to detect primary contents of the file reading the head of the file. Already from the first block, it should be possible to determine type of data as basic content of the document.
-  * **Identification of the type of subtree** - Even for the file for which the type is not recognized from header, it should be possible to identify some type of subtrees which store independent and separable mostly ancillary data.
-  * **Extensibility** - And on this part there is the requirement for extensibility. The mere possibility of extension of the block groups is not enough and it should be possible to add other types of blocks in the deeper levels of the tree.
-  * **Availability of the document definition** - Specification of the document should be attached as part of the document, or on publicly available sources, which currently means available on the Internet.
-
-In addition, it is necessary to introduce declaration of list for both the attribute list and a list of parameters. There is a need to consider the following aspects:
-
-  * **Infinite list of parameters** - It is appropriate to allow the definition of an infinite list of parameters for the processing of endless streams of blocks. The endless list of attributes and blocks would be difficult to guarantee an equal number of both, an endless list of attributes in general. However, it would be necessary to define the termination of such a list, normally the end of the block. This would, however, disallow any additional attributes and parameters of the block. Alternatively, special termination block could be used, for example, an empty data block. Instead of endless lists it is also possible to use method of linked blocks. Chosen to use the + using end with empty block.
-  * **Multidimensional lists** - Allow multidimensional lists, or lists of lists only. Allow infinite multidimensional lists - only the selected multidimensional final lists of single-dimension potentially infinite lists.  
-
-==== Basic Blocks ====
-
-Basic blocks should primarily allow creation of a type definitions and for basic constraints for its addressing. Since the types of blocks are determined dynamically, it is necessary to allow the definition of groups and blocks in the document. For this purpose it is appropriate to define a group of blocks which would allow to specify the meaning of other groups and types of blocks of the document and optionally use the built in definitions or catalog. In addition, there should be a root block of a document specifying what type of data contains the document. A viable solution is to use the root block to specify the format and the main block of the document. Spefication can be both external and internal - contained in a document and also at the same time, the internal definition takes precedence over the catalog.
-
-Basic blocks should therefore meet the definition of a type system and of the catalog and are defined in the Basic (0) / Basic (0) and always implicitly defined for the group 0, while a block of type (0,0) is restricted due to the possible use of the principle of default zero for data blocks. So blocks have increased value by one for groups.
-
-=== Declaration ===
-
-//Block: Basic (0) / DocumentDeclaration (1)//
-
-Declaration block determines the allowed range of groups. This block should be located at the beginning of each file, if the application didn't deal any special static meaning.
-
-Definition:
-
-Join GroupsReserved (UBNatural) - The number of reserved groups\\
-Join PreserveCount (UBNatural) - The number of groups to keep from previous definitions\\
-Consist FormatDeclaration - Declaration of format\\
-Any DocumentRoot - Root node of document\\
-
-For subblocks of this block there is permitted range of values in the interval group PreserveCount + 1 .. PreserveCount + GroupsReserved + 1. PreserveCount + GroupsReserved + 1. If the value PreserveCount = 0, takes the highest not yet reserved group in the current or parental blocks + 1. For all values of zero and the application of rules of cutting the block of zeros coincides with the data block.
-
-=== Format Declaration ===
-
-//Block: Basic (0) / FormatDeclaration (2)//
-
-This block allows to specify the basic structure of an equivalent of format specification. Specifies the sequence of groups and their definition.
-
-Definition:
-
-Join GroupsLimit (UBNatural) - Maximum allowed value of group for those types of blocks\\
-Join FormatSpecCatalogPath (UBPath) - Specification of format defined as path in catalog\\
-Join Revision (UBNatural) - Specification's revision number\\
-List GroupDeclaration - Declaration of group\\
-List FormatDefinition - Format definition\\
-List Revision - Specification's revision\\
-List GroupDeclaration defines a sequence of groups of format, while the FormatDefinition defines a sequence of operations Join / Consist. Together with the list of revisions it defines the specification of format.
-
-=== Group Declaration ===
-
-//Block: Basic (0) / GroupDeclaration (3)//
-
-This basic block represents declaration of the group. It specify the sequence of block specifications and their definition.
-
-Definition:
-
-Join BlocksLimit (UBNatural) - Maximum allowed value for block for those types of blocks\\
-Join GroupSpecCatalogPath (UBPath) - Specification of format defined as path in catalog\\
-Join Revision (UBNatural) - Specification's revision number\\
-List BlockDeclaration - Declaration of block\\
-List GroupDefinition - Group definition\\
-List Revision - Specification's revision\\
-List BlockDeclaration determines the sequence of blocks in the group, while the sequence of Join/Consist operations is defined by GroupDefinition. Along with the list of revisions it defines specification of the group.
-
-=== Block Declaration ===
-
-//Block: Basic (0) / BlockDeclaration (4)//
-
-The definition of blocks has two levels, since it is necessary to define both attributes and subblocks.
-
-Definition:
-
-Join AttributesLimit (UBNatural) - Maximum allowed number of attributes for block (includes lists)\\
-Join ParametersLimit (UBNatural) - Maximum allowed number of parameters (includes lists)\\
-Join BlockSpecCatalogPath (UBPath) - Specification of format defined as path in catalog\\
-Join Revision (UBNatural) - Specification's revision number\\
-List ListDeclaration\\
-List BlockDeclaration\\
-List BlockDefinition\\
-List Revision - Specification's revision\\
-List BlockDeclaration determines the sequence of blocks in the group, while the sequence of Join/Consist operations or alternatively ListJoin/ListConsist is defined by BlockDefinition. Along with the list of revisions it defines specification of the block.
-
-=== Format Definition ===
-
-//Block: Basic (0) / FormatDefinition (5)//
-
-Definition of format as a sequence of values to merge.
-
-Definition:
-
-Join ConsistSkip (UBNatural) - Number of items before the merge\\
-Join JoinCount (UBNatural) - Number of merged items\\
-Consist FormatDeclaration - Declaration of format\\
-
-=== Group Definition ===
-
-//Block: Basic (0) / GroupDefinition (6)//
-
-Definition of group as a sequence of values to merge.
-
-Definition:
-
-Join ConsistSkip (UBNatural) - Number of items before the merge\\
-Join JoinCount (UBNatural) - Number of merged items\\
-Consist GroupDeclaration - Declaration of group\\
-
-=== Block Definition ===
-
-//Block: Basic (0) / BlockDefinition (7)//
-
-Definition of block as a sequence of values to merge.
-
-Definition:
-
-Join ConsistSkip (UBNatural) - Number of items before the merge\\
-List ListSpecification - List specification\\
-Join JoinCount (UBNatural) - Number of merged items\\
-Join IsList (UBBoolean) - Indication of list merging\\
-Consist BlockDeclaration - Declaration of block\\
-
-=== List Declaration ===
-
-//Block: Basic (0) / ListDeclaration (8)//
-
-This specification block defines the potentially endless lists of parameters.
-
-Definition:
-
-Join ConsistSkip (UBNatural) - Number of items before the merge\\
-
-=== Revision Definition ===
-
-//Block: Basic (0) / RevisionDefinition (9)//
-
-For a definition of revision separate list is needed.
-
-Definition:
-
-Join RevisionCount (UBNatural) - Number of revision items\\
-
-Todo: Missing argumentation for order of basic blocks and their attributes, etc..
 
 ==== Attribute Type Specification ====
 
