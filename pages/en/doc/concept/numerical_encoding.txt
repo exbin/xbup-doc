@@ -1,10 +1,10 @@
 ====== Concept: Numerical Encoding ======
 
-This concept describes recursive unary-binary (gama) encoding. Specific encoding of numbers is a fundamental basis of the entire protocol design, allowing efficient representation of any integer number.
+This concept describes recursive hybrid unary-binary encoding. This specific encoding of numbers is a fundamental basis of the entire protocol design, allowing efficient representation of any integer number.
 
-==== Declared Requirements ====
+===== Declared Requirements =====
 
-The following requirements (comming from basic requirements on protocol) have been established for the proposed coding.
+The following requirements (comming from basic requirements on protocol) have been established for the proposed encoding.
 
 //Declared Requirements://
 
@@ -16,17 +16,15 @@ The following requirements (comming from basic requirements on protocol) have be
   * **Processibility (Efficiency)** - This requirement seeks to improve data processing efficiency. For example to process this encoding, as few as possible CPU (for example binary shift) operations should needed.
   * **Organization of data in bit clusters (Efficiency)** - This requirement is introduced because of the the organization of bits as the bytes in the processing on current computers. The numbers should be encrypted preferably with a length of exponent with the base of 2 instead of the sequence of bits into bit groups.
 
-==== UBNumber Encoding Family ====
+===== UBNumber Encoding Family =====
 
 Proposed UBNumber encoding consist of three three components/parts: unary encoded value, recursive UBNumber-encoded part and binary encoded part.
 
 Native mapping of codes to values is represented in UBNatural encoding, which can represent any non-negative integer value. Encoding can be used to store other types of numbers, like for example real numbers.
 
-=== UBNatural Encoding ===
+==== UBNatural Encoding ====
 
-FIXME
-
-For encoding of natural numbers with zero, or the Omega Set, there is the coding, which is direct derivation of UBNumber. It allows to encode a natural number of any value.
+For encoding of natural numbers with zero (non-negative integers or the Omega set), there is the encoding, which is direct derivation of UBNumber. It allows to encode a natural number of any value.
 
 //Examples of the type UBNatural://
 
@@ -46,21 +44,21 @@ For encoding of natural numbers with zero, or the Omega Set, there is the coding
 //Value encoding// (value <html>&gt;&gt;</html> data stream)
 
 <html><pre class="code">
-  Value := Hodnota
+  Value := Input
   Length := 0
-  while Length &lt;= ByteSize+1 and Value&gt;=2^(ByteSize*(Length+1)) do (
+  while Length &lt;= ByteSize+1 and Value&gt;=2^(ByteSize*(Length+1)) do {
     Length := Length + 1
     Value := Value - 2^(ByteSize*(Length+1))
-  )
-  if Length = 8 the (
+  }
+  if Length = 8 the {
     ExtLength := 0
-    while Value&gt;=2^((ByteSize+1)*(ExtLength+ByteSize+1)) do (
+    while Value&gt;=2^((ByteSize+1)*(ExtLength+ByteSize+1)) do {
       ExtLength := ExtLength + 1
       Value := Value - 2^((ByteSize+1)*(ExtLength+ByteSize+1))
-    )
+    }
     write prefix
     write ExtLength
-  ) else write unary Length
+  } else write unary Length
   write binary Value
 </pre></html>
 
@@ -68,21 +66,21 @@ For encoding of natural numbers with zero, or the Omega Set, there is the coding
 
 <html><pre class="code">
   read prefix or Length
-  if prefix then (
+  if prefix then {
     Length := ByteSize + 1
     read ExtLength
-  )
+  }
   read Value
   Result := Value
-  if prefix then (
+  if prefix then {
     for each I from interval &lt;1..ExtLength&gt; Result := Result + (2^((I+ByteSize) * (ByteSize+1)))
-  )
+  }
   for each I from interval &lt;1..Length&gt; Result := Result + (2^(I * ByteSize))
 </pre></html>
 
-=== UBENatural Encoding ===
+==== UBENatural Encoding ====
 
-This encoding is designed for natural numbers with a special constant for the infinity. It will be used primarily later in the block structure to represent the length and infinity there will express the unknown, potentially infinite length. For the realization is the value of infinity placed on the highest value in the basic form. Another option was to put infinity to 0, but that would conflict with the previously established rule of static zero.
+This encoding is designed for natural numbers with a special constant for the infinity. This type is used in the block structure to represent the length of data part and infinity constant expres the undefined, potentially infinite length. Infinity constant is placed on the highest value in the basic form. Another option is to put infinity as a value 0, which would incline to have infinity as default value (see zero filling principle).
 
 //Examples of the type UBENatural//
 
@@ -100,9 +98,9 @@ This encoding is designed for natural numbers with a special constant for the in
   if Value=(2^ByteSize)-1 then Value := &infin;
 </pre></html>
 
-=== UBInteger Encoding ===
+==== UBInteger Encoding ====
 
-This encoding is used to store integer numbers. Binary part is interpreted as a binary code in the two-complementary code with the highest bit as the sign. Probably another way of coding can not be used because of efficiency, moreover, the sign must be shown first, because it is more important than the value (affects processing).
+This encoding is used to store integer numbers. Binary part is interpreted as a binary code in the two-complementary code with the highest bit as the sign. The sign flag is included as first, because it is more important than the value (might affects processing).
 
 //Examples of the UBInteger type values//
 
@@ -135,19 +133,19 @@ This encoding is used to store integer numbers. Binary part is interpreted as a 
   if Input&lt;0 then Value := Value + 1
   Length := 0
 
-  while Length &lt;= ByteSize+1 and Value&gt;=2^(ByteSize*(Length+1)) do (
+  while Length &lt;= ByteSize+1 and Value&gt;=2^(ByteSize*(Length+1)) do {
     Length := Length + 1
     Value := Value - 2^(ByteSize*Length-1)
-  )
-  if Length = 8 then (
+  }
+  if Length = 8 then {
     ExtLength := 0
-    while Value&gt;=2^((ByteSize+1)*(ExtLength+ByteSize+1)) do (
+    while Value&gt;=2^((ByteSize+1)*(ExtLength+ByteSize+1)) do {
       ExtLength := ExtLength + 1
       Value := Value - 2^((ByteSize+1)*(ExtLength+ByteSize+1))
-    )
+    }
     write prefix
     write ExtLength
-  ) else write unary Length
+  } else write unary Length
   if Input&lt;0 then Value := Neg(Value)
   write binary Value
 </pre></html>
@@ -158,27 +156,28 @@ Where the Neg operation is the inversion of the lowests ByteSize * (Length +1) b
 
 <html><pre class="code">
   read prefix or Length
-  if prefix then (
+  if prefix then {
     Length := ByteSize + 1
     read ExtLength
-  )
+  }
   read Value
   Result := Value
   if prefix then BitLength := ByteSize*(ExtLength+8)+7 jinak BitLength := Length*ByteSize+(7-Length)
-  if (Value and 2^(BitLength))&gt;0 then ( <span style="color:gray">// Test on negative sign</span>
+  if (Value and 2^(BitLength))&gt;0 then { <span style="color:gray">// Test on negative sign</span>
     Result := ( - Neg(Result) ) - 1
     For each integer I from interval &lt;1..Length&gt; Result := Result - (2^(I*ByteSize-1))
-    if prefix then (
+    if prefix then {
       for each I from interval &lt;1..ExtLength&gt; Result := Result - (2^((I+ByteSize) * (ByteSize+1)))
-    )
-  ) else (
+    }
+  } else {
     For each I integer from interval &lt;1..Length&gt; Result := Result + (2^(I*ByteSize-1))
-    if prefix then (
+    if prefix then {
       for each I from interval &lt;1..ExtLength&gt; Result := Result + (2^((I+ByteSize) * (ByteSize+1)))
-  )
+    }
+  }
 </pre></html>
 
-=== UBEInteger Encoding ===
+==== UBEInteger Encoding ====
 
 Like in the case UBENatural this is an extension of the number of constants for infinity, this time it includes negative one. Placed the similar way.
 
@@ -205,54 +204,22 @@ Like in the case UBENatural this is an extension of the number of constants for 
   if Value=-(2^(ByteSize-1)) then Value := -&infin;
 </pre></html>
 
-=== UBReal Encoding ===
+==== UBReal Encoding ====
 
-The aim of this encoding is to enable the storage of real numbers. Because the real numbers are uncountable, it was necessary to limit on a subset. Chosen limitation was the final development of the binary form, because the endless numbers can not be fitted into finite memory. As a suitable solution seems to be a encoding as a pair of UBInteger type numbers. The first one defines the base and the other mantis. Base bears main value and mantissa determines how much the value is shifted. For example, for the [[#Links|Intel]] processor architecture are real numbers realized by the [[#Links|IEEE 754]] standard, which is used to eliminate redundancy using the invisible one method. Also in this encoding that it is not possible to allow redundancy, in order not to violate the rule of determinism and it is necessary to find a way to solve such type of ambiguity. For example, one way is to try to use the similar method of the invisible one. It is possible to choose between placing the one before the highest, or at the lowest bit of the Value. There is also the possibility of multiple interpretations of the mantis. So first the technique of placing "invisible" one before the highest bit of the base should be described. When interpreting the number it is essential for any negation of the negative number, to add before valid bits also one bit with value 1. Already at this stage it is possible to recognize some problems with the point skipping. Another problem is the right interpretation of the decimal point shift. Usual decimal exponent will not be proper solution here so instead will be better to choose "half" (binary) point. Lets list three ways of placing point depending on the location of the invisible one before the highest bit:
+This encoding enables the representation of limited subset of real numbers. Because the real numbers are uncountable, it was necessary to limit to numbers with final development of the binary base, because the endless numbers can not be fitted into finite memory. Solution is based on the use of a pair of UBInteger values. The first one defines the base and the other mantissa, which determines how much the value is shifted on the base-2 scale.
 
-  * point interpretation to lowest bit
-
-<code>
-    00000000  00000000                   = 64              [(1)000000.]
-</code>
-
-  * point interpretation to highest bit
-
-<code>
-    00000000  00000000                   = 1               [(1).000000]
-</code>
-
-  * point interpretation before invisible one
-
-<code>
-    00000000  00000000                   = 0.5             [.(1)000000]
-</code>
-
-Most preferable way seems to be to put the point to the highest bit, but there related problems with the mantis conversion, which is depending on the length of the base value. However, those cannot be avoid even with the placement of the point at the end of the code, which would force to somehow shift the mantis. The third method is basically similar unsuitable. Fortunately, we can still use less unusual option to add the invisible one at the end of the number. Opět si uvedeme způsoby interpretace tečky: Again, lets include different ways of point interpretation:
-
-  * point interpretation to highest bit
-
-<code>    00000000  00000000                   = 0.015625        [.000000(1)]</code>
-
-  * point interpretation to lowest bit
-
-<code>    00000000  00000000                   = 0.5             [000000.(1)]</code>
-
-  * point interpretation before invisible one
-
-<code>    00000000  00000000                   = 1               [000000(1).]</code>
-
-Finally, the third option was selected, since it appeared to be the best. Only the problem with the interpretation of the value 0 remains to resolve, with easiest way to shift it out. That approach brings together the following algorithm:
+To eliminate redundancy, method of adding invisible bit 1 before point is used. Only exception is in basic form, where value is decremented to support zero constant. This approach uses following algorithm:
 
 <html><pre class="code">
-  if (X=0 and Y=0) the Value := 0 else (
-    Value := (X*2+1)*(2^Y)
-    if (X&gt;0 and Y=0) then Value := Value - 2
-  )
+  if (Base = 0 and Mantissa = 0) the Value := 0 else {
+    Value := (Base*2+1)*(2^Mantissa)
+    if (Base &gt; 0 and Mantissa = 0) then Value := Value - 2
+  }
 </pre></html>
 
-Encoding numbers seem to be more technically difficult. It requires the division by the number two, until the remaining part is 1, or multiplication until number's fraction is less or equal equal to 1/2. The resulting whole number is then placed in the base and count of the performed division or negation of the count of performed multiplication is then placed as mantis. This operation should be optimized in the future as much as possible (could be added to as a processor integrated instruction, or two :-)).
+Encoding numbers using this formula is a bit more complicated. It requires the division by the number two, until the remaining part is 1, or multiplication until number's fraction is less or equal equal to 1/2. The resulting whole number is then placed in the base and count of the performed division or negation of the count of performed multiplication is then placed as mantissa.
 
-The advantages of the selected form of encoding include, for example, the mantissa rate determines whether there is a whole number, or number, which has nonzero fraction. Likewise, it is possible to determine the parity of the number from the parity of the base. So, if instead of the both numbers only one part is included, it can still encode some useful value. If, for example, only base is included, the mantissa is zero and odd numbers are encoded plus code for zero, which is not so useful as a second case when there is only mantissa so binary exponents with the exception of 1 replaced by value 0 are encoded.
+This encoding has some useful properties, for example, the mantissa rate determines whether there is a whole number, or number, which has nonzero fraction. Likewise, it is possible to determine the parity of the number from the parity of the base. So, if instead of the both numbers only one part is included, it can still provide some useful value. If, for example, only base is included, the mantissa is zero and odd numbers are encoded plus code for zero, which is not so useful as a second case when there is only mantissa so binary exponents with the exception of 1 replaced by value 0 are encoded.
 
 Some numbers with endless development will be possible to store using higher mathematical algorithms and blocks, such as using recursion. Binary form of numbers is simply the best for the bit stream data.
 
@@ -292,19 +259,19 @@ Some numbers with endless development will be possible to store using higher mat
 <code>
   Base := 0
   Mantissa := 0
-  if not Value=0 then (
-    if Frac(Value)=0 then (
-     while not Frac(Value)=0.5 do (
-       Mantissa := Mantissa + 1
-       Base := Base / 2
-     )
-    ) else (
-     while not Frac(Value)=0.5 do (
-       Mantissa := Mantissa - 1
-       Base := Base * 2
-     )
-    )
-  )
+  if not Value=0 then {
+    if Frac(Value)=0 then {
+     while not Frac(Value)=0.5 do {
+        Mantissa := Mantissa + 1
+        Base := Base / 2
+      }
+    } else {
+      while not Frac(Value)=0.5 do (
+        Mantissa := Mantissa - 1
+        Base := Base * 2
+      }
+    }
+  }
   write UBInteger Base
   write UBInteger Mantissa
 </code>
@@ -314,20 +281,20 @@ Some numbers with endless development will be possible to store using higher mat
 <html><pre class="code">
   Base := read UBInteger
   Mantissa := read UBInteger
-  if (Base=0 and Mantissa=0) then Result := 0 else (
+  if (Base=0 and Mantissa=0) then Result := 0 else {
     Result := (Base*2+1)*(2^Mantissa)
     if (Base&gt;0 and Mantissa=0) then Result := Result - 2
-  )
+  }
 </pre></html>
 
-== UBReal as a Single Number ==
+=== UBReal as a Single Number ===
 
-Real number with the final decimal development is likely to be possible to encode into a single UBNumber value, as it is equally possible to effectively encode any final final seqeunce of integer numbers into a single natural number. For or against the use of encoding there has not be found the appropriate arguments.
+Real number with the final decimal development is likely to be possible to encode into a single UBNumber value, as it is equally possible to effectively encode any final final sequence of integer numbers into a single natural number, but combining two numbers into single value is a bit problematic.
 
 One possible solution is the diagonal method:
 
 <code>
-(0,0)  (0,1)  (0,2)  (0,3)
+(0,0)  (0,1)  (0,2)  (0,3) ...
       /      /      /
      /      /      /
 (1,0)  (1,1)  (1,2)  (1,3)
@@ -338,12 +305,19 @@ One possible solution is the diagonal method:
      /      /      /
 (3,0)  (3,1)  (3,2)  (3,3)
 ...
-(0,0) - (1,0) - (0,1) - (2,0) - (1,1) - (0,2) - ...
 </code>
 
-=== UBEReal Encoding ===
+Resulted code sequence is build following diagonal lines:
 
-Again, another extension is this time to add constants for the +-infinity to real number. Basically, the mantis with a base value of 0 is interpreted as UBEInteger type. This corresponds to constants:
+<code>
+(0,0) = 0, (0,1) = 1, (1,0) = 2, (0,2) = 3, (1,1) = 4, (2,0) = 5, (0,3) = 6, ...
+</code>
+
+Other possible method is bit-zipping, where in final value, odd bits are used to construct first value and even bits are used to construct second value.
+
+==== UBEReal Encoding ====
+
+This is another extension adding constants for the +-infinity to real numbers. Basically, the mantissa with a base value of 0 is interpreted as UBEInteger type. This corresponds to constants:
 
 <code>
    00111111 00000000                     = +infinity
@@ -366,92 +340,21 @@ Again, another extension is this time to add constants for the +-infinity to rea
 //UBReal value conversion//
 
 <html><pre class="code">
-  if (Base=0 and Mantissa=0) then Value := 0 else (
+  if (Base=0 and Mantissa=0) then Value := 0 else {
     if (Base=(2^ByteSize)-1 and Mantissa=0) then Value := &infin; else
-    if (Base=-(2^ByteSize) and Mantissa=0) then Value := -&infin; else (
-      if (Mantissa=0) then (
+    if (Base=-(2^ByteSize) and Mantissa=0) then Value := -&infin; else {
+      if (Mantissa=0) then {
         if (Base&gt;0) then Value := Value - 2
         if (Base&lt;(2^ByteSize)-1) then Value := Value - 2 else
         if (Base&gt;-(2^ByteSize)) then Value := Value - 2
-      )
-    )
-  )
+      }
+    }
+  }
 </pre></html>
 
-=== UBRatio Encoding ===
+==== UBRatio Encoding ====
 
-So far the last approved type is the type of encoding real numbers in the interval <html>&lt;0,1&gt;</html> with the finite binary development. This set is already countable large, and it is possible to encode it as a UBNumber value. Value is essentially stored as a count of divided of half cut to a depth intervals. This type can be used to store real numbers for any constant intervals of equal spread. Likewise, for saving intensity and other physical quantities.
-
-== Encoding with Reversion ==
-
-<html><span style="color: gray"></html>
-
-Základní úvaha vycházela z toho, že bude nutné kódovat posloupnost čísel s postupně prostoucím rozvojem. První hodnoty musí být samozřejmě 0 a 1, dále je předpokládáno pořadí postupně na poloviny dělených zlomků bez opakování, tedy 1/2, 1/4, 3/4, 1/8, 3/8, 5/8, 7/8, 1/16, 3/16 atd. Nakonec však bylo požadováno pouze to, aby byly skupiny zlomků se stejným zalomením v pořadí za sebou a bez opakování a použito bylo přidání tečky za celé číslo a otočení pořadí bitů, takže místo do vyšších hodnot porostou do vyšší přesnosti. Tento algoritmus vyžaduje použití netriviální operace reverze pořadí bitů.<html></span></html>
-
-<html><span style="color: gray"></html>//Příklad převodu//<html></span></html>
-
-<html><pre class="code" style="color: gray">
-0010111 =&gt;<sup>(-1)</sup> 0010110 =&gt;<sup>(reverse order)</sup> 0110100 =&gt;<sup>("0." add)</sup> 0.0110100 =&gt;<sup>(calculate)</sup> 0.25 + 0.125 + 0,03125 = 0,40625
-</pre></html>
-
-<html><span style="color: gray"></html>Uveďme si příklady několika prvních hodnot ve formátu UBRatio:<html></span></html>
-
-<html><span style="color: gray"></html>//kód, binární tvar skutečné hodnoty, zlomkový tvar//<html></span></html>
-
-<html><pre class="code" style="color: gray">
-  <span style="color:green">0</span>0000000  0                          = 0
-  <span style="color:green">0</span>0000001  1                          = 1
-  <span style="color:green">0</span>0000010  0.1                        = 1/2
-  <span style="color:green">0</span>0000011  0.01                       = 1/4
-  <span style="color:green">0</span>0000100  0.11                       = 3/4
-  <span style="color:green">0</span>0000101  0.001                      = 1/8
-  <span style="color:green">0</span>0000110  0.101                      = 5/8
-  <span style="color:green">0</span>0000111  0.011                      = 3/8
-  <span style="color:green">0</span>0001000  0.111                      = 7/8
-  <span style="color:green">0</span>0001001  0.0001                     = 1/16
-  <span style="color:green">0</span>0001010  0.1001                     = 9/16
-  <span style="color:green">0</span>0001011  0.0101                     = 5/16
-  ...
-</pre></html>
-
-<html><span style="color: gray"></html>//Dekódování hodnoty//<html></span></html>
-
-<html><pre class="code" style="color: gray">
-  Přečti UBNatural Value
-  Je-li (Value&lt;2) potom ( Hodnota := Value ) jinak (
-    Hodnota := 0
-    Value := Value - 1
-    Pomocná := 1
-    Dokud platí (Value&gt;0) proveď (
-      pokud platí (Value and 1) potom Hodnota := Hodnota + 1/Pomocná
-      Pomocná := Pomocná shl 1
-      Value := Value shr 1
-    )
-  )
-</pre></html>
-
-<html><span style="color: gray"></html>//Kódování hodnoty//<html></span></html>
-
-<html><pre class="code" style="color: gray">
-  Je-li (Hodnota=0 nebo Hodnota=1) potom ( Value := Hodnota ) jinak (
-    Value := 0
-    Pomocná := 0
-    Dokud platí (Hodnota&gt;0) proveď (
-      Hodnota := Hodnota * 2
-      Je-li (Hodnota &gt; 1) potom (
-        Value := Value + Pomocná
-        Hodnota := Hodnota - 1
-      )
-      Pomocná := Pomocná shl 1
-    Value := Value + 1
-    )
-  )
-  Zapiš UBNatural Value
-</pre></html>
-
-== Direct Encoding ==
-
-There is, fortunately, available a variant of the encoding without the reversing the order of bits which uses a simple shift. It also uses more natural order of fractions.
+Another considered type is encoding of real numbers in the fixed interval <html>&lt;0,1&gt;</html> with the finite binary development. This set is already countable large, and it is possible to encode it as a UBNumber value. Value is essentially stored as a count of divided of half cut to a depth intervals. This type can be used to store real numbers for any constant intervals of equal spread. Likewise, for saving intensity and other physical quantities. Encoding is based on point shifting.
 
 //Example conversion//
 
@@ -503,7 +406,7 @@ There is, fortunately, available a variant of the encoding without the reversing
   )
 </pre></html>
 
-=== Other Considered Encodings ===
+==== Other Considered Encodings ====
 
 In addition to the above there were considered some additional encoding of some frequently used types.
 
@@ -515,46 +418,3 @@ In addition to the above there were considered some additional encoding of some 
 **UBBits** - array of logical values - the number is interpreted as a field of 0/1, and it might make sense to define it if the format will be redundant. Thus it will be realized as data block.
 
 Any additional encodings might be described in other parts of the documentation.
-
-==== Argumentation of the Correctness ====
-
-Lets try to summarize why it is the chosen encoding UBNumber the most appropriate (perhaps I will be possile to reformulate these arguments to some form of proof later).
-
-  * It allows to encode any big final integer or real number
-  * It's unambiguously decodable (deterministic, block-chunked, prefix)
-  * It can be align to bitové clusters of variable size
-  * Efficiency is asymptotically approaching binary encoding
-  * It is relatively well implementable (low conversion complexity)
-
-Since it is possible to encode a sequence of integers as a single whole number, it will be useful to prove that such operations is inappropriate.
-
-=== Open Questions ===
-
-Especially the following questions have not been sufficiently argumented so far:
-
-  * Placement for constants for infinity - Still variant of the locations for constants for infinity in the extended types to zero should be considered. At the moment I am even more in favor of this option.
-  * The use of recursive variation - The argument for the use of recursion based on efficiency does not appear to be too strong. Nonrecursive option on the other hand, has advantages in its simplicity. In addition, LRUB encoding is difficult on correction. Yet still recursion seems to be beneficial in more efficient use of small value of ClusterSize constant.
-  * UBReal type encoding - It is still not clear whether it is preferable to use two or single-valued variant of this encoding. Single value advantage is the ability to use it as only a single attribute, but at a price of less analyzable code, and with lower efficiency of extraction.
-
-===== Links =====
-
-The list of resources, literature and relevant links:
-
-**Inverse Form** [[http://en.wikipedia.org/wiki/Ones%27_complement|http://en.wikipedia.org/wiki/Ones%27_complement]]\\
-**Two's Complement Form** [[http://en.wikipedia.org/wiki/Two%27s_complement|http://en.wikipedia.org/wiki/Two%27s_complement]]\\
-**RFC** - Request For Comment [[http://www.ietf.org/rfc.html|http://www.ietf.org/rfc.html]]\\
-**MIME** - Multipurpose Internet Mail Extensions [[http://en.wikipedia.org/wiki/MIME|http://en.wikipedia.org/wiki/MIME]]\\
-**UNICODE** - The character encoding system [[http://www.unicode.org|http://www.unicode.org]]\\
-**UCS** - [[http://www.unicode.org|http://www.unicode.org]]\\
-**UTF** - Unicode Transformation Format [[http://www.unicode.org|http://www.unicode.org]]\\
-**INTEL** - Intel Corporation (C) [[http://www.intel.com|http://www.intel.com]]\\
-**IEEE** - Institute of Electrical and Electronics Engineers, Inc. [[http://www.ieee.com|http://www.ieee.com]]\\
-**IEEE** - IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985) [[http://en.wikipedia.org/wiki/IEEE754|http://en.wikipedia.org/wiki/IEEE754]]\\
-**ISO** - International Standartization Organization [[http://www.iso.ch|http://www.iso.ch]]\\
-**ANSI** - American National Standartization Organization [[http://www.ansi.org|http://www.ansi.org]]\\
-**Alpha Coding** - Alpha Unary Number Coding [[http://en.wikipedia.org/wiki/Unary_coding|http://en.wikipedia.org/wiki/Unary_coding]]\\
-**Beta Coding** - Beta Binary Coding [[http://en.wikipedia.org/wiki/Binary_number|http://en.wikipedia.org/wiki/Binary_number]]\\
-**Gama Coding** - Elias Gamma Number Coding [[http://en.wikipedia.org/wiki/Elias_Gamma_coding|http://en.wikipedia.org/wiki/Elias_Gamma_coding]]\\
-**Convergence** - Mathematical Convergence [[http://en.wikipedia.org/wiki/Convergence|http://en.wikipedia.org/wiki/Convergence]]\\
-**Limes Superior** - Mathematical Limes Superior [[http://www.math.uni-sb.de/~ag-wittstock/lehre/WS00/analysis1/Vorlesung/node62.html|http://www.math.uni-sb.de/~ag-wittstock/lehre/WS00/analysis1/Vorlesung/node62.html]]\\
-**Binary XML** - XML Binary Characterization [[http://www.w3.org/XML/Binary/|http://www.w3.org/XML/Binary/]]\\

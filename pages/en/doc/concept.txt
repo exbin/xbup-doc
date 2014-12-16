@@ -8,22 +8,19 @@ This document is part of the eXtensible Binary Universal Protocol project docume
   * [[en:doc:concept:numerical_encoding|Numerical Encoding]]
   * [[en:doc:concept:data_structure|Data Structure]]
   * [[en:doc:concept:type_system|Type System]]
-
-  FIXME
-
+  * [[en:doc:concept:central_catalog|Central Catalog]]
   * [[en:doc:concept:transformations|Transformations]]
   * [[en:doc:concept:constraints|Constraints]]
   * [[en:doc:concept:data_meaning|Data Meaning]]
 
-  More:
+  FIXME
 
-  Compression
-  Encryption
-  Filesystem
-  Random Access
-  Correctness and self-repair
-
-  Parsing
-  Serialization
-  Streaming
-  
+  * Parsing
+  * Serialization
+  * Streaming
+  * Framework
+  * Compression
+  * Encryption
+  * Filesystem
+  * Random Access
+  * Correctness and self-repair

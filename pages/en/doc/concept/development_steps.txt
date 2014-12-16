@@ -6,7 +6,7 @@ As XBUP project is technically an experimental/research initiative without clear
 
 Goal is to provide prototype implementation supporting desired properties, with repetitive sequence of steps:
 
-**Extend/refine set of requirements -> analyze and design improved solution -> implement new / modify existing functionality -> testing / validation -> provide prototype release**
+**Extend/refine set of requirements -> analyze and design improved solution -> implement new functionality or modify existing -> perform testing / validation -> provide prototype release**
 
 Typically only last release and currently developed version are covered by runable environment (database, catalog and framework service).
 
@@ -18,10 +18,17 @@ Bottom-up approach is step-by-step extending set of requirements from most simpl
 
   * Number Encoding
   * Block Structure
-  * Typing System
-  * Catalog
+  * Type System
+  * Central Catalog
   * Data Transformations
   * Data Meaning & Constraints
   * Scripting
 
 See [[en:doc:concept|project concepts]] to read more about those properties/functionality.
+
+===== Evolving Data Formats ======
+
+To cover various testing purposes or internal communication needs, various data formats using protocol on current development cycle will be created. This formats should be considered as part of development process and are expected to be evolved along protocol itself.
+
+With each prototype release, there should be included set of sample files for demonstration/testing purpose.
+
