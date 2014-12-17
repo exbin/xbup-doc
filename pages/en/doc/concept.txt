@@ -8,15 +8,15 @@ This document is part of the eXtensible Binary Universal Protocol project docume
   * [[en:doc:concept:numerical_encoding|Numerical Encoding]]
   * [[en:doc:concept:data_structure|Data Structure]]
   * [[en:doc:concept:type_system|Type System]]
+  * [[en:doc:concept:parsing|Parsing]]
+  * [[en:doc:concept:serialization|Serialization]]
   * [[en:doc:concept:central_catalog|Central Catalog]]
   * [[en:doc:concept:transformations|Transformations]]
   * [[en:doc:concept:constraints|Constraints]]
   * [[en:doc:concept:data_meaning|Data Meaning]]
 
-  FIXME
+FIXME
 
-  * Parsing
-  * Serialization
   * Streaming
   * Framework
   * Compression

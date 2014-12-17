@@ -1,15 +1,17 @@
 ====== Concept: Numerical Encoding ======
 
-This concept describes recursive hybrid unary-binary encoding. This specific encoding of numbers is a fundamental basis of the entire protocol design, allowing efficient representation of any integer number.
+This concept describes specific encoding used as a fundamental basis of the entire protocol design, allowing efficient representation of any integer number or any instance of accountable set. It's based on hybrid unary-binary encoding with some recursive applicability.
+
+This encodings should not be considered as the only way how to represent values in protocol. Although it is enforced in attributes sequence, it's still possible to store values in blobs using any proper encoding form for storage needs, including typical binary number encoding to fixed length with options to choose endianity or various types of encodings, like for example IEEE-754 for real numbers.
 
 ===== Declared Requirements =====
 
-The following requirements (comming from basic requirements on protocol) have been established for the proposed encoding.
+The following requirements or nice-to-have features are specified for the proposed encoding.
 
 //Declared Requirements://
 
-  * **Coding numbers of any size (Universality)** - The basic requirement is to allow the expression of any finite number. Can not be considered only big enough margin, since the format would lose its universality.
-  * **Coding into sequence of bits** - The data are coded into a potentially endless sequence of bits. The sequence of two-state information mediators is selected because of its minimalism.
+  * **Encoding numbers of any size (Universality)** - The basic requirement is to allow the expression of any finite number. Can not be considered only big enough margin, since the format would lose its universality.
+  * **Encoding into sequence of bits** - The data are coded into a potentially infinite sequence of bits. The sequence of two-state information mediators is selected because of its minimalism.
   * **Compatibility with unary encoding** - Unary encoding is the most simple solution, and should be therefore considered.
   * **Use binary encoding where possible (Efficiency)** - The aim is to get as close as possible to the binary representation of numbers, namely unary coding itself is very inefficient. Likewise, other encoding types, such as pure unary-binary encoding (gamma) or Fibonachi's coding, are effective from some perspectives, but there are some issues.
   * **Determinism (Efficiency)** - Although a unified expression of numbers is not a necessity, it is appropriate with regard to algorithms, to enforce the only one possible variant of the representation of the value. It is also necessary with regard to the above-mentioned efficiency of the encoding.
@@ -18,13 +20,17 @@ The following requirements (comming from basic requirements on protocol) have be
 
 ===== UBNumber Encoding Family =====
 
-Proposed UBNumber encoding consist of three three components/parts: unary encoded value, recursive UBNumber-encoded part and binary encoded part.
+Proposed UBNumber encoding consist of three components/parts: unary encoded value, optional recursive UBNumber-encoded part and binary encoded part.
 
-Native mapping of codes to values is represented in UBNatural encoding, which can represent any non-negative integer value. Encoding can be used to store other types of numbers, like for example real numbers.
+Encoding uses bit clusters of fixed length, typically bytes. In basic form, where recursive part is not present, value of unary encoded part is followed by binary encoded part filling up the rest of sequence of clusters which count is based on value represented by unary part. This is similar to Unicode UTF-8 encoding.
+
+When unary part would be longer than single cluster, recursive part is added instead and value of this part is used further extend cluster length of number. See examples below, where green color marks unary encoded part and red color marks recursive part. Optionally some encodings uses magenta color for value sign bit.
+
+Native mapping of codes to values is demonstrated on UBNatural encoding variant, which can represent any non-negative integer value. Encoding can be also used to store other types of numbers, like for example real numbers.
 
 ==== UBNatural Encoding ====
 
-For encoding of natural numbers with zero (non-negative integers or the Omega set), there is the encoding, which is direct derivation of UBNumber. It allows to encode a natural number of any value.
+For encoding of natural numbers with zero (non-negative integers or the Omega set), direct translation of UBNumber codes to incrementing integer values is used.
 
 //Examples of the type UBNatural://
 
@@ -38,6 +44,15 @@ For encoding of natural numbers with zero (non-negative integers or the Omega se
  ...
  <span style="color:green">10</span>111111 11111111                     = 407Fh
  <span style="color:green">110</span>00000 00000000 00000000            = 4080h
+ ...
+ <span style="color:green">11111110</span> 11111111 .. 11111111           = 10204081020407Fh
+          \_____ 7 times ____/
+ ...
+ <span style="color:green">11111111</span> <span style="color:red">00000000</span> 00000000 .. 00000000  = 102040810204080h
+                   \_____ 8 times ____/
+ ...
+ <span style="color:green">11111111</span> <span style="color:red">00000001</span> 00000000 .. 00000000  = 10102040810204080h
+                   \_____ 9 times ____/
  ...
 </pre></html>
 
@@ -80,7 +95,9 @@ For encoding of natural numbers with zero (non-negative integers or the Omega se
 
 ==== UBENatural Encoding ====
 
-This encoding is designed for natural numbers with a special constant for the infinity. This type is used in the block structure to represent the length of data part and infinity constant expres the undefined, potentially infinite length. Infinity constant is placed on the highest value in the basic form. Another option is to put infinity as a value 0, which would incline to have infinity as default value (see zero filling principle).
+This encoding is designed for natural numbers with a special constant for the infinity. Infinity constant is placed on the highest value in the shortest form. Another option is to put infinity as a value 0, which would incline to have infinity as default value (see default zero principle on protocol transformation concept).
+
+This type is used in the block structure to represent the length of data part and infinity constant expresses the undefined, potentially infinite length.
 
 //Examples of the type UBENatural//
 
@@ -100,7 +117,7 @@ This encoding is designed for natural numbers with a special constant for the in
 
 ==== UBInteger Encoding ====
 
-This encoding is used to store integer numbers. Binary part is interpreted as a binary code in the two-complementary code with the highest bit as the sign. The sign flag is included as first, because it is more important than the value (might affects processing).
+This encoding is used to store integer numbers. Binary part is interpreted as a binary code in the two-complementary code with the highest bit as the sign. The sign flag is included as first occurring bit, because it might theoretically bring additional information how to processing the rest of the value.
 
 //Examples of the UBInteger type values//
 
@@ -150,7 +167,7 @@ This encoding is used to store integer numbers. Binary part is interpreted as a 
   write binary Value
 </pre></html>
 
-Where the Neg operation is the inversion of the lowests ByteSize * (Length +1) bits of the value Value (including sign) and Abs is a function of absolute value.
+Where the Neg operation is the inversion of the lowest ByteSize * (Length +1) bits of the value Value (including sign) and Abs is a function of absolute value.
 
 //Value decoding//
 
@@ -162,7 +179,7 @@ Where the Neg operation is the inversion of the lowests ByteSize * (Length +1) b
   }
   read Value
   Result := Value
-  if prefix then BitLength := ByteSize*(ExtLength+8)+7 jinak BitLength := Length*ByteSize+(7-Length)
+  if prefix then BitLength := ByteSize*(ExtLength+8)+7 else BitLength := Length*ByteSize+(7-Length)
   if (Value and 2^(BitLength))&gt;0 then { <span style="color:gray">// Test on negative sign</span>
     Result := ( - Neg(Result) ) - 1
     For each integer I from interval &lt;1..Length&gt; Result := Result - (2^(I*ByteSize-1))
@@ -179,7 +196,7 @@ Where the Neg operation is the inversion of the lowests ByteSize * (Length +1) b
 
 ==== UBEInteger Encoding ====
 
-Like in the case UBENatural this is an extension of the number of constants for infinity, this time it includes negative one. Placed the similar way.
+Like in the case UBENatural this is an extension of the integer number set adding constants for infinity, this time it includes both positive and negative one. Placed the similar way.
 
 //Examples of the type UBEInteger//
 
@@ -206,7 +223,7 @@ Like in the case UBENatural this is an extension of the number of constants for 
 
 ==== UBReal Encoding ====
 
-This encoding enables the representation of limited subset of real numbers. Because the real numbers are uncountable, it was necessary to limit to numbers with final development of the binary base, because the endless numbers can not be fitted into finite memory. Solution is based on the use of a pair of UBInteger values. The first one defines the base and the other mantissa, which determines how much the value is shifted on the base-2 scale.
+This encoding enables the representation of limited subset of real numbers. Because the real numbers are uncountable, it was necessary to limit to numbers with final development of the binary base form, because the endless numbers cannot be fitted into finite memory. Solution is based on the use of a pair of UBInteger values. The first one defines the base and the other mantissa, which determines how much the value is shifted on the base-2 scale.
 
 To eliminate redundancy, method of adding invisible bit 1 before point is used. Only exception is in basic form, where value is decremented to support zero constant. This approach uses following algorithm:
 
@@ -289,9 +306,9 @@ Some numbers with endless development will be possible to store using higher mat
 
 === UBReal as a Single Number ===
 
-Real number with the final decimal development is likely to be possible to encode into a single UBNumber value, as it is equally possible to effectively encode any final final sequence of integer numbers into a single natural number, but combining two numbers into single value is a bit problematic.
+Real number with the final decimal development is likely to be possible to encode into a single UBNumber value, as it is equally possible to effectively encode any final sequence of integer numbers into a single natural number, but combining two numbers into single value is a bit problematic.
 
-One possible solution is the diagonal method:
+One possible solution is the diagonal method, but it is a bit computational-demanding:
 
 <code>
 (0,0)  (0,1)  (0,2)  (0,3) ...
@@ -313,7 +330,7 @@ Resulted code sequence is build following diagonal lines:
 (0,0) = 0, (0,1) = 1, (1,0) = 2, (0,2) = 3, (1,1) = 4, (2,0) = 5, (0,3) = 6, ...
 </code>
 
-Other possible method is bit-zipping, where in final value, odd bits are used to construct first value and even bits are used to construct second value.
+Other possible method is bit interleaving, where in final value, odd bits are used to construct first value and even bits are used to construct second value. Value conversion is slightly easier to compute using binary shifting.
 
 ==== UBEReal Encoding ====
 
@@ -412,9 +429,17 @@ In addition to the above there were considered some additional encoding of some 
 
 **UBNReal** - nonnegative real number - the base is interpreted as UBENatural/UBNatural\\
 **UBCReal** - integer number with development - mantissa is interpreted as UBNatural\\
-**UBComplex** - compex numberk - two real numbers\\
+**UBComplex** - complex number - stored as two real numbers\\
 **UBKvat** - quaternion - four real numbers, but no practical use \\
 **UBFrag** - fractions\\
 **UBBits** - array of logical values - the number is interpreted as a field of 0/1, and it might make sense to define it if the format will be redundant. Thus it will be realized as data block.
 
 Any additional encodings might be described in other parts of the documentation.
+
+===== Links =====
+
+**IEEE** - IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985) [[http://en.wikipedia.org/wiki/IEEE754|http://en.wikipedia.org/wiki/IEEE754]]\\
+**Two's Complement Form** [[http://en.wikipedia.org/wiki/Two%27s_complement|http://en.wikipedia.org/wiki/Two%27s_complement]]\\
+**Alpha Coding** - Alpha Unary Number Coding [[http://en.wikipedia.org/wiki/Unary_coding|http://en.wikipedia.org/wiki/Unary_coding]]\\
+**Beta Coding** - Beta Binary Coding [[http://en.wikipedia.org/wiki/Binary_number|http://en.wikipedia.org/wiki/Binary_number]]\\
+**Gama Coding** - Elias Gamma Number Coding [[http://en.wikipedia.org/wiki/Elias_Gamma_coding|http://en.wikipedia.org/wiki/Elias_Gamma_coding]]\\

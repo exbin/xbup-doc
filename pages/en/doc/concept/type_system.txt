@@ -1,36 +1,31 @@
 ====== Concept: Type System ======
 
-With data structure defined using only blocks with attributes or blobs, next step should define a way how to use them and distinguish what certain values represents. First step related to this will be introduced in this concept and it's definition of type system.
+This concept describes basic type system, which extends data structure concept to support definition of data representation.
 
-==== Block Type ====
+===== Processing Levels =====
 
-For all non-data block, first two attributes are reserved for block type:
+To allow additional data processing on top of data structure, there are processing levels declared. This allows to distinguish processing methods depending on supported functionality.
+
+Basic block structure is considered to be level 0 and can be used, but protocol defines additional levels which are build on top of it. Type system described in this concept defines level 1: type-aware processing. This should provide more restricted use with should provide additional functionality for better interoperability.
+
+Further levels should build on top of this type system and cover various areas:
+
+  * Data transition and transformation
+  * Permitted ranges, allowed subblocks and other constraints
+  * Additional declarations for data meaning
+
+===== Block Type =====
+
+For all blocks with attributes, first two attributes are reserved for block type:
 
   UBNatural - TypeGroup
   UBNatural - BlockType
 
-Blocks are organized by type into groups and the **TypeGroup** value determines to which group the block belongs to. The value 0 means that it is a basic group is used, which built-in group accesible all the time. The **BlockType** determines the specific type of block in the group. Allowed ranges of block type values for other than basic group and therefore the meaning of groups of blocks is defined using declaration block, which is in basic group.
+Blocks are organized by type into groups and the **TypeGroup** value determines to which group the block belongs to. The value 0 means that it is a basic group is used, which built-in group accessible all the time. The **BlockType** determines the specific type of block in the group. Allowed ranges of block type values for other than basic group and therefore the meaning of groups of blocks is defined using declaration block, which is in basic group.
 
-==== Document Type ====
+===== Type Declaration =====
 
-First value at the beginning of the stream is a sequence of bits that specifies used numerical encoding cluster size.
-
-Byte - ClusterSize = FEh (11111110 in bit stream)
-
-This value is unary encoded, which means ClusterSize = 7, but effectively defines cluster with size 8 bits.
-
-For development purposes the header of the file next contains few identification chars.
-
-  UBNatural - ProtocolVersion = 00h
-  DWord(4xUBNatural) - ProtocolSignature = 58 42 00 XXh ("XB" + development version)
-
-Protocol version 0 is reserved for the protocol development stage. The development version then specify particular structure of the file and any incompatible changes shall be reflected in a change to this value. The header can be interpreted as a 32-bit identification number and 16-bit version number. It is assumed that the final version will have different file headers.
-
-Data is then processed as a single block, and data after that block are called **extended area**, which is cosidered as general, potentially infinite data blob. 
-
-===== Block Declaration =====
-
-To define block, there are two kinds of possible operations available. **Consist operation** defines type of next subblock, while **join operation** performs inclusion of definition for both attributes and subblocks from given block type. Same two operations can be used for declaration of format and group.
+To define type, there are two kinds of possible operations available. For block type declaration **consist operation** defines type of next subblock, while **join operation** performs inclusion of definition for both attributes and subblocks from given block type. Same two operations can be used for declaration of the format and the group.
 
 For the block specification, target block types for these two operations are not required and there are also defined two additional operations for finite and infinite list, which means there is 8 operations in total:
 
@@ -41,13 +36,13 @@ For the block specification, target block types for these two operations are not
   * Infinite list - Adds UBENatural attribute with count and list of of potential infinite subblocks having declared type
   * Finite list - Adds UBNatural attribute and merges list of declared types using join operation.
   * Any list - Adds potentially infinite list of subblocks of undeclared type (infinite list of undefined block)
-  * Attributes list - Adds finite list of genera attributes (finite list of undefined block)
+  * Attributes list - Adds finite list of general attributes (finite list of undefined block)
 
-FIXME
+The block definition allows to define the attributes and parameters, while group and format definitions provides list of block declarations or other groups or block to merge.
 
-The block definition allows to define the attributes and parameters.
+===== Type Catalog =====
 
-The definition of a type system are stored in the [[en:doc:devel:progress:catalog|catalog of types]], where it is possible to use your own definitions using the built in basic blocks and later it should be possible to add the definition from any source.
+To store types, there is catalog of types provided, where various type declarations or other data can be stored.
 
 The following chart shows the ER diagram of the type definition in the catalog of types, including the tree hierarchy of categories of the definitions:
 
@@ -59,7 +54,7 @@ Diagram source file {{en:doc:devel:progress:images:diagram4.dia|diagram4.dia}}
 
 Basic group uses TypeGroup = 0. Basic blocks provides ability to store block type declarations, definitions and links to catalog.
 
-==== Undefined ====
+==== Undefined Block Type ====
 
 This block is used for unknown block types or data padding.
 
@@ -177,47 +172,9 @@ Block allows to define parameters count for particular specification definition.
 
 ===== Type Context =====
 
-For each block, there is type context which provides mapping of particular block type (as defined above) to particular declaration/definition. Context is typically same for block and it's childer, except for **declaration** blok and it's **formatDeclaration** parameter, which affects context of **documentRoot** block and also incrementally affects group and block definitions which can use block types already defined in currently processed declaration.
+For each block, there is type context which provides mapping of particular block type (as defined above) to particular declaration/definition. Context is typically same for block and it's children, except for **declaration** block and it's **formatDeclaration** parameter, which affects context of **documentRoot** block and also incrementally affects group and block definitions which can use block types already defined in currently processed declaration.
 
-FIXME
-
-=== Basic Types ===
-
-Basic types correspond to the above-mentioned types of attributes.
-
-=== Compound Block Types ===
-
-This group of blocks is needed for the construction of more complex blocks, which are consisting of more simpler parts. This is essentially about sequences, and collections. Examples of the use can be found in some already defined document specification for lists of blocks and groups.
-
-==== Document Specification ====
-
-Here are described some of the possible ways how to define the type of blocks in the document. (obsolete)
-
-=== Document Definition ===
-
-The definition of a document is a separate document determining the permitted ranges of groups and block types. In the case of the specifications it points the values of GroupListPointer and DocumentRootPointer to the same block.
-
-===== Document Processing =====
-
-The following text describe the how to deal with the document specifications. This is mainly about the techniques of how to perform control checks and connect specifications into the  sequence.
-
-==== Specification's Processing ====
-
-Defined specifications should be processed using appropriate method. Although it is possible to store the table for each block, it would be very inefficient. The outline of usable proposed method follows.
-
-=== Active Specification ===
-
-Current specification maintains values of the indexes to the catalog for the currently processed element and keeps a list of the existing range of groups up to lower levels. In the case that we want to handle another block of the document, it's possible to travel up in the tree so far as is necessary and delete definition of groups using the table. After that going through the blocks the way to the desired node and process block specifications.
-
-=== Preprocessed Specifications ===
-
-Lets walk through the document to depth and prepare a specification table for each specification block. For the current block it is possible to get copy of the specification. In the processing of another lets walk through his ancestries, until we hit on the specification block, which table we can use.
-
-==== Document Validation ====
-
-The rules for each level should be checked for compliance with the required limits. The corruption might be caused by a mistake of the applications, or with the file damages. Checking the document is split on the rules for determining the validity and to determine the document compatibility. While the validity determines if the file is properly written and, therefore, is processible for real work, compatibility checks to determine whether document is possible to use in the specific application. In the case of the XBUP protocol validation methods forms similar hierarchy as levels.
-
-=== Document Validity ===
+===== Document Validity =====
 
 The document is valid if it is properly created and all types of blocks and their attributes are properly defined. This precisely means:
 
@@ -225,17 +182,3 @@ The document is valid if it is properly created and all types of blocks and thei
   * BlockGroup value of each block does not exceed permitted range in its context (WrongGroup)
   * BlockType value of each block does not exceed the permitted range of values in its group (WrongType)
   * The count of the attributes of each block is not larger in its scope than allowed (TooManyAttributes)
-
-=== Document Compatibility ===
-
-Compatibility is a property of the document saying that this document is processible by the given applications. The application is compatible if:
-
-  * The main document version is in supported set of values
-  * The value of minor version is equal to or greater than the value supported for given block
-
-Todo:\\
-
-  * Define the type of items including, for example, UBPointer the next level + relevant types of linked subblocks\\
-  * Argumentation for the order of the system blocks\\
-  * Argumentation for the order of attributes\\
-  * Block for definition of auxiliary data with while keeping the meaning\\

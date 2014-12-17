@@ -1,0 +1,195 @@
+====== Concept: Parsing ======
+
+Parsing concept is describing method for conversion of raw data to components, typically using formal grammar. Although parsing is technique used mostly for text processing, it is possible to use similar approach to binary data.
+
+===== Protocol Grammar =====
+
+Protocol data structure can be interpreted as a form of the language over the alphabet {0,1}, which is generally the type 0. However, it is also possible to define grammar for this basic components even without the need to define exact binary data.
+
+==== Simplified Grammar ====
+
+This simplified grammar can be used for expression and understanding of the basic block structure of the protocol. Words written in lowercase letters are terminals.
+
+<code>
+Document ::= documentHeader + Block + extendedArea
+Block ::= Attributes + Blocks | dataBlock
+Attributes ::= Attributes + attribute | epsilon
+Blocks ::= Blocks + Block | epsilon
+</code>
+
+This context-free grammar express that the entire document consists of a single block, each block is either a data block, or have two separate parts, sequence of attributes and sequence of subblocks. Attributes are listed as the first block and the blocks are defined recursively. The grammar can be extended to provide other characteristics.
+
+==== Grammar with Terminal Blocks ====
+
+This grammar adds description of the use of terminator.
+
+<code>
+Document ::= documentHeader + Block
+Block ::= Stdblock | Stdtermblock | Datablock | Datatermblock
+Stdblock ::= Attributes + Blocks
+Stdtermblock ::= Attributes + Blocks + terminator
+Datablock ::= dataBlob
+Datatermblock ::= datablob + terminator
+Blocks ::= Block + Blocks | epsilon
+Attributes ::= attribute + Attributes | epsilon
+</code>
+
+==== Document Parsing Grammar ====
+
+Especially when parsing the blocks occurring in the limited order, which can also reduce the grammar, which is then context-free.
+
+<code>
+Document ::= Block
+Block ::= blockBegin + Attributes + Blocks + blockEnd | blockBegin + blockData + blockEnd
+Blocks ::= Block + Blocks | epsilon
+Attributes ::= blockAttribute + Attributes | epsilon
+</code>
+
+The following chart reflects the basic graph of the occurrence of events in the sequential document parsing.
+
+Explanation:
+
+  a - block attribute (blockAttribute)
+  b - begin of the block (blockBegin)
+  d - data part of block (blockData)
+  e - end of block (blockEnd)
+
+{{ en:doc:protocol:images:graph-1.png |Event occurrence graph}}
+
+Graph source file {{en:doc:protocol:images:graph-1.graphml|graph-1.graphml}}
+
+Alternatively, you can use the following automate transitional system, a regular grammars, whose language is close super-set to the previous language:
+
+{{ en:doc:devel:progress:images:graph-2.png |Event occurrence graph}}
+
+Graph source file {{en:doc:devel:progress:images:graph-2.graphml|graph-2.graphml}}
+
+==== Finer Grammar ====
+
+In the case of large data blocks may be their processed problematic and memory demanding. For this reason, it is possible and even advisable to use finer division of the individual bytes. Between the two types of grammars direct conversion of the corresponding events exist.
+
+Explanation:
+
+  a - block attribute (blockAttribute)
+  b - begin of the block (blockBegin)
+  d - single byte of block data part (blockData)
+  e - end of block (blockEnd)
+
+{{ en:doc:devel:progress:images:graph-3.png |Event occurrence graph}}
+
+Graph source file {{en:doc:devel:progress:images:graph-3.graphml|graph-3.graphml}}
+
+Since the data event here represents exactly one byte, it was necessary to establish a direct transition at the end of the data block with an empty data sections.
+
+Divide the attributes to individual bytes does not seems to be meaningful, as well as a split of the data to bits.
+
+==== Rougher Grammar ====
+
+On the other hand, it is possible to merge some events, for example include attributes and data block as a part of block begin.
+
+Explanation:
+
+  b - begin of the block with attributes (blockBegin)
+  d - data block with data blob (blockData)
+  e - end of block (blockEnd)
+
+{{ en:doc:devel:progress:images:graph-4.png |Event occurrence graph}}
+
+Graph source file {{en:doc:devel:progress:images:graph-4.graphml|graph-4.graphml}}
+
+====== Parsers ======
+
+Parser is a program which allows browsing of structured data defined by a grammar. At the output interface offers functionality to get access to processed result, most often in the form of the tree.
+
+===== Parsing Principles =====
+
+Parsers are technically different especially at the lowest levels, but have a common basis. There is defined the common behavior and interface, which should comply with all parsers.
+
+==== Token Types ====
+
+XBUP level 0 protocol recognize following 4 types of tokens:
+
+  * BEGIN (TerminationMode)
+  * ATTRIBUTE (Value)
+  * DATA (Data)
+  * END
+
+For XBUP Level 1 protocol TYPE token is added:
+
+  * TYPE (Type of XBBlockType type)
+
+=== Event Interfaces ===
+
+Base of the parsers the transformation of the stream to the stream of recognized events, which are then processed. The reverse procedure is also possible to generate the document. For each token type, there is separate method defined:
+
+  void begin(Boolean terminationMode)
+  void attrib(Attribute value)
+  void data(Blob data)
+  void end()
+
+Similarly, there are methods defined for the interfaces at higher levels.
+
+==== Parser Status ====
+
+Parser of the level 0 when reading data stream may be in one of the following states - for the needs of fine recognition, it is possible to distinguish whether the parser is at the beginning or within the region:
+
+  * Start/Head - Parser is at the beginning of the file / Parser is located inside the file header
+  * Node - Parser is at the beginning of the block or read the its header (length)
+  * Attribute - Parser reads or will read an attribute
+  * Data - Parser read or will read data of the the data block
+  * Extended - Parser is before (read the last block) or within the extended area
+  * Eof (End of file) - Parser reach the end of file
+
+==== Parser Types ====
+
+Parsers vary mostly on how they store service data of the processed document and there are separated parsers for each protocol's level. This concept will describe 3 types of parsers:
+
+  * Object Model Parser - Converts raw binary data to structured data or objects
+  * Token Parser - Converts raw binary data to sequence of tokens
+  * Command Parser - Provides methods access content of raw binary stream using combination of both previous parsers
+
+Parsers have different memory consumption and may vary on the complexity of the implementation, speed and performance.
+
+==== Object Model Parser ====
+
+These parsing classes process the entire source and create an object copy of the file in the memory (DOM - Document Object Model). The implementation works so that it checks file header and calls recursive/iterative retrieval of the root node, which recursively fills its internal structures. Object model parser usually cannot handle infinite streams. The object model can be also build using token stream and vice-verse.
+
+Typically objects are blocks with following structure:
+
+  Document {
+    Block rootBlock
+    Blob extendedArea
+  }
+
+  Block {
+    Boolean terminationMode
+    attribute[] attributes
+    Block[] childBlocks
+  }
+
+==== Token Parser ====
+
+This kind of parsers converts the input stream to sequence of tokens. This includes both event and pull parsers, which differs on calling method. Pull parser provides single method which returns the following token from the stream (bitstream -> tokens), while event parser process whole stream at once. This parsers are complementary and in opposite direction (tokens -> bitstream) event parser can receive single token while pull parser pulls all tokens at once. This parsers are using simple interface for sending single token and are suitable for streaming or parallel processing and also can be used for processing infinite data stream.
+
+Parser tools of this type are usually faster and easier to implement, however, most of the work remains on the application. That means that this parsers are good for processing simple documents which could be read sequentially.
+
+==== Command Parser ====
+
+Command parser works on the basis of isolated orders to which returns relevant answers. (similar to the command line - command shell). Set of these commands allows both reading and handling of the document parts.
+
+Command parser is a combination of previous parsers. If it's necessary, it stores parts of document into the memory as a tree structure and saves them only if necessary. The advantage is, for example, that until the document is updated, it's not necessary to copy complete document into the memory, only relevant indexes up to a maximum allowed size are stored for the rapid transitions between documents. If the document is processed sequentially, behaves as a token parser, only in the case of jumping it creates auxiliary indexes, or in the case of modification object model is used. Parser construction allows to perform more sophisticated operations, such as modification of the file without reading the entire content (delayed write, copy-on-write).
+
+Example methods for command parser:
+
+  Open(Stream)
+  Close()
+  Reset()
+  Integer CurrentLevel()
+  GoTo(TreePath)
+  Skip(Count)
+
+===== Links =====
+
+Parsing - [[http://en.wikipedia.org/wiki/Parsing]]\\
+XML Pull Parsing - [[http://www.xmlpull.org]]\\
+XML Document Object Model - [[http://www.w3.org/XML/DOM]]\\
