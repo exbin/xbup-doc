@@ -9,18 +9,15 @@ This document is part of the eXtensible Binary Universal Protocol project docume
   * [[en:doc:concept:data_structure|Data Structure]]
   * [[en:doc:concept:type_system|Type System]]
   * [[en:doc:concept:parsing|Parsing]]
-  * [[en:doc:concept:serialization|Serialization]]
   * [[en:doc:concept:central_catalog|Central Catalog]]
   * [[en:doc:concept:transformations|Transformations]]
+  * [[en:doc:concept:serialization|Serialization]]
   * [[en:doc:concept:constraints|Constraints]]
+  * [[en:doc:concept:remote_invocation|Remote Invocation]]
+  * [[en:doc:concept:framework|Framework]]
+  * [[en:doc:concept:textual_syntax|Textual Syntax]]
+  * [[en:doc:concept:data_packing|Data Packing, Compression and Encryption]]
+  * [[en:doc:concept:filesystem|Filesystem Emulation]]
+  * [[en:doc:concept:random_access|Random Access Acceleration]]
+  * [[en:doc:concept:correctness_checking|Correctness Checking and Self-Repair]]
   * [[en:doc:concept:data_meaning|Data Meaning]]
-
-FIXME
-
-  * Streaming
-  * Framework
-  * Compression
-  * Encryption
-  * Filesystem
-  * Random Access
-  * Correctness and self-repair

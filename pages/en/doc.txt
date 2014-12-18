@@ -4,6 +4,17 @@ Documentation is partial / work in progress. Documents are divided into several 
 
 ===== Content =====
 
+  * [[en:doc:concept|Project Concepts]] - Documentation of various issues and proposed concepts of project's characteristics
+    * [[en:doc:concept:development_steps|Development Steps]]
+    * [[en:doc:concept:numerical_encoding|Numerical Encoding]]
+    * [[en:doc:concept:data_structure|Data Structure]]
+    * [[en:doc:concept:type_system|Type System]]
+    * [[en:doc:concept:parsing|Parsing]]
+    * [[en:doc:concept:serialization|Serialization]]
+    * [[en:doc:concept:central_catalog|Central Catalog]]
+    * [[en:doc:concept:transformations|Transformations]]
+    * [[en:doc:concept:constraints|Constraints]]
+    * [[en:doc:concept:data_meaning|Data Meaning]]
   * [[en:doc:protocol|Protocol Specification]] - Currently used specification of the XBUP protocol
     * [[en:doc:protocol:overview|Specification Overview]]
     * [[en:doc:protocol:tree_structure|Level 0: Tree Structure]]
@@ -17,10 +28,6 @@ Documentation is partial / work in progress. Documents are divided into several 
     * [[en:doc:framework:structure|Framework Structure]]
     * [[en:doc:framework:services|Framework Services]]
     * [[en:doc:framework:interface|Framework Interface]]
-  * [[en:doc:concept|Project Concepts]] - Documentation of various issues and proposed concepts of project's characteristics
-    * [[en:doc:concept:development_steps|Development Steps]]
-    * [[en:doc:concept:numerical_encoding|Numerical Encoding]]
-    * [[en:doc:concept:data_structure|Data Structure]]
   * [[en:doc:format|Protocol Formats]] - Documentation of various protocol format's issues
     * [[en:doc:format:overview|Format's Overview]]
     * [[en:doc:format:visual|Visual Formats]]

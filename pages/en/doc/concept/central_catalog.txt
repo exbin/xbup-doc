@@ -1,18 +1,10 @@
-====== Documentation: Catalog of Specifications ======
+====== Concept: Central Catalog ======
 
-This document is part of the eXtensible Binary Universal Protocol project documentation. Provides description of catalog architecture and how to use it.
+The basic concept of the catalog is to provide place where to store basic declarations and related data. It should be used mainly to provide storage for set of properly defined and stable declarations. Catalog can also be used as a local service to provide cached access for XBUP editor and other local applications.
 
-===== Introduction =====
+It should be also possible to have separated data declarations, which can be included in document itself or provided by other data sources, like for example via HTTP / using URL to fixed file or RPC service.
 
-The basic proposal of the catalog is designed as a tree hierarchy with defined owners. These constitute the basic skeleton for each protocol specification, over which the additional extensions are defined, particularly human interface. In the first phase there will be entity relational model of the catalog proposed, then the server-client type communication will be defined and finally particular extensions and recommendations for their implementation will be defined.
-
-===== Catalog Realization =====
-
-The catalog is divided into several levels, which correspond to each level of the protocol. Test version of the catalog will be implemented over relational database, therefore it will be used for the design of ERD model. That will be extended by the specifications of each class and interface design, which will be later accessible by client applications.
-
-You can read about the description of the specific implementation of the catalog, if you can look at relevant parts of the [[en:doc:support:services:webcatalog|catalog service documentation]].
-
-==== Requested Characteristics ====
+===== Requested Characteristics =====
 
 The catalog is subject to the following requirements:
 
@@ -23,19 +15,13 @@ The catalog is subject to the following requirements:
   * Community - To allow editing of selected specifications by more people, like the WIKI. The possibility of adding translations in different languages, expansion of the specifications of other owners, links to individual specifications available from independent public sources.
   * Mirroring - The ability to create catalog mirrors, with the possibility of automatic updates from a central source.
 
-For maintenance purposes it should be possible to mark individual movable parts with four letters shortcuts.
+===== Catalog Structure =====
 
-==== Catalog Basis ====
+Catalog shall be application build on top of database and have a tree hierarchy representing ownership structure, probably similar to internet domain names. In each tree node, there can be declarations and definitions stored with separate data for each protocol level. It should be possible to store all catalog data as a single file which can be then downloaded or to provide access to selected subset of data using RPC interface.
 
-The necessary basic part of the catalog are components which provides support for different levels of the catalog. The aim is to enable the external definition of specifications independent on the operating system and application that process the file. It consists of the list of definitions of documents specifications, where items are the same type or the type of definition of the group. Catalog can be interpreted as a single file, and download it as it or it's possible to access the required subsection using communication protocol.
+The aim is to also allow use catalog as a storage for various additional data as a sort of extensions.
 
-=== Level 1 ===
-
-For each type of format specifications, and group, and block, it is necessary provide links which allows to combine them, so that they be used as the document specification. In addition, there is a need for appropriate way of addressing individual items.
-
-  * Addressing using index - In this case individual specifications would be assigned to unique ID. Not suitable.
-  * Addressing using multiple independent trees - The original concept expect the introduction of the types of attributes to the first level. It appeared to be appropriate to the organization of the attributes than it had different tree specification than blocks, and therefore the initial proposal expected that a single tree of categories for each type of items. In the case of specification items, however, these trees greatly overlap semantically.
-  * Addressing using single tree - An appropriate simplification proved the possibility of creating a single tree for categories for all three types of items.
+For each type of format, group and block specifications, their definition parameters can link to other specifications using internal id or path of nodes with sequence index called **XBIndex**.
 
 The following ER Diagram shows the chosen variant scheme:
 
@@ -43,77 +29,37 @@ The following ER Diagram shows the chosen variant scheme:
 
 Diagram source file {{en:doc:devel:progress:images:diagram1.dia|diagram1.dia}}
 
-It is therefore about ITEM and BIND parts.
+Catalog should also allow to store transformations and other conversions as it will be defined on level 2.
 
-=== Level 2 ===
+===== Catalog Extensions =====
 
-Level 2 introduces the types of attributes for the simple attributes, and also for the sequences of attributes.
+In addition to the basic catalog there is a set of considered extensions to be included in catalog. This is primarily for information about owner of each item, as well as its description and documentation.
 
-The primary argument for the organization of the attributes types as a tree of should be some form of inheritance. This would allow certain properties of the item, even without explicit knowledge about it.
+==== Textual Names ====
 
-This catalog should be able to express the following characteristics:
+Name extension adds the text names to the individual catalog items, with the possibility of multilingual names. Name will be used for various human interfaces for a better understanding of the block data meaning. The will most likely given certain restrictions on the block names, or there may be used more simultaneous names with different kinds of restrictions and with possible conversions between them. There will be restrictions, for example like the prohibition of the spaces, or restrictions on case sensitiveness or exclusion of special characters and similar cases.
 
-  * Inheritance of attribute properties - The type hierarchy should reflect inheritance of the attributes characteristics.
-  * Declaration of attribute groups - For higher level of the protocol, it should be possible to realize the definition of a sequence of attributes for the expression of certain properties.
+==== Textual Descriptions ====
 
-The following ER diagram shows the chosen variant scheme:
+Similarly, the description extension is designed for short text description of the block meaning, which unlike the name is not given such strong restrictions. However, only one sentence is allowed maximum.
 
-{{ en:doc:devel:progress:images:diagram2.png |Diagram 2}}
+==== Textual Comments ====
 
-Diagram source file {{en:doc:devel:progress:images:diagram2.dia|diagram2.dia}}
+Third similar comment extension is used for writing extensive comments on the specification. Use of HTML, or WIKI formatting should be considered later or alternative XBUP-based format should be considered later.
 
-Added parts are named as TYPE and ATTR.
+==== String Identification ====
 
-=== Level 3 ===
+This extension is considered for unique string identification codes used for catalog items. It's similar to names extension, but there will be only one value, probably using English language.
 
-Level 3 introduced possibility of block transformations into the catalog. Transformability is will be probably defined for all 4 types of specification items, but it is still subject to other considerations. It is supposed on of the following possible solutions for next proposal:
+==== Graphical Icons ====
 
-{{ en:doc:devel:progress:images:diagram3.png |Diagram 3}}
+Another extension is to provide a catalog data for graphic representation of individual catalog's items using icons. Use of several possible resolutions of the bitmap, language-dependent icons or also vector formats will be considered later.
 
-Diagram source file {{en:doc:devel:progress:images:diagram3.dia|diagram3.dia}}
+===== Catalog Interface =====
 
-Added part is named as TRAN.
+It is expected that the catalog will only expand and the specifications will not be removed. Therefore it is recommended to thoroughly examine each specification before placing it in the catalog. This does not of course apply for the prototype version thou.
 
-=== Other Considered Extensions ===
+To communicate with the catalog it will be necessary to design an interface (remote method invocation), because the internal database is not likely to have fixed structure. Interface should provide wide set of methods including:
 
-There is among the others an extension considered to be included, it is called REV and designed for the inclusion of revisions into the specifications.
-
-==== Catalog Extensions ====
-
-In addition to the basic catalog there can be defined various extensions as needed. This is primarily for information about owner of each item, as well as its description and documentation.
-
-=== Textual Names ===
-
-NAME extension adds the text names to the individual blocks, with the possibility of multilingual names. Name will be used for various human interfaces for a better understanding of the block data meaning. The will most likely given certain restrictions on the block names, or there may be used more simultaneous names with different kinds of restrictions and with possible conversions between them. There will be restrictions, for example like the prohibition of the spaces, or restrictions on case sensitiveness or exclusion of special characters and similar cases.
-
-More relevant information can be found in the chapter about [[en:doc:devel:issues:hinterfaces|human interfaces]].
-
-=== Textual Descriptions ===
-
-Similarly, the DESC extension is designed for short text description of the block meaning, which unlike the name is not given such strong restrictions. However, only one sentence is allowed maximum.
-
-=== Textual Comments ===
-
-Third similar extension COMM is used for writing extensive comments on the specification. Use of HTML, or WIKI formatting should be considered later.
-
-=== Graphical Icons ===
-
-Another option is to create a catalog for graphic representation of individual items through catalog of icons or other symbols. Usa of several possible resolutions of the bitmap, dependence on language and, where appropriate, vector formats will be considered later.
-
-==== Catalog Interface ====
-
-It is expected that the catalog will only expand and the specifications it will not be removed. Therefore it is recommended to thoroughly examine each specification before placing it in the catalog. This does not of course apply for the test version. However, the principle should allow to create copies of the catalog as mirror images, or as a local copy on computers without worrying about getting items obsolete.
-
-To communicate with the catalog it will be necessary to design an interface (remote function calls), because the internal database is not likely to have fixed structure. The possible use cases follows.
-
-=== Catalog Image Acquirement ===
-
-This interface provides a complete image of all data in the catalog. For these purposes, yet regular access to the database should be sufficient.
-
-=== Local Copy Actualization ===
-
-Especially when we want to create a local copy of the catalog for processing on own computer, all data including all the information about the format / group / block will be downloaded. However, the descriptions are usually focused on a single language.
-
-== Reading for Validation-only Purposes ==
-
-In case we need to do basic validation only, there is basic specification. Information from extensions might be read later to make complete local copy.
+  * Methods to allow full or differential export of the catalog's content.
+  * Access to perform validation of the document

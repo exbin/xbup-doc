@@ -97,15 +97,15 @@ Explanation:
 
 Graph source file {{en:doc:devel:progress:images:graph-4.graphml|graph-4.graphml}}
 
-====== Parsers ======
+===== Parsers =====
 
 Parser is a program which allows browsing of structured data defined by a grammar. At the output interface offers functionality to get access to processed result, most often in the form of the tree.
 
-===== Parsing Principles =====
+==== Parsing Principles ====
 
 Parsers are technically different especially at the lowest levels, but have a common basis. There is defined the common behavior and interface, which should comply with all parsers.
 
-==== Token Types ====
+=== Token Types ===
 
 XBUP level 0 protocol recognize following 4 types of tokens:
 
@@ -129,7 +129,7 @@ Base of the parsers the transformation of the stream to the stream of recognized
 
 Similarly, there are methods defined for the interfaces at higher levels.
 
-==== Parser Status ====
+=== Parser Status ===
 
 Parser of the level 0 when reading data stream may be in one of the following states - for the needs of fine recognition, it is possible to distinguish whether the parser is at the beginning or within the region:
 
@@ -140,7 +140,7 @@ Parser of the level 0 when reading data stream may be in one of the following st
   * Extended - Parser is before (read the last block) or within the extended area
   * Eof (End of file) - Parser reach the end of file
 
-==== Parser Types ====
+=== Parser Types ===
 
 Parsers vary mostly on how they store service data of the processed document and there are separated parsers for each protocol's level. This concept will describe 3 types of parsers:
 

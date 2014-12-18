@@ -1,19 +1,21 @@
-====== Documentation: Block Transformation ======
+====== Concept: Transformations ======
 
-This document is part of the eXtensible Binary Universal Protocol project documentation. Provides techniques and specification for block transformation.
+Transformation concept represents the extension of the block types adding the possibility to perform data conversions.
 
-===== Transformation =====
+Transformation operations are converting data from one form to another, not necessarily equivalent, form. Data can be transformed to different forms automatically when needed, which can improve protocol flexibility and backward compatibility.
 
-Transformation represents the extension of the block types of the possibility of data processing by conversion. Transformation operations are transferring data from one form to another (not necessarily equivalent) and allow to define parameters, that means allowed allowed types of subblocks. Data should be transferred to different forms automatically as necessary, and usually without the need for user intervention.
+===== Requirements =====
 
-Individual blocks are regarded as a functions that additionally to its own type which return has also defined type of transformation and subblocks have also defined the default type.
+FIXME
+
+===== Transformation Types =====
 
 The fundamental transformation include the transfer to the ancestors (type inheritance):
 
   * Generalization / Specialization - For blocks which have fixed attribute or subblock compare to it's parent (for example UTF-String -> String).
   * Parametric types - It is also possible to use ancestor type (for example List of pictures -> List).
 
-Another type is isomorphism / homomorphism (equivalence). Examples can be compression, encryption, links, or for example mathematical representation of the graph neigbour matrix, or a list of neighbors.
+Another type is isomorphism / homomorphism (equivalence). Examples can be compression, encryption, links or for example mathematical representation of the graph for neighbor matrix, or a list of neighbors.
 
 For the purposes of implementation it is necessary to define:
 
@@ -30,7 +32,7 @@ Some of the transformation should be prioritized as the default.
 
 To the usual transformations belong:
 
-  * The transformation of older versions of a document to later one, and vice versa
+  * The transformation of older versions of a document to later one, and vice verse
   * Compression and decompression
   * Encryption and decryption
   * Insertion of parts of documents from other sources
@@ -85,9 +87,9 @@ For the needs of transformation it seems appropriate to allow the definition of 
   * A separate block type for each function - This option would allow to extend the concrete block on the function declaration. The advantage is that these blocks represent the actual function.
   * Define a list of features as part of the definition of the type - In this variant if would be associated with the specific function block type, and by referring to them through this type.
 
-For now the first option was choosen, as it has the ability to to effectively define the functional requirements. In addition, it is possible to determine the input parameters such as n-tuple entity, without necessity to bind to particular type of block.
+For now the first option was chosen, as it has the ability to to effectively define the functional requirements. In addition, it is possible to determine the input parameters such as n-tuple entity, without necessity to bind to particular type of block.
 
-Function is defined as an extension of the block's definition adding the list of function's results, parameterized by error condition. Result of this function can always be just of single type, but it also dependent on the error condition and can be also of compound kind. In addition, it can have limitations for both input and output sets.
+Function is defined as an extension of the block's definition adding the list of function's results, parametrized by error condition. Result of this function can always be just of single type, but it also dependent on the error condition and can be also of compound kind. In addition, it can have limitations for both input and output sets.
 
 ==== Data Transformations ====
 
@@ -114,8 +116,8 @@ The goal of encryption is to avoid reading of the data without the knowledge of 
 
 A higher form is the extraction of the tree from the data block, and it has the same attributes as a transformation block, but they have got differ meaning:
 
-UBPointer - DataSource\\
-UBPointer - ExtractMethod
+  UBPointer - DataSource
+  UBPointer - ExtractMethod
 
 The result of the extraction is a sequence of blocks in XBUP protocol, encoded in standard form. This block is to be used to encrypt the entire document subtree.
 
@@ -142,8 +144,8 @@ Node: It probably would not be much useful if it would be possible to check the 
 
 Last variant of manipulation block is intended to convert block into block structure to another form.
 
-UBPointer - DataSource\\
-UBPointer - ExtractMethod
+  UBPointer - DataSource
+  UBPointer - ExtractMethod
 
 === Linking Blocks ===
 
@@ -153,11 +155,11 @@ Further are defined the fundamental basic building blocks, where full support is
 
 Link allows to address other block of the same stream. Individual blocks are numbered in the standard order (according to the order they are listed) so that the value of 0 refers to the data of the block itself and higher indexes on the individual sub-blocks. In the extended versions it might be possible to address any data structure, any block in the same or another file, either in the local folder, or elsewhere in the local network or the Internet. (As analogy of URL) In the basic version there is a method for obtaining full block left to the application, and therefore whether if block will downloaded from the Internet, or version stored in the local cache will be used should not be important. For address entries in the file, values are as follows:
 
-UBPath - LinkPath\\
-UBNatural - UpCount\\
-UBPointer - LinkRoot\\
+  UBPath - LinkPath
+  UBNatural - UpCount
+  UBPointer - LinkRoot
 
-These values uniquely determine the path of the block. For LinkRoot = 0 it is an internal reference in the stream. UpCount value = 0 corresponds to the reference to a parent block. If the value exceeds UpCount depth of the root depth of the file, or if any of the values PathPointer exceeds the number of block at reffered level, the link is considered void. There should be also mentioned the case when the link refers to another link, which is generally prohibited. In this case, it is necessary to verify the sequence of links on the looping. In general case, the length of path is not limited.
+These values uniquely determine the path of the block. For LinkRoot = 0 it is an internal reference in the stream. UpCount value = 0 corresponds to the reference to a parent block. If the value exceeds UpCount depth of the root depth of the file, or if any of the values PathPointer exceeds the number of block at referred level, the link is considered void. There should be also mentioned the case when the link refers to another link, which is generally prohibited. In this case, it is necessary to verify the sequence of links on the looping. In general case, the length of path is not limited.
 
 For the positive value of a pointer it should be interpreted as the link of the root. If pointed another block of link type, then type 0 followed by references and links of different types are considered as the root of the path.
 
