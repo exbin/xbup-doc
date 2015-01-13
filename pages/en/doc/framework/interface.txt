@@ -1,0 +1,19 @@
+====== Framework: Interface ======
+
+Framework should provide interface to allow use of its services. There are some aspects to be considered related to form of the interface:
+
+  * Use of TCP/IP networking
+  * Use of shared memory
+  * Use of messaging services
+  * Use of clusters / farms
+  * Structure of RPC packets
+
+===== Networking =====
+
+Use of generaly supported TCP/IP networking should allow to transport RPC packets across internet or local networks. There are some options to be considered:
+
+  * TCP or UDP packets
+  * Network port and HTTP encapsulation for port 80
+
+FIXME
+

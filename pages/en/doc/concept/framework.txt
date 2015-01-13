@@ -1,0 +1,8 @@
+====== Concept: Framework ======
+
+FIXME
+
+Framework Service similar to multimedia service
+
+XBUP Stack (as an alternative to web stack)
+

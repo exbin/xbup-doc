@@ -21,3 +21,6 @@ This document is part of the eXtensible Binary Universal Protocol project docume
   * [[en:doc:concept:random_access|Random Access Acceleration]]
   * [[en:doc:concept:correctness_checking|Correctness Checking and Self-Repair]]
   * [[en:doc:concept:data_meaning|Data Meaning]]
+  * [[en:doc:concept:programming_language|Programming Language]]
+  * [[en:doc:concept:database|Database]]
+  * [[en:doc:concept:technology_stack|Technology Stack]]

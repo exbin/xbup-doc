@@ -54,15 +54,15 @@ Explanation:
   d - data part of block (blockData)
   e - end of block (blockEnd)
 
-{{ en:doc:protocol:images:graph-1.png |Event occurrence graph}}
+{{ en:doc:concept:images:graph-1.png |Event occurrence graph}}
 
-Graph source file {{en:doc:protocol:images:graph-1.graphml|graph-1.graphml}}
+Graph source file {{en:doc:concept:images:graph-1.graphml|graph-1.graphml}}
 
 Alternatively, you can use the following automate transitional system, a regular grammars, whose language is close super-set to the previous language:
 
-{{ en:doc:devel:progress:images:graph-2.png |Event occurrence graph}}
+{{ en:doc:concept:images:graph-2.png |Event occurrence graph}}
 
-Graph source file {{en:doc:devel:progress:images:graph-2.graphml|graph-2.graphml}}
+Graph source file {{en:doc:concept:images:graph-2.graphml|graph-2.graphml}}
 
 ==== Finer Grammar ====
 
@@ -75,9 +75,9 @@ Explanation:
   d - single byte of block data part (blockData)
   e - end of block (blockEnd)
 
-{{ en:doc:devel:progress:images:graph-3.png |Event occurrence graph}}
+{{ en:doc:concept:images:graph-3.png |Event occurrence graph}}
 
-Graph source file {{en:doc:devel:progress:images:graph-3.graphml|graph-3.graphml}}
+Graph source file {{en:doc:concept:images:graph-3.graphml|graph-3.graphml}}
 
 Since the data event here represents exactly one byte, it was necessary to establish a direct transition at the end of the data block with an empty data sections.
 
@@ -93,9 +93,9 @@ Explanation:
   d - data block with data blob (blockData)
   e - end of block (blockEnd)
 
-{{ en:doc:devel:progress:images:graph-4.png |Event occurrence graph}}
+{{ en:doc:concept:images:graph-4.png |Event occurrence graph}}
 
-Graph source file {{en:doc:devel:progress:images:graph-4.graphml|graph-4.graphml}}
+Graph source file {{en:doc:concept:images:graph-4.graphml|graph-4.graphml}}
 
 ===== Parsers =====
 
@@ -122,12 +122,14 @@ For XBUP Level 1 protocol TYPE token is added:
 
 Base of the parsers the transformation of the stream to the stream of recognized events, which are then processed. The reverse procedure is also possible to generate the document. For each token type, there is separate method defined:
 
-  void begin(Boolean terminationMode)
-  void attrib(Attribute value)
-  void data(Blob data)
+  void begin(terminationMode)
+  void attrib(attribute)
+  void data(data)
   void end()
 
-Similarly, there are methods defined for the interfaces at higher levels.
+On level 1 additional method is included:
+
+  void type(blockType)
 
 === Parser Status ===
 
@@ -144,8 +146,8 @@ Parser of the level 0 when reading data stream may be in one of the following st
 
 Parsers vary mostly on how they store service data of the processed document and there are separated parsers for each protocol's level. This concept will describe 3 types of parsers:
 
-  * Object Model Parser - Converts raw binary data to structured data or objects
-  * Token Parser - Converts raw binary data to sequence of tokens
+  * Object Model Parser - Converts raw binary data from or to structured data or objects
+  * Token Parser - Converts raw binary data from or to sequence of tokens
   * Command Parser - Provides methods access content of raw binary stream using combination of both previous parsers
 
 Parsers have different memory consumption and may vary on the complexity of the implementation, speed and performance.
@@ -165,6 +167,7 @@ Typically objects are blocks with following structure:
     Boolean terminationMode
     attribute[] attributes
     Block[] childBlocks
+    Blob data
   }
 
 ==== Token Parser ====

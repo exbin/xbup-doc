@@ -1,0 +1,101 @@
+====== Concept: Textual Syntax ======
+
+FIXME
+
+As a main interface for document accessing for humans, there should be available unified content visualization in a form suitable for human understanding.
+
+==== Motivation ====
+
+Like text editors are using a standard translator of numbers codes (for example in the ASCII encoding) to the graphic symbols, there should be defined an appropriate interface to visualize the binary structure of the protocol XBUP.
+
+==== Textual Interfaces ====
+
+One possible visualization is the printing a document in text format, using appropriate text grammar. For a print of tree it is possible, for example, to use XML syntax, or others similar. Most appropriate seems to be to allow more possible syntax, or choose one only. Appropriateness of the text syntax is fairly subjective matter, it will be more appropriate to choose a preferred syntax, but to allow the use of other alternatives.
+
+=== Text Input ===
+
+It's possible to provide a way how to create a new document from a text form.
+
+In this case, it is necessary to consider how wrong inputs will be processed and recognized syntax constructions connected to different specifications. The possible solutions are:
+
+  * Warn users about syntax errors and deny saving - apparently ignoring mistakes could lead to data loss.
+  * Disallow writing of the invalid document - limit users text inputs to valid or automatically convertible to valid.
+  * Alert users on errors and store document including invalid parts using special blocks.
+
+=== Virtualization of the Text Console ===
+
+It is in the interest of the project to provide also the text interface for access to services, as well as text communication translations. This should work automatically according to defined rules and grammars.
+
+Virtual Console lets browse the contents of the file as if each level of the tree was part of the file. Furthermore, it should be possible to perform certain basic operations, such as the addition of a node, remove, edit, and so on.
+
+== Transparent Translation on the Client Side ==
+
+The basic variant translates text commands on the client side so that data are transmitted through communication interface in the XBUP protocol. Specific interface is defined for the communication using XBUP protocol to receive remote calls.
+
+== Transparent Translation on the Server Side ==
+
+The other possible variant is suitable primarily for the implementation of compatibility and interconnection with existing services. It translates commands in a text console directly on the server side. This means that commands are transmitted over the network layer in text format, for example, using the current technologies.
+
+== XML-like Syntax ==
+
+One example of a text form is a text representation of the XML markup language.
+
+On the zero level, it is possible to represent it, for example, using following these steps:
+
+<code>
+<xbup bytesize="7" version="0" signature="1">
+  <node terminated="true/false" /> // Root node
+    <attribute>x</attribute>
+    ...
+    <attribute>x</attribute>
+    <node> // Subnode
+      <attribute>0</attribute>
+    </node>
+    <data>XASfdsfASD/*asd</data> // Data coded in BASE64 encoding
+  </node>
+</xbup>
+</code>
+
+The order in which blocks and attributes appear is corresponding to the occurrence in the document. Text tag attribute is a non-negative integer. Each node must have at least one attribute.
+
+Level 1 adds XML attributes "group" and "block" to the tag "node" whose values are text names corresponding to the specifications XBUP document.
+
+In addition, at the beginning of xbup tag there is the team specifications of the document added:
+
+<code>
+<specification>
+  <group name="name">
+    <block name="name"/>
+    ...
+    <block name="name"/>
+  </group>
+  ...
+  <group name="name">
+    <block name="name"/>
+    ...
+    <block name="name"/>
+  </group>
+</specification>
+</code>
+
+Level 2 adds to the tag "attribute" XML attributes "name" and "type" for which the specifications of the tags appears <attrib type="type" name="name"/> as subtag of the "block" tags.
+
+Assuming that the two attributes do not have the same name, the following XML syntax can be used:
+
+<code>
+<!xbup bytesize="7" version="0" signature="1">
+<group_name:block_name id="index" term="true/false" attribute_name="value" ... >
+  <subblock .../>
+  ...
+  <data>hexadecimal or Base64 encoded data</data>
+  <subblock .../>
+</group_name:block_name>
+</code>
+
+Where appropriate, it would also be possible to establish special value for the blocks for the text comments.
+
+==== Graphical Interfaces ====
+
+Another option is to display the list of items such as listing with a graphical representation of the elements and offset using visual lines.
+
+The tree view is available in most of modern operating systems and is used as the default interface in [[en:doc:support:tools:xbeditor|XBEditor]].

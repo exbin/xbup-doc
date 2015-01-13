@@ -1,0 +1,49 @@
+====== Concept: Filesystem ======
+
+FIXME
+
+===== Fragmentable Structure =====
+
+Since the format itself does not support fragment-ability according to the block structure of the file system, it is appropriate to use a transformation block for these purposes. This technique works so that the data block it interpreted as a sequence of blocks of constant size and allows their classification in any order, thus allowing noncontinuous sequence of regular blocks representation.
+
+==== Description of the Solution ====
+
+This is a transformational type of data-block tree. Individual clusters has constant length and are either structural or data type. The first block is the root and structural. The proposed solutions is not likely final.
+
+UBClusterIndex - Next Block\\
+UBENatural - SubBlockPartSize\\
+UBClusterIndex - First SubBlock\\
+...\\
+UBClusterIndex - Last SubBlock\\
+UBNatural - DataPartSize\\
+UBNatural - MainBlockPartSize\\
+UBClusterIndex - First MainBlock\\
+...\\
+UBClusterIndex - Last MainBlock
+
+While the indexes to SubBlock refer to the structural blocks, an index to MainBlock is referring to the sequence of data block.
+
+SubBlockPartSize value equals to infinity means that the file is equivalent to data block, otherwise it is a node / leaf block.
+
+==== Advantages of the Solution ====
+
+Mentioned technology brings some advantages, especially it's more flexible way how to edit the file, to add to the other blocks on any depth level and change their size.
+
+  * The potential increase or reduce of the block does not lead to the need to rebuild the entire file
+  * More efficient organization reduces the number of necessary accesses to disk
+
+==== Possible Optimalizations ====
+
+It should be possible to improve low-efficiency of the solution.
+
+For example, with the introduction of bitmaps using blocks, use of the relative values of the clusters indexes, or assembling a large number of small blocks into one.
+
+It could be also possible to establish totals sums for increased robustness, or caching of certain values for greater efficiency.
+
+==== Problems ====
+
+The implementation of this solution is also facing some problems.
+
+  * How to align the entire block to disk access block - There should be an advantage to use SLRUB type.
+  * How to address the problem where the value of Next Block is longer than the cluster size
+  * How to determine data vs. leaf block

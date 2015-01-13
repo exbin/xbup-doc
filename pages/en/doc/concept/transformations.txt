@@ -1,30 +1,29 @@
 ====== Concept: Transformations ======
 
-Transformation concept represents the extension of the block types adding the possibility to perform data conversions.
+Transformation concept represents the extension of the block type system adding the possibility to perform data conversions.
 
 Transformation operations are converting data from one form to another, not necessarily equivalent, form. Data can be transformed to different forms automatically when needed, which can improve protocol flexibility and backward compatibility.
 
 ===== Requirements =====
 
-FIXME
+Requiremens on the structure are derived from project's requirements with additional focus on compatibility and scalability of the implementation.
 
-===== Transformation Types =====
+//Requirements://
 
-The fundamental transformation include the transfer to the ancestors (type inheritance):
+  * **Inheritance - generalization/specialization** - For blocks which have fixed attribute or subblock compare to it's parent (for example UTF-String -> String)
+  * **Generics/parametric types** - It is also possible to use ancestor type (for example List of pictures -> List of general items)
+  * **Conversion between different forms** - Conversion between various forms of data representation with different space requirements should be supported, like for example compression, encryption
+  * **Link related transformations** - It should be possible to convert linked resource to target data
 
-  * Generalization / Specialization - For blocks which have fixed attribute or subblock compare to it's parent (for example UTF-String -> String).
-  * Parametric types - It is also possible to use ancestor type (for example List of pictures -> List).
+===== Transformation =====
 
-Another type is isomorphism / homomorphism (equivalence). Examples can be compression, encryption, links or for example mathematical representation of the graph for neighbor matrix, or a list of neighbors.
+In mathematics, transformation relation is reflexive and transitive. For the purposes of implementation some of the following methods should be defined:
 
-For the purposes of implementation it is necessary to define:
-
-  * Getting a list of blocks to which can be transformed - For given block there should be defined way to determine the blocks, to which can it be algorithmically converted to and that both for when it is maintained all the information, and also even if part of it is lost.
+  * Getting a list of blocks to which it is possible transform to - For given block there should be defined way to determine the blocks, to which can it be algorithmically converted to and that both for when it is maintained all the information, and also even if part of it is lost.
   * Transformation application and transmission of the result - Sometimes it is possible to generate result simultaneously, sometimes it may be necessary to construct the entire result in memory.
-  * Transformation chaining - It is possible to perform multiple transformations in a row as a sequence, also to determine the sequence (the use of lattices?).
+  * Transformation chains - It is possible to perform multiple transformations in a row as a sequence, also to determine the sequence (the use of lattices?).
   * General transformation - It would be appropriate to distinguish the general manipulation blocks, which allow to transform any data to a different form from the transformation of data from one representation to another.
 
-Transformation relation is reflexive and transitive.
 
 ==== Default Transformation ====
 
@@ -36,10 +35,9 @@ To the usual transformations belong:
   * Compression and decompression
   * Encryption and decryption
   * Insertion of parts of documents from other sources
-  * Blocks with fixed attributes
-  * Child to parent transformation
+  * Specialized block to generalized block
 
-For inheritance there is possible that more to the count of attributes in the block it is also possible to determine its compatible parent. This principle is particularly appropriate to use when we want, that the application would be able to partially process the block where not the complete document definition is known.
+FIXME
 
 ==== Transformation Graph ====
 
@@ -177,7 +175,7 @@ Document can be classed as analyzable, if the application has available all the 
 
 Notes:
 
-  * Define the type of items including, for example, UBPointer on the next level + relevant types linked subblocks\\
-  * "system blocks" to rename on something more intelligent\\
-  * Argumentation for the order of the system blocks \\
-  * Argumentation for attribute order\\
+  * Define the type of items including, for example, UBPointer on the next level + relevant types linked subblocks
+  * "system blocks" to rename on something more intelligent
+  * Argumentation for the order of the system blocks
+  * Argumentation for attribute order
