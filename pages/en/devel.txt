@@ -13,7 +13,7 @@ You can browse and download source codes from GitHub repository: [[http://github
 Following communication channels are available for developers:
 
   * Project's IRC channel [[irc://irc.freenode.net/xbup|#xbup]] on [[http://www.freenode.net|freenode.net]] or alternative [[http://webchat.freenode.net/?channels=xbup|webchat]]
-  * [[http://sourceforge.net/p/xbup/discussion/|Public forums]] or [[http://sourceforge.net/p/xbup/mailman/|mailing list]] on [[http://www.sourceforge.net|sourceforge.net]].
+  * [[http://sourceforge.net/p/xbup/discussion/|Public forums]] or [[http://sourceforge.net/p/xbup/mailman/|mailing list]] on [[http://www.sourceforge.net|sourceforge.net]]
   * Follow [[http://twitter.com/xbup|#XBUP]] on [[http://twitter.com|twitter.com]]
 
 ===== Getting Started With the Project =====
@@ -21,10 +21,11 @@ Following communication channels are available for developers:
 If you want to contribute to this project, you should consider taking some of the following actions:
 
   * If you don't have it yet, [[https://sourceforge.net/account/registration/|register]] your own SourceForge account
-  * [[http://sourceforge.net/u/hajdam/profile/send_message|Send]] a request to become member of the development team and wait till you will be accepted and added to the project
-  * [[https://sourceforge.net/forum/forum.php?thread_id=3338711&forum_id=317000|Introduce yourself]] to other members of the team (optional)
+  * [[http://sourceforge.net/u/hajdam/profile/send_message|Send]] a request to become member of the development team
   * Prepare your [[en:devel:ide|development environment]]
+  * [[https://sourceforge.net/forum/forum.php?thread_id=3338711&forum_id=317000|Introduce yourself]] to other members of the team (optional)
   * [[http://webchat.freenode.net/?channels=xbup|Discuss]] on #xbup channel on freenode.net about what you would like to work on (optional)
+  * Choose task from [[http://trac.xbup.org|Trac service]] to work on (optional)
   * Start working!
 
 ===== Editing This Wiki Pages =====
@@ -32,5 +33,5 @@ If you want to contribute to this project, you should consider taking some of th
 This wiki uses [[doku>|DokuWiki]] and covers various parts of project's documentation.
 
   * I you don't have account yet, you can [[this>?wiki&do=register|register]] new account.
-  * To edit this wiki you shall [[this>?wiki&do=login|login]] to this wiki.\\
+  * To edit this wiki you shall [[this>?wiki&do=login|login]] to this wiki.
   * Also check out [[wiki:syntax]] for more information about how edit wiki pages.

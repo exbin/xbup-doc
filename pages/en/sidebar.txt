@@ -10,7 +10,7 @@ Download
 
 Documentation
   * [[en:doc|Project's documentation]]
-  * [[en:doc:spec:overview|Protocol's specification]]
+  * [[en:doc:protocol:overview|Protocol's specification]]
   * [[en:doc:impl:java|Implementation in Java]]
 
 Get involved
@@ -21,6 +21,10 @@ Get involved
 Services
   * [[http://catalog.xbup.org|Catalog of types]]
   * [[http://catalog-php.xbup.org|Catalog of types (PHP)]]
+
+Tools
+  * [[http://ci.xbup.org|Jenkins]]
+  * [[http://trac.xbup.org|Trac]]
 
 Follow us on
   * [[https://github.com/xbup|XBUP on GitHub]]

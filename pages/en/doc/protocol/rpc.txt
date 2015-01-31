@@ -33,6 +33,49 @@ In other cases ExecutionFail block can be returned with additional description o
 
 Any failureInfo
 
+===== Remote Command Processing =====
+
+Standard processing of the received command is to send a reply to the output channel. Primarily the root block is processed, optional auxiliary blocks may contain additional processing parameters. The actual execution task on the server side is fully in his responsibility. Sending the response may be started earlier than the known / send the result. As a call's return code the status code is returned and error conditions are defined as appropriate responses. Error conditions arising in the processing itself are not included in the basic definition of a remote call.
+
+Groups of error conditions:
+
+  * Input processing errors
+  * Command execution errors
+  * Output processing errors
+
+==== Valid Execution State ====
+
+If the server will correctly process the command the following condition is returned and can optionally include the output returned by the executed command.
+
+RPCState_OK\\
+any RPCResult
+
+==== Input Processing Errors ====
+
+These error conditions occur in the processing of the input before execution of the real command. This might be following error states:
+
+  * Internal Server Error
+  * Service Unavailable (temporary, removed)
+  * Redirecting (temporary, single/multiple targets)
+  * Not Implemented
+
+==== Command Execution Errors ====
+
+These errors occur after you have read the command and are looking for valid handler to process it.
+
+  * Bad Request (unknown, reserved, insufficient parameters)
+  * Forbidden (temporary, required authorization, obsolete)
+  * Not Found
+  * Moved
+
+==== Output Processing Errors ====
+
+These errors occur when you run the handler and result is processed.
+
+  * Terminated (killed, resource overflow)
+  * Timeout
+  * Output truncated
+
 ===== Service Discovery =====
 
 Interface to identify available functions provided by remote interface.

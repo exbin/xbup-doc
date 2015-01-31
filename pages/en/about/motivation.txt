@@ -50,7 +50,7 @@ Let's have simple bitmap editor capable editing RAW RGB bitmap data supporting X
 Framework should provide following functions:
 
   * Allow application to open various bitmap formats (PNG, JPEG...) as supported by framework by decompressing pictures to RAW RGB
-  * Allow application to save ins various bitmap formats as supported by framework by compressing RAW RGB to given format
+  * Allow application to save in various bitmap formats as supported by framework by compressing RAW RGB to given format
   * Preserve additional information (for example EXIF data) if appropriate
   * Provide additional methods to show/edit additional information if available
   * Provide additional export or import methods from different formats if available

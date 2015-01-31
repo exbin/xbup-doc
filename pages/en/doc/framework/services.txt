@@ -1,4 +1,11 @@
 ====== Framework: Services ======
 
+Framework service should provide:
+
+  * Access to catalog and all it's extensions
+  * Ability to perform transformations
+
+...
+
 FIXME
 
