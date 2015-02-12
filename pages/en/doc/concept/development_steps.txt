@@ -28,6 +28,6 @@ See [[en:doc:concept|project concepts]] to read more about those properties/func
 
 ===== Evolving Data Formats ======
 
-To cover various testing purposes or internal communication needs, various data formats using protocol on current development cycle will be created. This formats should be considered as part of development process and are expected to be evolved alongside protocol itself.
+To cover various testing tasks or internal communication needs, various data formats will be created using protocol on current development cycle. This formats should be considered as part of development process and are expected to be evolved alongside the protocol itself.
 
 With each prototype release, there should be included set of sample files for demonstration/testing purpose.
