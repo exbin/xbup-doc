@@ -1,4 +1,4 @@
-====== Concept: Remote Invokation ======
+====== Concept: Remote Invocation ======
 
 Protocol for remote procedure calls defines the way how to transmit parameters for remote procedure calls and how to return results and interface to identify available functions, especially those potentially remote. The goal is to provide a foundation for XBUP-based communication protocol built as alternative to protocols like [[#Links|HTTP]], [[#Links|XML-RPC]], [[#Links|WSDL]], [[#Links|CORBA]] and more.
 
@@ -10,7 +10,7 @@ One possible solution is to use the direct evaluation of received data without a
 
 ===== Native Command Processing =====
 
-Standard native processing is execution mode where server estabilish input stream where it receive blocks representing commands and output stream where to send replies. Primarily the root block of the commands is processed, optional auxiliary blocks may contain additional processing parameters.
+Standard native processing is execution mode where server establish input stream where it receive blocks representing commands and output stream where to send replies. Primarily the root block of the commands is processed, optional auxiliary blocks may contain additional processing parameters.
 
 The actual execution task on the server side is fully in its responsibility. Sending the response may be started earlier than the actual complete result is known.
 
@@ -18,13 +18,13 @@ The actual execution task on the server side is fully in its responsibility. Sen
 
 If the server is able to correctly process the command the following block is returned and can optionally include the output returned by the executed command:
 
-  InvocationSuccesful\\
-    any Result\\
+  InvocationSuccesful
+    any Result
     any ExecutionException
 
 If server is unable to invocate method, it will return following block:
 
-  InvocationFailed\\
+  InvocationFailed
     any ErrorInfo
 
 Some of these errors can be also fatal, which will lead to connection termination.
@@ -60,7 +60,7 @@ Server execution exceptions:
   * Timeout
   * Output truncated
 
-Also if there is failure during partial result transmittion, connection might be terminated with general //ExecutionException//.
+Also if there is failure during partial result transmission, connection might be terminated with general //ExecutionException//.
 
 FIXME
 
