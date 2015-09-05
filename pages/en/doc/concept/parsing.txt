@@ -25,11 +25,11 @@ Transmitted items (tokens) constitutes a unit of the stream. The basic unit of i
 
 Individual tokens are described in the document [[en:doc:devel:progress:structure|block structure]].
 
-Tokens vary depending on the level of the Protocol.
+Tokens vary depending on the level of the protocol.
 
 === Block Processing Classes ===
 
-Another option is to transfer entire blocks of the Protocol as described in the rough grammar. There are three types of blocks:
+Another option is to transfer entire blocks of the protocol as described in the rough grammar. There are three types of blocks:
 
   * Attribute Block
   * Data Block
@@ -118,78 +118,53 @@ Blocks ::= Block + Blocks | epsilon
 Attributes ::= blockAttribute + Attributes | epsilon
 </code>
 
-The following chart reflects the basic graph of the occurrence of events in the sequential document parsing.
-
-Explanation:
-
-  a - block attribute (blockAttribute)
-  b - begin of the block (blockBegin)
-  d - data part of block (blockData)
-  e - end of block (blockEnd)
-
-{{ en:doc:concept:images:graph-1.png |Event occurrence graph}}
-
-Graph source file {{en:doc:concept:images:graph-1.graphml|graph-1.graphml}}
-
-Alternatively, you can use the following automate transitional system, a regular grammars, whose language is close super-set to the previous language:
-
-{{ en:doc:concept:images:graph-2.png |Event occurrence graph}}
-
-Graph source file {{en:doc:concept:images:graph-2.graphml|graph-2.graphml}}
-
-==== Finer Grammar ====
-
-In the case of large data blocks may be their processed problematic and memory demanding. For this reason, it is possible and even advisable to use finer division of the individual bytes. Between the two types of grammars direct conversion of the corresponding events exist.
-
-Explanation:
-
-  a - block attribute (blockAttribute)
-  b - begin of the block (blockBegin)
-  d - single byte of block data part (blockData)
-  e - end of block (blockEnd)
-
-{{ en:doc:concept:images:graph-3.png |Event occurrence graph}}
-
-Graph source file {{en:doc:concept:images:graph-3.graphml|graph-3.graphml}}
-
-Since the data event here represents exactly one byte, it was necessary to establish a direct transition at the end of the data block with an empty data sections.
-
-Divide the attributes to individual bytes does not seems to be meaningful, as well as a split of the data to bits.
-
-==== Rougher Grammar ====
-
-On the other hand, it is possible to merge some events, for example include attributes and data block as a part of block begin.
-
-Explanation:
-
-  b - begin of the block with attributes (blockBegin)
-  d - data block with data blob (blockData)
-  e - end of block (blockEnd)
-
-{{ en:doc:concept:images:graph-4.png |Event occurrence graph}}
-
-Graph source file {{en:doc:concept:images:graph-4.graphml|graph-4.graphml}}
-
 ===== Parsers =====
 
 Parser is a program which allows browsing of structured data defined by a grammar. At the output interface offers functionality to get access to processed result, most often in the form of the tree.
 
-==== Parsing Principles ====
+==== Token Parsers ====
 
-Parsers are technically different especially at the lowest levels, but have a common basis. There is defined the common behavior and interface, which should comply with all parsers.
+Simple parsers allows to access data using primitive data objects called tokens.
 
 === Token Types ===
 
-XBUP level 0 protocol recognize following 4 types of tokens:
+XBUP level 0 protocol recognizes following 4 types of tokens:
 
-  * BEGIN (TerminationMode)
-  * ATTRIBUTE (Value)
-  * DATA (Data)
-  * END
+  * [b] BEGIN (TerminationMode)
+  * [a] ATTRIBUTE (Value)
+  * [d] DATA (Data)
+  * [e] END
 
-For XBUP Level 1 protocol TYPE token is added:
+For XBUP level 1 protocol there is additional TYPE token:
 
-  * TYPE (Type of XBBlockType type)
+  * [t] TYPE (Type of XBBlockType type)
+
+=== Parser States and Transition Graph ===
+
+Parser of the level 0 when reading data stream may be in one of the following states - for the needs of fine recognition, it is possible to distinguish whether the parser is at the beginning or within the region:
+
+  * [S] Start/Head - Parser is at the beginning of the file / Parser is located inside the file header
+  * [B] Begin - Parser is at the beginning of the block or read the its header (length)
+  * [A] Attribute - Parser reads or will read an attribute
+  * [D] Data - Parser read or will read data of the the data block
+  * [X] Extended - Parser is before (read the last block) or within the extended area
+  * [F] Finish (EOF) - Parser reach the end of file
+
+On level 1 there is additional state for block type:
+
+  * [T] Type - Parser processed block type
+
+This states are used in state transition graph below. Edges in this graph are transitions reflecting one passing token of specific type.
+
+{{ en:doc:concept:images:eventflow.png |Event flow / state transition graph}}
+
+Graph source file {{en:doc:concept:images:eventflow.graphml|eventflow.graphml}}
+
+For level 1 there is extension of this graph for type event.
+
+{{ en:doc:concept:images:eventflow-level1.png |Level 1 event flow / state transition graph}}
+
+Graph source file {{en:doc:concept:images:eventflow-level1.graphml|eventflow-level1.graphml}}
 
 === Event Interfaces ===
 
@@ -203,17 +178,6 @@ Base of the parsers the transformation of the stream to the stream of recognized
 On level 1 additional method is included:
 
   void type(blockType)
-
-=== Parser Status ===
-
-Parser of the level 0 when reading data stream may be in one of the following states - for the needs of fine recognition, it is possible to distinguish whether the parser is at the beginning or within the region:
-
-  * Start/Head - Parser is at the beginning of the file / Parser is located inside the file header
-  * Node - Parser is at the beginning of the block or read the its header (length)
-  * Attribute - Parser reads or will read an attribute
-  * Data - Parser read or will read data of the the data block
-  * Extended - Parser is before (read the last block) or within the extended area
-  * Eof (End of file) - Parser reach the end of file
 
 === Parser Types ===
 

@@ -23,11 +23,11 @@ Services
   * [[http://catalog-php.xbup.org|Catalog of types (PHP)]]
 
 Tools
-  * [[http://ci.xbup.org|Jenkins]]
-  * [[http://trac.xbup.org|Trac]]
+  * [[http://ci.xbup.org|Cont. Integration (Jenkins)]]
+  * [[http://it.xbup.org|Issue Tracking (BugGenie)]]
 
 Follow us on
   * [[https://github.com/xbup|XBUP on GitHub]]
   * [[https://twitter.com/xbup|XBUP on Twitter]]
-  * [[http://www.ohloh.net/projects/xbup|XBUP on OHLOH]]
+  * [[https://openhub.net/p/xbup|XBUP on OpenHUB]]
   * [[http://www.sourceforge.net/projects/xbup|XBUP on SourceForge]]
