@@ -1,19 +1,9 @@
-XBUP: eXtensible Binary Universal Protocol
-==========================================
+XBUP Documentation
+==================
 
-The XBUP Project aims to design and to provide an open-source support for unified general binary data representation format.
+This repository contains documentation for eXtensible Binary Universal Protocol.
 
-This should provide following advantages:
-
- * Advanced Data Structures - Unified structure should allow to combine various types of data together
- * Efficiency - Optional compression and encryption on multiple levels should allow effective representation of binary data
- * Flexibility - General framework should provide data transformations/processing and compatibility issues solving capability
- * Comprehensibility - Catalog of data types, metadata, relations and abstraction should allow better understanding of data
-
-Homepage: http://xbup.org  
-Project page: http://sourceforge.net/projects/xbup  
-
-This repository contains documentation for the project.
+Homepage: http://xbup.exbin.org  
 
 Structure
 ---------
