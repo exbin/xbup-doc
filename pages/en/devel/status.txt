@@ -1,14 +1,14 @@
 ====== Project Status ======
 
-XBUP project is currently in prototype phase with experimental protocol design and proof-of-concept implementation in construction.
+Development of the XBUP is currently in prototype phase with experimental protocol design and proof-of-concept implementation under construction.
 
 ===== Next Release =====
 
-Next release should be work release 24 (0.1.24) around January 2015.
+Next release should be work release 0.2.1 around July 2017.
 
 Next version should include:
 
-  * Improved catalog management
+  * Basic framework service
   * Additional examples of types
 
 ===== Planned Functionality =====

@@ -6,13 +6,13 @@ If you are interested, read this page further to see how you can take a look on 
 
 ===== Source Codes =====
 
-You can browse and download source codes from GitHub repository: [[http://github.com/xbup]]
+You can browse and download source codes from GitHub repository: [[http://github.com/exbin]]
 
 ===== Communication =====
 
 Following communication channels are available for developers:
 
-  * Project's IRC channel [[irc://irc.freenode.net/xbup|#xbup]] on [[http://www.freenode.net|freenode.net]] or alternative [[http://webchat.freenode.net/?channels=xbup|webchat]]
+  * Project's IRC channel [[irc://irc.freenode.net/exbin|#exbin]] on [[http://www.freenode.net|freenode.net]] or alternative [[http://webchat.freenode.net/?channels=exbin|webchat]]
   * [[http://sourceforge.net/p/xbup/discussion/|Public forums]] or [[http://sourceforge.net/p/xbup/mailman/|mailing list]] on [[http://www.sourceforge.net|sourceforge.net]]
   * Follow [[http://twitter.com/xbup|#XBUP]] on [[http://twitter.com|twitter.com]]
 
@@ -24,8 +24,8 @@ If you want to contribute to this project, you should consider taking some of th
   * [[http://sourceforge.net/u/hajdam/profile/send_message|Send]] a request to become member of the development team
   * Prepare your [[en:devel:ide|development environment]]
   * [[https://sourceforge.net/forum/forum.php?thread_id=3338711&forum_id=317000|Introduce yourself]] to other members of the team (optional)
-  * [[http://webchat.freenode.net/?channels=xbup|Discuss]] on #xbup channel on freenode.net about what you would like to work on (optional)
-  * Choose task from [[http://trac.xbup.org|Trac service]] to work on (optional)
+  * [[http://webchat.freenode.net/?channels=exbin|Discuss]] on #exbin channel on freenode.net about what you would like to work on (optional)
+  * Choose task from [[http://it.exbin.org|Trac service]] to work on (optional)
   * Start working!
 
 ===== Editing This Wiki Pages =====
