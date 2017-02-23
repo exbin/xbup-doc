@@ -1,18 +1,8 @@
-====== Project Motivation ======
-
-Project should provide new binary format applicable to wide range use cases, including:
-
-  * Multimedia and data streaming
-  * Long-term data storage
-  * Highly structured data
-  * Huge data streaming (with terabytes in size or more)
-  * Representation of segmented, fragmented or indexed data
-
-===== Use Cases =====
+====== Use Cases ======
 
 Few examples of situation are included, where results of the project should provide some new possibilities or advantages.
 
-==== Browseable Binary Content ====
+===== Browseable Binary Content =====
 
 Case here is to provide more flexible picture format as an alternative to GIF, PNG, JPEG or WebP.
 
@@ -26,7 +16,7 @@ Basic editor should provide following functions:
   * Allow to edit each pixel using color selection dialog or editing RGB values directly
   * Provide documentation for each form of data and each transformation and meaning of every value
 
-==== Data Tables ====
+===== Data Tables =====
 
 Case here is to provide more flexible data tables format as an alternative to CSV or XML table formats.
 
@@ -41,7 +31,7 @@ Basic editor should provide following functions:
   * For each type allow to edit it in proper textual/graphical form (for example date format with calendar dialog or internationalized string)
   * Allow to edit data as a textual data using some markup syntax
 
-==== Flexible Modular Applications ====
+===== Flexible Modular Applications =====
 
 Case here is to provide more flexible software framework as an alternative to DirectShow, GStreamer or system libraries.
 
