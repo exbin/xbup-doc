@@ -6,11 +6,11 @@ XBUP is binary data protocol and file format for communication, data storage and
 
   * **Unified block-tree structure** - Combine different types of data together
   * **Build-in and custom data types** - Catalog of types and external type definitions
-  * **Transformations framework** - For compression, encryption and compatibility handling
+  * **Transformations framework** - For compression, encryption, compatibility and data handling
 
 ===== Motivation =====
 
-Project should provide universal protocol which should allow general methods for handling various types of data including:
+Project should provide universal protocol as a more feature-rich alternative to currently used binary protocols. It should provide general methods for handling various types of data including:
 
   * **Multimedia Files** - Audio, Video, Animation
   * **Filesystem Structure** - Allow to represent data of filesystem or as compressed archive
@@ -47,3 +47,4 @@ You can learn more about this project by reading next sections about the project
   * [[en:about:use_cases|Use Cases]]
   * [[en:about:goals|Goals]]
   * [[en:about:project_scope|Scope]]
+  * [[en:about:logo|Project Logo]]
