@@ -1,0 +1,280 @@
+ 
+
+
+
+INTERNET-DRAFT                                            Miroslav Hajda
+Intended Status: Proposed Standard                       (ExBin Project)
+Expires: <Expiry Date>                                      <Issue Date>
+
+
+              Extensible Binary Universal Protocol (XBUP)
+                     draft-ietf-exbin-xbup-core-00
+
+
+Abstract
+
+   The Extensible Binary Universal Protocol (XBUP) is a general purpose
+   binary data protocol and file format with primary focus on data and
+   control abstraction.
+
+   It is constructed bottom up with 
+
+Contributing
+
+   This document is being worked on by ExBin Project. Primary goal is to
+   gather comments and raise interest in this project.
+
+Status of this Memo
+
+   This Internet-Draft is submitted to IETF in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF), its areas, and its working groups.  Note that
+   other groups may also distribute working documents as
+   Internet-Drafts.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   The list of current Internet-Drafts can be accessed at
+   http://www.ietf.org/1id-abstracts.html
+
+   The list of Internet-Draft Shadow Directories can be accessed at
+   http://www.ietf.org/shadow.html
+
+
+Copyright and License Notice
+
+   Copyright (c) <year> IETF Trust and the persons identified as the
+   document authors. All rights reserved.
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 1]
+
+INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document. Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document. Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+
+Table of Contents
+
+   1  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .  3
+     1.1  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  3
+   2.  Title  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+   3  Security Considerations . . . . . . . . . . . . . . . . . . . .  5
+   4  IANA Considerations . . . . . . . . . . . . . . . . . . . . . .  5
+   5  References  . . . . . . . . . . . . . . . . . . . . . . . . . .  5
+     5.1  Normative References  . . . . . . . . . . . . . . . . . . .  5
+     5.2  Informative References  . . . . . . . . . . . . . . . . . .  5
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . .  5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 2]
+
+INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
+
+
+1  Introduction
+
+   The Extensible Binary Universal Protocol (XBUP) is a general purpose
+   binary data protocol and file format.
+
+   Key features:
+
+    *  Unified block-tree structure - Minimalistic core structure based
+   on integer and blobs only
+
+    *  Build-in and custom data types - Data type definitions and
+   catalog of types
+
+    *  Transformations framework - Data transformation and compatibility
+   handling
+
+   Primary focus on abstraction makes this protocol somewhat different
+   compare to other similar binary formats which focus on efficiency,
+   serialization or binary representation of mark-up language, like for
+   example
+
+
+   TODO: Extensible Binary Universal Protocol is bi
+
+1.1  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in RFC 2119 [RFC2119].
+
+
+2.  Title
+
+   <Document text>
+
+      Definitions and code {
+        line 1
+        line 2
+      }
+
+
+   Special characters examples:
+
+   The characters  , , , 
+   However, the characters \0, \&, \%, \" are displayed.
+
+   .ti 0  is displayed in text instead of used as a directive. 
+   .\"  is displayed in document instead of being treated as a comment
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 3]
+
+INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
+
+
+   C:\dir\subdir\file.ext  Shows inclusion of backslash "\".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 4]
+
+INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
+
+
+3  Security Considerations
+
+   <Security considerations text>
+
+
+4  IANA Considerations
+
+   <IANA considerations text>
+
+
+5  References
+
+5.1  Normative References
+
+
+5.2  Informative References
+
+
+
+Authors' Addresses
+
+
+   Miroslav Hajda
+   and
+   Address
+
+   EMail: name@example.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 5]

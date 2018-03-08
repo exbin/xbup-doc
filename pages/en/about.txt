@@ -12,10 +12,10 @@ XBUP is binary data protocol and file format for communication, data storage and
 
 Project should provide universal protocol as a more feature-rich alternative to currently used binary protocols. It should provide general methods for handling various types of data including:
 
-  * **Multimedia Files** - Audio, Video, Animation
-  * **Filesystem Structure** - Allow to represent data of filesystem or as compressed archive
+  * **Multimedia files** - Audio, Video, Animation
+  * **Filesystem structure** - Allow to represent data in the form of filesystem or as compressed archive
   * **Application API** - Remote or local methods execution supporting parameters and result passing
-  * **Serialization Protocol** - Provide ability to serialize structured data
+  * **Serialization protocol** - Provide ability to serialize structured data
   * **Long-term data storage** - Provide way to define data with separate or integrated specification
   * **Huge data** - Use dynamic numeric values to allow support for data in terabytes range or more
   * **Representation of segmented, fragmented or indexed data**
@@ -36,9 +36,9 @@ Project is using bottom-up approach with layers building on top of each other ad
 
 Some of the design principles:
 
-  * Flexibility over efficiency
-  * Abstraction over compactness
-  * Evolving over simplified
+  * **Small steps** - Project should be build and evolve by adding small and independent functionality
+  * **Universaility first** - Focus should be on support of wide range of use-cases and provide extensibility instead of fixed and compact structure
+  * **Abstraction** - Data should be defined using abstraction instead of vague description only
 
 ===== More =====
 
