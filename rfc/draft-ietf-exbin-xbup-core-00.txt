@@ -2,7 +2,7 @@
 
 
 
-INTERNET-DRAFT                                            Miroslav Hajda
+Internet-Draft                    XBUP                    Miroslav Hajda
 Intended Status: Proposed Standard                       (ExBin Project)
 Expires: <Expiry Date>                                      <Issue Date>
 
@@ -55,7 +55,7 @@ Copyright and License Notice
 
 Miroslav Hajda           Expires <Expiry Date>                  [Page 1]
 
-INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
+Internet-Draft                    XBUP                      <Issue Date>
 
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -73,8 +73,9 @@ INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
 Table of Contents
 
    1  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .  3
-     1.1  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  3
-   2.  Title  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+     1.1  Objectives  . . . . . . . . . . . . . . . . . . . . . . . .  3
+     1.2  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  3
+   2.  Title  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  4
    3  Security Considerations . . . . . . . . . . . . . . . . . . . .  5
    4  IANA Considerations . . . . . . . . . . . . . . . . . . . . . .  5
    5  References  . . . . . . . . . . . . . . . . . . . . . . . . . .  5
@@ -105,19 +106,19 @@ Table of Contents
 
 
 
-
  
 
 
 Miroslav Hajda           Expires <Expiry Date>                  [Page 2]
 
-INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
+Internet-Draft                    XBUP                      <Issue Date>
 
 
 1  Introduction
 
    The Extensible Binary Universal Protocol (XBUP) is a general purpose
-   binary data protocol and file format.
+   binary data protocol and file format with primary focus on
+   abstraction.
 
    Key features:
 
@@ -138,10 +139,37 @@ INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
 
    TODO: Extensible Binary Universal Protocol is bi
 
-1.1  Terminology
+1.1  Objectives
+
+   The primary goal of this project is to create communication
+   protocol/data format with the following characteristics:
+
+     * Universal - Capable to represent any type of data, suitable for
+   persistent and long-term storage and streaming
+
+     * Independent - Not tightly linked to particular spoken language or
+   infrastructure, processing architecture or programming language
+
+     * Declarative - 
+
+     * Effective - Data compactness and compression support for plain
+   binary and structured data
+
+     * Flexible - Support for data transformations, compatibility and
+   extensibility
+
+1.2  Terminology
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 3]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
    document are to be interpreted as described in RFC 2119 [RFC2119].
 
 
@@ -162,36 +190,8 @@ INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
 
    .ti 0  is displayed in text instead of used as a directive. 
    .\"  is displayed in document instead of being treated as a comment
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                  [Page 3]
-
-INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
-
 
    C:\dir\subdir\file.ext  Shows inclusion of backslash "\".
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -223,7 +223,7 @@ INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
 
 Miroslav Hajda           Expires <Expiry Date>                  [Page 4]
 
-INTERNET DRAFTExtensible Binary Universal Protocol (XBUP)   <Issue Date>
+Internet-Draft                    XBUP                      <Issue Date>
 
 
 3  Security Considerations
@@ -250,7 +250,7 @@ Authors' Addresses
 
    Miroslav Hajda
    and
-   Address
+   Zdechov, Czech Repubic
 
    EMail: name@example.com
 

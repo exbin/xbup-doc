@@ -6,9 +6,9 @@
 .nr LT 7.2i
 .ds LF Miroslav Hajda 
 .ds RF FORMFEED[Page %]
-.ds LH INTERNET DRAFT
+.ds LH Internet-Draft
 .ds RH <Issue Date>
-.ds CH Extensible Binary Universal Protocol (XBUP)
+.ds CH XBUP
 .ds CF Expires <Expiry Date>
 .hy 0
 .nh
@@ -16,7 +16,7 @@
 .in 0
 
 .nf
-.tl 'INTERNET-DRAFT''Miroslav Hajda'
+.tl 'Internet-Draft'XBUP'Miroslav Hajda'
 .tl 'Intended Status: Proposed Standard''(ExBin Project)'
 .tl 'Expires: <Expiry Date>''<Issue Date>'
 .fi
@@ -81,8 +81,9 @@ Table of Contents
 
 .nf
    1  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .  3
-     1.1  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  3
-   2.  Title  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  3
+     1.1  Objectives  . . . . . . . . . . . . . . . . . . . . . . . .  3
+     1.2  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  3
+   2.  Title  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  4
    3  Security Considerations . . . . . . . . . . . . . . . . . . . .  5
    4  IANA Considerations . . . . . . . . . . . . . . . . . . . . . .  5
    5  References  . . . . . . . . . . . . . . . . . . . . . . . . . .  5
@@ -98,7 +99,7 @@ Table of Contents
 .ti 0
 1  Introduction
 
-The Extensible Binary Universal Protocol (XBUP) is a general purpose binary data protocol and file format.
+The Extensible Binary Universal Protocol (XBUP) is a general purpose binary data protocol and file format with primary focus on abstraction.
 
 Key features:
 
@@ -114,7 +115,22 @@ Primary focus on abstraction makes this protocol somewhat different compare to o
 TODO: Extensible Binary Universal Protocol is bi
 
 .ti 0
-1.1  Terminology
+1.1  Objectives
+
+The primary goal of this project is to create communication protocol/data format with the following characteristics:
+
+  * Universal - Capable to represent any type of data, suitable for persistent and long-term storage and streaming
+
+  * Independent - Not tightly linked to particular spoken language or infrastructure, processing architecture or programming language
+
+  * Declarative - 
+
+  * Effective - Data compactness and compression support for plain binary and structured data
+
+  * Flexible - Support for data transformations, compatibility and extensibility
+
+.ti 0
+1.2  Terminology
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119 [RFC2119].
 
@@ -198,7 +214,7 @@ Authors' Addresses
 .nf
 Miroslav Hajda
 and
-Address
+Zdechov, Czech Repubic
 
 EMail: name@example.com
 .sp
