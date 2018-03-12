@@ -14,15 +14,21 @@ Expires: <Expiry Date>                                      <Issue Date>
 Abstract
 
    The Extensible Binary Universal Protocol (XBUP) is a general purpose
-   binary data protocol and file format with primary focus on data and
-   control abstraction.
+   binary data protocol and file format with primary focus on data
+   abstraction and transformation.
 
-   It is constructed bottom up with 
+   This documentation describes specification of bottom levels of
+   protocol and set of basic data types and recommended API.
 
 Contributing
 
    This document is being worked on by ExBin Project. Primary goal is to
    gather comments and raise interest in this project.
+
+   To participate on development of this project, following
+   communications are available:
+
+   TODO
 
 Status of this Memo
 
@@ -44,12 +50,6 @@ Status of this Memo
 
    The list of Internet-Draft Shadow Directories can be accessed at
    http://www.ietf.org/shadow.html
-
-
-Copyright and License Notice
-
-   Copyright (c) <year> IETF Trust and the persons identified as the
-   document authors. All rights reserved.
  
 
 
@@ -57,6 +57,11 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 1]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
+
+Copyright and License Notice
+
+   Copyright (c) 2018 IETF Trust and the persons identified as the
+   document authors. All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents
@@ -74,7 +79,7 @@ Table of Contents
 
    1  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .  3
      1.1  Objectives  . . . . . . . . . . . . . . . . . . . . . . . .  3
-     1.2  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  3
+     1.2  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  4
    2.  Title  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  4
    3  Security Considerations . . . . . . . . . . . . . . . . . . . .  5
    4  IANA Considerations . . . . . . . . . . . . . . . . . . . . . .  5
@@ -82,11 +87,6 @@ Table of Contents
      5.1  Normative References  . . . . . . . . . . . . . . . . . . .  5
      5.2  Informative References  . . . . . . . . . . . . . . . . . .  5
    Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . .  5
-
-
-
-
-
 
 
 
@@ -118,7 +118,7 @@ Internet-Draft                    XBUP                      <Issue Date>
 
    The Extensible Binary Universal Protocol (XBUP) is a general purpose
    binary data protocol and file format with primary focus on
-   abstraction.
+   abstraction and automatic data transformation.
 
    Key features:
 
@@ -128,16 +128,22 @@ Internet-Draft                    XBUP                      <Issue Date>
     *  Build-in and custom data types - Data type definitions and
    catalog of types
 
-    *  Transformations framework - Data transformation and compatibility
-   handling
+    *  Transformations framework - Automatic and manual data conversions
+   and compatibility handling
+
+   In general, XBUP is an attempt to create new and improved binary data
+   format which would utilize advancements from markup languages like
+   SGML/XML or from more recent programming languages, and bring them
+   into world of binary data.
+
+   For example:
+
+    *  Extensibility *  Unconstraint values *  Links (URL) *  Namespaces
 
    Primary focus on abstraction makes this protocol somewhat different
    compare to other similar binary formats which focus on efficiency,
-   serialization or binary representation of mark-up language, like for
-   example
-
-
-   TODO: Extensible Binary Universal Protocol is bi
+   serialization or binary representation of mark-up language. Please
+   see "formats comparison" for better idea.
 
 1.1  Objectives
 
@@ -148,20 +154,14 @@ Internet-Draft                    XBUP                      <Issue Date>
    persistent and long-term storage and streaming
 
      * Independent - Not tightly linked to particular spoken language or
-   infrastructure, processing architecture or programming language
+   product, processing architecture or programming language
 
-     * Declarative - 
+     * Declarative - Self sufficient for data type definition and
+   ability to build data types on top of each other and link them
+   together
 
-     * Effective - Data compactness and compression support for plain
-   binary and structured data
-
-     * Flexible - Support for data transformations, compatibility and
-   extensibility
-
-1.2  Terminology
-
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+     * Efficiency - Effective data compacting / compression support for
+   plain binary and structured data
  
 
 
@@ -170,8 +170,25 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 3]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
+     * Flexible - Support for data transformations, compatibility and
+   extensibility
+
+1.2  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
    document are to be interpreted as described in RFC 2119 [RFC2119].
 
+   This specification makes use of the following terminology:
+
+   Byte: Used in the sense of 8-bits binary data value as a synonym for
+   "octet".
+
+   Parser:
+
+   Token:
+
+   Stream:
 
 2.  Title
 
@@ -201,23 +218,6 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
  
 
 
@@ -232,6 +232,7 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 
 4  IANA Considerations
+
 
    <IANA considerations text>
 
@@ -253,7 +254,6 @@ Authors' Addresses
    Zdechov, Czech Repubic
 
    EMail: name@example.com
-
 
 
 
