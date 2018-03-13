@@ -80,18 +80,18 @@ Table of Contents
    1  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .  3
      1.1  Objectives  . . . . . . . . . . . . . . . . . . . . . . . .  3
      1.2  Terminology . . . . . . . . . . . . . . . . . . . . . . . .  4
-   2.  Title  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  4
-   3  Security Considerations . . . . . . . . . . . . . . . . . . . .  5
-   4  IANA Considerations . . . . . . . . . . . . . . . . . . . . . .  5
-   5  References  . . . . . . . . . . . . . . . . . . . . . . . . . .  5
-     5.1  Normative References  . . . . . . . . . . . . . . . . . . .  5
-     5.2  Informative References  . . . . . . . . . . . . . . . . . .  5
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . .  5
-
-
-
-
-
+   2  XBUP Specification  . . . . . . . . . . . . . . . . . . . . . .  4
+     2.1 Tree Structure (Level 0) . . . . . . . . . . . . . . . . . .  4
+       2.1.1 UBNumber Encoding  . . . . . . . . . . . . . . . . . . .  4
+       2.1.2 Document . . . . . . . . . . . . . . . . . . . . . . . .  5
+       2.1.3 Block  . . . . . . . . . . . . . . . . . . . . . . . . .  5
+   3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  6
+   3  Security Considerations . . . . . . . . . . . . . . . . . . . .  7
+   4  IANA Considerations . . . . . . . . . . . . . . . . . . . . . .  7
+   5  References  . . . . . . . . . . . . . . . . . . . . . . . . . .  7
+     5.1  Normative References  . . . . . . . . . . . . . . . . . . .  7
+     5.2  Informative References  . . . . . . . . . . . . . . . . . .  7
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . .  7
 
 
 
@@ -190,7 +190,118 @@ Internet-Draft                    XBUP                      <Issue Date>
 
    Stream:
 
-2.  Title
+2  XBUP Specification
+
+   Protocol is specified bottom up by levels. Each level build on top of
+   previous level adding new features and limitations.
+
+2.1 Tree Structure (Level 0)
+
+   Lowest protocol's level defines basic tree structure using two
+   primitive types.
+
+     * Binary blob (sequence of bytes)  * Natural non-negative integer
+   number
+
+   See complete [[en:doc:protocol:tree_structure|specification of tree
+   structure]].
+
+2.1.1 UBNumber Encoding
+
+   UBNumber is encoding used for representation of instance of countable
+   infinite set stored as one or more bytes (similar to UTF-8
+   encoding).
+
+   First, non-zero bits are counted for length and then rest of bits is
+   used as value while value is also incremented so that there is only
+   one code for each number.
+
+   Most native encoding using UBNumber is UBNatural for representation
+   of a natural non-negative integer number.
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 4]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
+   //Examples of the UBNatural codes (sequence of bits = represented
+   value)://
+
+   00000000                                     = 0
+   00000001                                     = 1
+   00000010                                     = 2
+   00000011                                     = 3
+   01111111                                     = 7Fh = 127
+   10000000 00000000                    = 80h = 128
+   10000000 00000001                    = 81h = 129
+   10111111 11111111                    = 407Fh = 16511
+   11000000 00000000 00000000   = 4080h = 16512
+
+   Various interpretations can be mapped on UBNumber encoding. For this
+   level there are defined two:
+
+     * UBNatural encoding using directly value from UBNumber  *
+   UBENatural where value 7Fh is reserved for infinity constant and
+   higher values are shifted by one
+
+2.1.2 Document
+
+   Document starts with 6 bytes long blob called "Document Header"
+   followed by a single block called "Root Block" and optional blob
+   called "Extended Area".
+
+   Header for current version of protocol is (hexadecimal):
+
+   <code> FE 00 58 42 00 02 </code>
+
+2.1.3 Block
+
+   Each block starts with single value:
+
+     UBNatural attributePartSize
+
+   If **attributePartSize = 0** then this block is called "Terminator"
+   and block ends. Otherwise it is followed by value:
+
+     UBENatural dataPartSize
+
+   If **attributePartSize = count of bytes used by dataPartSize** then
+   this block is called "Data Block" and binary blob follows which has
+   length in bytes specified by dataPartSize value and block ends.
+
+   If **attributePartSize > count of bytes used by dataPartSize** then
+   this block is called "Node Block" and a sequence of attributes
+   follows until **sum of count of bytes used by attributes =
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 5]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
+   attributePartSize - count of bytes used by dataPartSize**.
+
+     UBNumber attribute
+
+   After attributes, sequence of blocks follows until **sum of block
+   sizes = dataPartSize** and block ends.
+
+   If **dataPartSize = infinity** for data block then binary blob is
+   ended by a sequence of two zero bytes. A sequence of two bytes where
+   first is zero followed by a non zero byte is considered a sequence of
+   nonstoping zero bytes. The non zero byte defines the length of the
+   sequence.
+
+   If **dataPartSize = infinity** for node block then sequence of data
+   blocks is ended by the terminator.
+
+   //See following picture for clarification:// {{
+   en:doc:protocol:images:block_structure.png?400 |Block Structure}}
+
+3. Todo
 
    <Document text>
 
@@ -218,10 +329,11 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 
 
+
  
 
 
-Miroslav Hajda           Expires <Expiry Date>                  [Page 4]
+Miroslav Hajda           Expires <Expiry Date>                  [Page 6]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
@@ -277,4 +389,4 @@ Authors' Addresses
 
 
 
-Miroslav Hajda           Expires <Expiry Date>                  [Page 5]
+Miroslav Hajda           Expires <Expiry Date>                  [Page 7]
