@@ -25,7 +25,7 @@ Contributing
    This document is being worked on by ExBin Project. Primary goal is to
    gather comments and raise interest in this project.
 
-   To participate on development of this project, visit
+   To participate on the development of this project, visit
    http://xbup.exbin.org/?development
 
 Status of this Memo
@@ -60,7 +60,7 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 Copyright and License Notice
 
-   Copyright (c) 2018 IETF Trust and the persons identified as the
+   Copyright (c) 2019 IETF Trust and the persons identified as the
    document authors. All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -84,20 +84,20 @@ Table of Contents
      2.1. Level 0: Tree Structure . . . . . . . . . . . . . . . . . .  4
        2.1.1. UBNumber Encoding . . . . . . . . . . . . . . . . . . .  5
        2.1.2. Document  . . . . . . . . . . . . . . . . . . . . . . .  5
-       2.1.3. Block . . . . . . . . . . . . . . . . . . . . . . . . .  5
-     2.2. Level 1: Block Types  . . . . . . . . . . . . . . . . . . .  6
-       2.2.1. Block Type  . . . . . . . . . . . . . . . . . . . . . .  6
-       2.2.2. Basic Group . . . . . . . . . . . . . . . . . . . . . .  7
-       2.2.3. Undefined . . . . . . . . . . . . . . . . . . . . . . .  7
-   3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  7
-   3. Security Considerations . . . . . . . . . . . . . . . . . . . .  8
-   4. IANA Considerations . . . . . . . . . . . . . . . . . . . . . .  8
-   5. References  . . . . . . . . . . . . . . . . . . . . . . . . . .  8
-     5.1.  Normative References . . . . . . . . . . . . . . . . . . .  8
-     5.2.  Informative References . . . . . . . . . . . . . . . . . .  8
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . .  8
-
-
+       2.1.3. Block . . . . . . . . . . . . . . . . . . . . . . . . .  6
+       2.1.4. Processing  . . . . . . . . . . . . . . . . . . . . . .  7
+     2.2. Level 1: Block Types  . . . . . . . . . . . . . . . . . . .  8
+       2.2.1. Block Type  . . . . . . . . . . . . . . . . . . . . . .  8
+       2.2.2. Block Definition  . . . . . . . . . . . . . . . . . . .  9
+       2.2.3. Basic Blocks Definition . . . . . . . . . . . . . . . .  9
+   3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  9
+     3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . .  9
+   4. Security Considerations . . . . . . . . . . . . . . . . . . . . 11
+   5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 11
+   6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+     6.1.  Normative References . . . . . . . . . . . . . . . . . . . 11
+     6.2.  Informative References . . . . . . . . . . . . . . . . . . 11
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 11
 
 
 
@@ -118,25 +118,24 @@ Internet-Draft                    XBUP                      <Issue Date>
 
    The Extensible Binary Universal Protocol (XBUP) is a general purpose
    binary data protocol and file format with primary focus on
-   abstraction and automatic data transformation.
+   abstraction and data transformation.
 
    Key features:
 
-    *  Unified block-tree structure - Minimalist core structure based on
-   integer and blobs only
+    *  Unified block-tree structure - Minimalist tree structure based on
+   integer and blob only
 
     *  Build-in and custom data types - Data type definitions and
    catalog of types
 
-    *  Transformations framework - Automatic and manual data conversions
+    *  Transformation framework - Automatic and manual data conversions
    and compatibility handling
 
-   In general, XBUP is an attempt to create binary data format which
-   would utilize advancements from markup languages like SGML/XML or
-   from more recent programming languages, and bring them into world of
-   binary data.
+   Secondary goal is to include some advancements from markup languages
+   like SGML/XML or data representation languages like YAML, JSON
+   [RFC4627] or ASN.1.
 
-   Features like:
+   This should cover capabilities like:
 
     *  Extensibility
 
@@ -151,7 +150,7 @@ Internet-Draft                    XBUP                      <Issue Date>
    Primary focus on abstraction makes this protocol somewhat different
    compare to other similar binary formats which focus on efficiency,
    serialization or binary representation of mark-up language. Please
-   see "formats comparison" section for more.
+   see "Formats comparison" section for more.
 
 1.1.  Objectives
 
@@ -162,6 +161,7 @@ Internet-Draft                    XBUP                      <Issue Date>
     *  Universal - Capable to represent any type of data, suitable for
    persistent and long-term storage and streaming
 
+    *  Independent - Not tightly linked to particular spoken language,
  
 
 
@@ -170,7 +170,6 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 3]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
-    *  Independent - Not tightly linked to particular spoken language,
    product, company, processing architecture or programming language
 
     *  Declarative - Self sufficient for data type definition and
@@ -196,28 +195,29 @@ Internet-Draft                    XBUP                      <Issue Date>
    Byte: Used in the sense of 8-bits binary data value as a synonym for
    "octet".
 
-   Parser:
+   Parser: A software component that takes input data and builds a data
+   structure
 
-   Token:
+   Decoder: A process that analyze input data stream to basic elements
+   structure or sequence utilizing parser
 
-   Stream:
+   Encoder: A process that constructs output data from elements
+   structure or sequence - reverse method to decoder
+
+   Token: Atomic parse element
+
+   Stream: A sequence of data elements made available over time
 
 2.  XBUP Specification
 
-   Protocol is specified bottom up by levels. Each level build on top of
-   previous level adding new features and limitations.
+   Specification of the protocol is split into separate levels. Each
+   level builds on top of previous level adding new features and/or
+   limitations.
+
+   Applications can also support particular level only including all
+   lower levels when full support is not necessary.
 
 2.1. Level 0: Tree Structure
-
-   Lowest protocol's level defines basic tree structure using two
-   primitive types.
-
-     * Binary blob (sequence of bytes)  * Natural non-negative integer
-   number
-
-   See complete [[en:doc:protocol:tree_structure|specification of tree
-   structure]].
-
  
 
 
@@ -226,54 +226,54 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 4]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
+   Lowest protocol's level defines basic tree structure using two
+   primitive types.
+
+     * Attribute - Value encoded using UBNumber encoding
+
+     * Blob - Sequence of bits (bytes) with unspecified length or length
+   specified by some attribute
+
 2.1.1. UBNumber Encoding
 
-   UBNumber is encoding used for representation of instance of countable
-   infinite set stored as one or more bytes (similar to UTF-8
-   encoding).
+   UBNumber is encoding which combines unary and binary encoding to
+   represent values with dynamic length. It is typically representing
+   natural non-negative integer number or value of any other type with
+   mapping to countable set.
 
-   First, non-zero bits are counted for length and then rest of bits is
-   used as value while value is also incremented so that there is only
-   one code for each number.
+   Encoding is similar to UTF-8, except that UBNumber is applied
+   recursively when unary part reaches all bits of byte.
 
-   Most native encoding using UBNumber is UBNatural for representation
-   of a natural non-negative integer number.
+   To decode value, non-zero bits are counted for length up to 8 bits
+   and then rest of bits is used as value while value is also shifted so
+   that there is only one code for each number.
 
-   //Examples of the UBNatural codes (sequence of bits = represented
-   value)://
+   Examples of the UBNatural - codes sequence of bits = value
+   represented value in basic natural non-negative integer number:
 
-   00000000                                     = 0
-   00000001                                     = 1
-   00000010                                     = 2
-   00000011                                     = 3
-   01111111                                     = 7Fh = 127
-   10000000 00000000                    = 80h = 128
-   10000000 00000001                    = 81h = 129
-   10111111 11111111                    = 407Fh = 16511
-   11000000 00000000 00000000   = 4080h = 16512
+     0 0000000                                         = 0
+     0 0000001                                         = 1
+     0 0000010                                         = 2
+     0 0000011                                         = 3
+     ...
+     0 1111111                                         = 7Fh = 127
+     10 000000 | 00000000                      = 80h = 128
+     10 000000 | 00000001                      = 81h = 129
+     ...
+     10 111111 | 11111111                      = 407Fh = 16511
+     110 00000 | 00000000 | 00000000   = 4080h = 16512
+     ...
 
-   Various interpretations can be mapped on UBNumber encoding. For this
-   level there are defined two:
+   Various interpretations can be mapped on UBNumber encoding. For level
+   0 following two are used:
 
-     * UBNatural encoding using directly value from UBNumber
+     * UBNatural encoding using directly value from UBNumber basic
+   mapping
 
      * UBENatural where value 7Fh is reserved for infinity constant and
    higher values are shifted by one
 
 2.1.2. Document
-
-   Document starts with 6 bytes long blob called "Document Header"
-   followed by a single block called "Root Block" and optional blob
-   called "Extended Area".
-
-   Header for current version of protocol is (hexadecimal):
-
-   <code> FE 00 58 42 00 02 </code>
-
-2.1.3. Block
-
-   Each block starts with single value:
-
  
 
 
@@ -282,54 +282,54 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 5]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
+   For version 0.2 of the document starts with fixed 6 bytes long blob
+   called "Document Header" followed by a single block called "Root
+   Block" and any data after root block are optional blob called "Tail
+   Data".
+
+   Header for current version of protocol with hexadecimal codes.
+   Explanation of the each value is non-conformant, primary use is
+   padding to help systems which uses begining of file for
+   identification of file type.
+
+     +-------------------------------------------+
+     | FE | Unary encoded size of cluster (byte) |
+     | 00 | Reserved for future versions         |
+     | 58 | Ascii constant 'X'                   |
+     | 42 | Ascii constant 'B'                   |
+     | 00 | UBNatural encoded major version      |
+     | 02 | UBNatural encoded minor version      |
+     +-------------------------------------------+
+
+   If it is known information, it is possible to omit header.
+
+2.1.3. Block
+
+   There are 3 kinds of blocks: Node Block, Data Block and Terminator
+
+   Each block starts with single attribute:
+
      UBNatural attributePartSize
 
-   If **attributePartSize = 0** then this block is called "Terminator"
-   and block ends. Otherwise it is followed by value:
+   If attributePartSize equals 0 then this block is called "Terminator"
+   and block ends.
+
+   Otherwise it is followed by blob of the length specified by
+   attributePartSize in bytes. Data in attribute part are interpreted as
+   a sequence of attributes encoded in UBNumber encoding.
+
+   First attribute in attribute part represents value:
 
      UBENatural dataPartSize
 
-   If **attributePartSize = count of bytes used by dataPartSize** then
-   this block is called "Data Block" and binary blob follows which has
-   length in bytes specified by dataPartSize value and block ends.
+   If dataPartSize value fills exactly whole attribute part then this
+   block is called "Data Block".
 
-   If **attributePartSize > count of bytes used by dataPartSize** then
-   this block is called "Node Block" and a sequence of attributes
-   follows until **sum of count of bytes used by attributes =
-   attributePartSize - count of bytes used by dataPartSize**.
-
-     UBNumber attribute
-
-   After attributes, sequence of blocks follows until **sum of block
-   sizes = dataPartSize** and block ends.
-
-   If **dataPartSize = infinity** for data block then binary blob is
-   ended by a sequence of two zero bytes. A sequence of two bytes where
-   first is zero followed by a non zero byte is considered a sequence of
-   nonstoping zero bytes. The non zero byte defines the length of the
-   sequence.
-
-   If **dataPartSize = infinity** for node block then sequence of data
-   blocks is ended by the terminator.
-
-   //See following picture for clarification:// {{
-   en:doc:protocol:images:block_structure.png?400 |Block Structure}}
-
-2.2. Level 1: Block Types
-
-   Level 1 introduces block types and catalog. For this level all non-
-   listed attributes in node blocks are considered zero.
-
-   See complete [[en:doc:protocol:block_types|specification of block
-   types]].
-
-2.2.1. Block Type
-
-   First two attributes in node block are interpreted as follows:
-
-     UBNatural - TypeGroup
-
-     UBNatural - BlockType
+   Binary blob called data part follows after attribute part and has
+   length in bytes specified by dataPartSize value or if dataPartSize
+   equals infinity bytes in data part are processed and when byte with
+   value zero is used as escape code and, following byte represents how
+   many bytes of zero it represents or end of the data part if it equals
  
 
 
@@ -338,25 +338,132 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 6]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
-   Blocks types are organized into **Groups**. Type group with value 0
-   is called **Basic Group** and it's meaning is build-in and defined in
-   the protocol itself.
+   zero as well.
+
+   If dataPartSize value fills only part of the attribute part then this
+   block is called "Node Block".
+
+   Binary blob called data part follows after attribute part. Data in
+   data part are interpreted as a sequence of (child) blocks.
+
+   Data part has length in bytes specified by dataPartSize value or if
+   dataPartSize equals infinity, sequence of blocks must be terminated
+   by terminator block.
+
+   After data part block ends.
+
+     +---------------------------------------+
+     | == First block's attribute ========== |
+     |                                       |
+     | UBNatural attributePartSize           |
+     +---------------------------------------+
+     | == Attribute part (optional) ======== |
+     |                                       |
+     | UBENatural dataPartSize               |
+     | UBNumber attribute 1                  |
+     | ...                                   |
+     | UBNumber attribute n                  |
+     +---------------------------------------+
+     | == Data part (optional) ============= |
+     |                                       |
+     | Binary data or child blocks           |
+     +---------------------------------------+
+
+   See block examples for better understanding.
+
+2.1.4. Processing
+
+   To process level 0 protocol following 4 types of tokens are used:
+
+     * begin (terminationMode flag)
+
+     * attribute (UBNumber value)
+
+     * data (Binary data)
+
+     * end
+
+   Following simplified grammar can be used for token processing.
+
+   Document ::= header + Block + data
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 7]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
+   Block ::= begin + Attributes + Blocks + end | begin + data + end
+   Blocks ::= Block + Blocks | epsilon
+   Attributes ::= attribute + Attributes | epsilon
+
+   2.1.5. Validity
+
+   Binary stream is structured correctly as XBUP document (well-formed)
+   if the following conditions are met. Description of invalid state is
+   also included for each condition.
+
+     * Optional: Stream header must be present (Corrupted or missing
+   header)
+
+     * Optional: Header version must be in supported range (Unsupported
+   header)
+
+     * In each block the end of last attribute corresponds to the end of
+   the attribute part (Attribute Overflow)
+
+     * In each block the end of last subblock corresponds to the end of
+   the data block part (Block Overflow)
+
+     * The terminal block is present only in blocks where it belongs to
+   (Unexpected Terminator)
+
+     * End of file is after the end of the root block (Unexpected End)
+
+2.2. Level 1: Block Types
+
+   Level 1 introduces block types and catalog of types. Since this
+   level, if attribute is defined, but not present, it's value is
+   considered as zero as in the form of UBNumber encoding.
+
+2.2.1. Block Type
+
+   First two attributes in node block are interpreted as follows:
+
+     UBNatural - TypeGroup
+
+     UBNatural - BlockType
+
+   Blocks types are organized into groups. Basic group is group with
+   value 0 and it's meaning is build-in and defined in the protocol
+   itself. Basic blocks provides ability to store block type
+   declarations, definitions and links to catalog.
 
    TypeGroup value specifies to which group each block belongs.
    BlockType value specifies particular block in the corresponding group
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 8]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
    where meaning of single groups and block types is defined in document
    using basic blocks.
 
-2.2.2. Basic Group
+   This approach should provide similar capability to XML Namespaces.
 
-   Basic group uses TypeGroup = 0. Basic blocks provides ability to
-   store block type declarations, definitions and links to catalog.
+2.2.2. Block Definition
 
-2.2.3. Undefined
+
+2.2.3. Basic Blocks Definition
+
+     * Unknown (0)
 
    This block is used for unknown block types or data padding.
 
-   //Block: Basic (0) / Unknown (0)//
 
 3. Todo
 
@@ -378,6 +485,67 @@ Internet-Draft                    XBUP                      <Issue Date>
 
    C:\dir\subdir\file.ext  Shows inclusion of backslash "\".
 
+3.1. Examples of Blocks
+
+     * Fixed size Node block with one attribute
+
+   +------------------------+
+   | 02 | AttributePartSize |
+   | 00 | DataPartSize      |
+   | 00 | Attribute 1       |
+   +------------------------+
+
+     * Terminated node block with one attribute
+
+   +------------------------+
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 9]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
+   | 02 | AttributePartSize |
+   | 7F | DataPartSize      |
+   | 05 | Attribute 1       |
+   | 00 | Terminator
+   +------------------------+
+
+     * Fixed size empty data block
+
+   +------------------------+
+   | 01 | AttributePartSize |
+   | 00 | DataPartSize      |
+   +------------------------+
+
+     * Terminated empty data block
+
+   +---------------------------+
+   | 01 | AttributePartSize    |
+   | 7F | DataPartSize         |
+   | 00 | Data block escape    |
+   | 00 | Termination value    |
+   +---------------------------+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -389,28 +557,28 @@ Internet-Draft                    XBUP                      <Issue Date>
  
 
 
-Miroslav Hajda           Expires <Expiry Date>                  [Page 7]
+Miroslav Hajda           Expires <Expiry Date>                 [Page 10]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
 
-3. Security Considerations
+4. Security Considerations
 
    <Security considerations text>
 
 
-4. IANA Considerations
+5. IANA Considerations
 
 
    <IANA considerations text>
 
 
-5. References
+6. References
 
-5.1.  Normative References
+6.1.  Normative References
 
 
-5.2.  Informative References
+6.2.  Informative References
 
 
 
@@ -445,4 +613,4 @@ Authors' Addresses
 
 
 
-Miroslav Hajda           Expires <Expiry Date>                  [Page 8]
+Miroslav Hajda           Expires <Expiry Date>                 [Page 11]
