@@ -90,13 +90,14 @@ Table of Contents
        2.1.1. UBNumber Encoding . . . . . . . . . . . . . . . . . . .  5
        2.1.2. Document  . . . . . . . . . . . . . . . . . . . . . . .  5
        2.1.3. Block . . . . . . . . . . . . . . . . . . . . . . . . .  6
-       2.1.4. Processing  . . . . . . . . . . . . . . . . . . . . . .  7
+       2.1.4. Validity  . . . . . . . . . . . . . . . . . . . . . . .  7
      2.2. Level 1: Block Types  . . . . . . . . . . . . . . . . . . .  8
        2.2.1. Block Type  . . . . . . . . . . . . . . . . . . . . . .  8
-       2.2.2. Block Definition  . . . . . . . . . . . . . . . . . . .  9
+       2.2.2. Block Type Definition . . . . . . . . . . . . . . . . .  8
        2.2.3. Basic Blocks Definition . . . . . . . . . . . . . . . .  9
    3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  9
      3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . .  9
+     3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 10
    4. Security Considerations . . . . . . . . . . . . . . . . . . . . 11
    5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 11
    6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 11
@@ -293,28 +294,7 @@ After data part block ends.
 See block examples for better understanding.
 
 .ti 0
-2.1.4. Processing
-
-To process level 0 protocol following 4 types of tokens are used:
-
-  * begin (terminationMode flag)
-
-  * attribute (UBNumber value)
-
-  * data (Binary data)
-
-  * end
-
-Following simplified grammar can be used for token processing.
-
-.nf
-Document ::= header + Block + data
-Block ::= begin + Attributes + Blocks + end | begin + data + end
-Blocks ::= Block + Blocks | epsilon
-Attributes ::= attribute + Attributes | epsilon
-.fi
-
-2.1.5. Validity
+2.1.4. Validity
 
 Binary stream is structured correctly as XBUP document (well-formed) if the following conditions are met. Description of invalid state is also included for each condition.
 
@@ -338,28 +318,43 @@ Level 1 introduces block types and catalog of types. Since this level, if attrib
 .ti 0
 2.2.1. Block Type
 
-First two attributes in node block are interpreted as follows:
+First two attributes in node block are interpreted as follows (somewhat similar to XML Namespaces):
 
   UBNatural - TypeGroup
 
   UBNatural - BlockType
 
-Blocks types are organized into groups. Basic group is group with value 0 and it's meaning is build-in and defined in the protocol itself. Basic blocks provides ability to store block type declarations, definitions and links to catalog.
+These two values determines blocks type.
 
-TypeGroup value specifies to which group each block belongs. BlockType value specifies particular block in the corresponding group where meaning of single groups and block types is defined in document using basic blocks.
+Block types are organized into groups where TypeGroup value specifies to which group block type belongs and BlockType value specifies particular block type in the corresponding group.
 
-This approach should provide similar capability to XML Namespaces.
+TypeGroup with value 0 is basic build-in group and cannot be overridden. Basic blocks provides ability to specify meaning of other groups via block type declarations, definitions or links to catalog or external source.
 
 .ti 0
-2.2.2. Block Definition
+2.2.2. Block Type Definition
 
+Block type is defined as a sequence of block types.
+
+Each block type can be represented with one of the operations:
+
+  * Join
+
+  * Merge
+
+  * List Joint
+
+  * List Merge
+
+  *
 
 .ti 0
 2.2.3. Basic Blocks Definition
 
-  * Unknown (0)
+  * Undefined (0)
 
-This block is used for unknown block types or data padding.
+This block is used for undefined block types or data padding.
+
+  * Document Declaration (1)
 
 
 .ti 0
@@ -438,6 +433,27 @@ C:\\dir\\subdir\\file.ext  Shows inclusion of backslash "\\".
 +---------------------------+
 .fi
 
+.ti 0
+3.1. Appendix 1: Parsing
+
+To process level 0 protocol following 4 types of tokens are used:
+
+  * begin (terminationMode flag)
+
+  * attribute (UBNumber value)
+
+  * data (Binary data)
+
+  * end
+
+Following simplified grammar can be used for token processing.
+
+.nf
+Document ::= header + Block + data
+Block ::= begin + Attributes + Blocks + end | begin + data + end
+Blocks ::= Block + Blocks | epsilon
+Attributes ::= attribute + Attributes | epsilon
+.fi
 
 .bp
 .ti 0
