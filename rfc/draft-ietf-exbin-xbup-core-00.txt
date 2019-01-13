@@ -91,14 +91,14 @@ Table of Contents
        2.2.2. Block Type Definition . . . . . . . . . . . . . . . . .  8
        2.2.3. Basic Blocks Definition . . . . . . . . . . . . . . . .  9
    3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  9
-     3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . .  9
+     3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . . 10
      3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 10
-   4. Security Considerations . . . . . . . . . . . . . . . . . . . . 11
-   5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 11
-   6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 11
-     6.1.  Normative References . . . . . . . . . . . . . . . . . . . 11
-     6.2.  Informative References . . . . . . . . . . . . . . . . . . 11
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 11
+   4. Security Considerations . . . . . . . . . . . . . . . . . . . . 12
+   5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 12
+   6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+     6.1.  Normative References . . . . . . . . . . . . . . . . . . . 12
+     6.2.  Informative References . . . . . . . . . . . . . . . . . . 12
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 12
 
 
 
@@ -414,7 +414,6 @@ Internet-Draft                    XBUP                      <Issue Date>
    (somewhat similar to XML Namespaces):
 
      UBNatural - TypeGroup
-
      UBNatural - BlockType
 
    These two values determines blocks type.
@@ -430,17 +429,18 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 2.2.2. Block Type Definition
 
-   Block type is defined as a sequence of block types.
+   Block type is defined as a sequence of operations over build-in or
+   defined types. There are singular and list variants of 4 operations.
 
-   Each block type can be represented with one of the operations:
+   Each block type can be represented with one of eight of the following
+   operations:
 
-     * Join
+     * Single block - Appends single child block of any type.
 
-     * Merge
+     * Single attribute - Appends single attribute of any type.
 
-     * List Joint
-
-     * List Merge
+     * Consist of definition - Appends single child block of defined
+   type (as a component/element).
 
  
 
@@ -450,7 +450,34 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 8]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
-     *
+     * Append definition - Appends all attributes and all child blocks
+   of defined type.
+
+     * List of any blocks - Appends single attribute of type UBENatural
+   to define count of blocks of any type and child blocks of that count.
+   When count equals infinity, list of blocks ends with empty block.
+
+     * List of attributes - Appends single attribute of type UBNatural
+   to define count of attributes of any type and attributes of that
+   count.
+
+     * List of consist of definitions - Appends single attribute of type
+   UBENatural to define count of blocks of defined type and child blocks
+   of that count. When count equals infinity, list of blocks ends with
+   empty block.
+
+     * List of appended definitions - Appends single attribute of type
+   UBNatural to define count of blocks of defined type and appends all
+   attributes and all child blocks of defined type of that count.
+
+   To simplify syntax, currently following shortcuts are used:
+
+   any - Single block
+   attribute - Single attribute
+   block_type_name - Consist of definition
+   +block_type_name - Append definition
+
+   List variants of the operations ends with brackets "[]".
 
 2.2.3. Basic Blocks Definition
 
@@ -469,6 +496,14 @@ Internet-Draft                    XBUP                      <Issue Date>
         line 1
         line 2
       }
+
+
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 9]
+
+Internet-Draft                    XBUP                      <Issue Date>
 
 
    Special characters examples:
@@ -498,14 +533,6 @@ Internet-Draft                    XBUP                      <Issue Date>
    | 7F | DataPartSize      |
    | 05 | Attribute 1       |
    | 00 | Terminator
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                  [Page 9]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
-
    +------------------------+
 
      * Fixed size empty data block
@@ -527,6 +554,13 @@ Internet-Draft                    XBUP                      <Issue Date>
 3.1. Appendix 1: Parsing
 
    To process level 0 protocol following 4 types of tokens are used:
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                 [Page 10]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
 
      * begin (terminationMode flag)
 
@@ -554,10 +588,32 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
 
 
-Miroslav Hajda           Expires <Expiry Date>                 [Page 10]
+Miroslav Hajda           Expires <Expiry Date>                 [Page 11]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
@@ -613,4 +669,4 @@ Authors' Addresses
 
 
 
-Miroslav Hajda           Expires <Expiry Date>                 [Page 11]
+Miroslav Hajda           Expires <Expiry Date>                 [Page 12]
