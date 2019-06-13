@@ -17,7 +17,7 @@
 
 .nf
 .tl 'Internet-Draft'XBUP'Miroslav Hajda'
-.tl 'Intended Status: Proposed Standard''(ExBin Project)'Block
+.tl 'Intended Status: Proposed Standard''(ExBin Project)'
 .tl 'Expires: <Expiry Date>''<Issue Date>'
 .fi
 
@@ -93,18 +93,20 @@ Table of Contents
        2.1.4. Validity  . . . . . . . . . . . . . . . . . . . . . . .  7
      2.2. Level 1: Block Types  . . . . . . . . . . . . . . . . . . .  8
        2.2.1. Block Type  . . . . . . . . . . . . . . . . . . . . . .  8
-       2.2.2. Block Type Definition . . . . . . . . . . . . . . . . .  8
-       2.2.3. Basic Blocks Definition . . . . . . . . . . . . . . . .  9
-     2.3. Level 2: Transformations  . . . . . . . . . . . . . . . . .  9
-   3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
-     3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . . 10
-     3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 11
-   4. Security Considerations . . . . . . . . . . . . . . . . . . . . 12
-   5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 12
-   6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 12
-     6.1.  Normative References . . . . . . . . . . . . . . . . . . . 12
-     6.2.  Informative References . . . . . . . . . . . . . . . . . . 12
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 12
+       2.2.2. Type Context  . . . . . . . . . . . . . . . . . . . . .  8
+       2.2.3. Block Type Definition . . . . . . . . . . . . . . . . .  9
+       2.2.4. Basic Blocks Definition . . . . . . . . . . . . . . . . 10
+       2.2.4. Main Catalog  . . . . . . . . . . . . . . . . . . . . . 12
+     2.3. Level 2: Transformations  . . . . . . . . . . . . . . . . . 12
+   3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+     3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . . 13
+     3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 13
+   4. Security Considerations . . . . . . . . . . . . . . . . . . . . 15
+   5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 15
+   6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+     6.1.  Normative References . . . . . . . . . . . . . . . . . . . 15
+     6.2.  Informative References . . . . . . . . . . . . . . . . . . 15
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 15
 .fi
 .in 3
 
@@ -186,7 +188,7 @@ Applications can also support XBUP protocol up to particular level only when ful
   | 0 | Tree Structure |
   | 1 | Type System   |
   | 2 | Transformations   |
-  | 3 | Ontologies   |
+  | 3 | Relations   |
   +-------------------------------------------+
 .fi
 
@@ -199,6 +201,8 @@ Lowest protocol's level defines basic tree structure using two primitive types.
 
   * Blob - Sequence of bits (bytes) with unspecified length or length specified by some attribute
 
+Nodes are represented as one or more blocks of bits with child blocks representing child nodes of the tree.
+
 .ti 0
 2.1.1. UBNumber Encoding
 
@@ -206,7 +210,7 @@ UBNumber is encoding which combines unary and binary encoding to represent value
 
 Encoding is similar to UTF-8, except that UBNumber is applied recursively when unary part reaches all bits of byte.
 
-To decode value, non-zero bits are counted for length up to 8 bits and then rest of bits is used as value while value is also shifted so that there is only one code for each number.
+To decode value, non-zero bits are counted for length up to 8 bits and then rest of bits is used as value. Value is also shifted so that there is only one code for each number.
 
 Examples of the UBNatural - codes sequence of bits = value represented value in basic natural non-negative integer number:
 
@@ -225,7 +229,7 @@ Examples of the UBNatural - codes sequence of bits = value represented value in 
 \&  ...
 .fi
 
-Various interpretations can be mapped on UBNumber encoding. For level 0 following two are used:
+Various interpretations can be mapped on UBNumber encoding. For level 0 following two mappings are used:
 
   * UBNatural encoding using directly value from UBNumber basic mapping
 
@@ -236,7 +240,7 @@ Various interpretations can be mapped on UBNumber encoding. For level 0 followin
 
 For version 0.2 of the document starts with fixed 6 bytes long blob called "Document Header" followed by a single block called "Root Block" and any data after root block are optional blob called "Tail Data".
 
-Header for current version of protocol with hexadecimal codes. Explanation of the each value is non-conformant, primary use is padding to help systems which uses begining of file for identification of file type.
+Header for current version of the protocol with hexadecimal codes. Explanation of the each value is non-conformant, primary use is padding to help systems which uses beginning of file for identification of file type.
 
 .nf
   +-------------------------------------------+
@@ -295,11 +299,11 @@ After data part block ends.
   +---------------------------------------+
   | == Data part (optional) ============= |
   |                                       |
-  | Binary data or child blocks           |
+  | Single data blob or child blocks   |
   +---------------------------------------+
 .fi
 
-See block examples for better understanding.
+See [block examples.
 
 .ti 0
 2.1.4. Validity
@@ -308,15 +312,15 @@ Binary stream is structured correctly as XBUP document (well-formed) if the foll
 
   * Optional: Stream header must be present (Corrupted or missing header)
 
-  * Optional: Header version must be in supported range (Unsupported header)
+  * Optional: Header version must be in supported range (Unsupported version)
 
-  * In each block the end of last attribute corresponds to the end of the attribute part (Attribute Overflow)
+  * In each block the end of last attribute corresponds to the end of the attribute part (Attribute overflow)
 
-  * In each block the end of last subblock corresponds to the end of the data block part (Block Overflow)
+  * In each block the end of last subblock corresponds to the end of the data block part (Block overflow)
 
-  * The terminal block is present only in blocks where it belongs to (Unexpected Terminator)
+  * The terminal block is present only in blocks where it belongs to (Unexpected terminator)
 
-  * End of file is after the end of the root block (Unexpected End)
+  * End of file is after the end of the root block (Unexpected end of data)
 
 .ti 0
 2.2. Level 1: Block Types
@@ -339,29 +343,33 @@ Block types are organized into groups where TypeGroup value specifies to which g
 TypeGroup with value 0 is basic build-in group and cannot be overridden. Basic blocks provides ability to specify meaning of other groups via block type declarations, definitions or links to catalog or external source.
 
 .ti 0
-2.2.2. Block Type Definition
+2.2.2. Type Context
 
-Block type is defined as a sequence of operations over build-in or defined types. There are singular and list variants of 4 operations, so 8 operations in total.
+For each block, there is type context which provides mapping of particular block type (as defined above) to particular declaration/definition. Context is typically same for block and it's childer, except for **declaration** blok and it's **formatDeclaration** parameter, which affects context of **documentRoot** block and also incrementally affects group and block definitions which can use block types already defined in currently processed declaration.
 
-Each block type can be represented with one of eight of the following operations:
 
-  * Single block - Appends single child block of any type.
+.ti 0
+2.2.3. Block Type Definition
 
-  * Single attribute - Appends single attribute of any type.
+Block type is defined as a finite sequence of operations where each operation defines one or more attributes and/or child blocks. Operation can define unspecified or refer build-in or previously defined types. There are variants for singular item and list of items, 8 operations in total:
 
-  * Consist of definition - Appends single child block of defined type (as a component/element).
+  * Single block - Single child block of any type.
 
-  * Append definition - Appends all attributes and all child blocks of defined type.
+  * Single attribute - Single attribute of any type.
 
-  * List of any blocks - Appends single attribute of type UBENatural to define count of blocks of any type and child blocks of that count. When count equals infinity, list of blocks ends with empty block.
+  * Consist of definition - Single child block of referred type (as a component/element).
 
-  * List of attributes - Appends single attribute of type UBNatural to define count of attributes of any type and attributes of that count.
+  * Append definition - Appends all attributes and all child blocks of referred type.
 
-  * List of consist of definitions - Appends single attribute of type UBENatural to define count of blocks of defined type and child blocks of that count. When count equals infinity, list of blocks ends with empty block.
+  * List of any blocks - One attribute of type UBENatural to define count of blocks of any type and child blocks of that count. When count equals infinity, list of blocks ends with empty block.
 
-  * List of appended definitions - Appends single attribute of type UBNatural to define count of blocks of defined type and appends all attributes and all child blocks of defined type of that count.
+  * List of attributes - One attribute of type UBNatural to define count of attributes of any type and attributes of that count.
 
-To simplify syntax, currently following shortcuts are used:
+  * List of consist of definitions - One attribute of type UBENatural to define count of blocks of referred type and child blocks of that count. When count equals infinity, list of blocks ends with empty block.
+
+  * List of appended definitions - Appends one attribute of type UBNatural to define count of blocks of defined type and appends all attributes and all child blocks of referred type of that count.
+
+Following syntax is used:
 
 any - Single block
 .br
@@ -374,13 +382,124 @@ block_type_name - Consist of definition
 List variants of the operations ends with brackets "[]".
 
 .ti 0
-2.2.3. Basic Blocks Definition
+2.2.4. Basic Blocks Definition
 
   * Unspecified (0)
 
-This block is used for unspecified block values or data padding.
+This block is used for unspecified block values or data padding. Can be used to represent nil / null values.
 
   * Document Declaration (1)
+
+Declaration block determines the allowed range of groups. This block should be located at the beginning of each file, if the application didn't provide any static/special meaning, but it might be used anywhere inside document as well.
+
+  +Natural groupsCount - The number of allocated groups
+.br
+  +Natural preserveGroups - The number of groups to keep from previous declarations
+.br
+  FormatDeclaration formatDeclaration - Declaration of format
+.br
+  Any documentRoot - Root node of document
+
+For subblocks of this block there is permitted range of values in the interval group preserveGroups + 1 .. preserveGroups + groupsCount + 1. preservedGroups + groupsCount + 1. If the value reserveGroups = 0, takes the highest not yet reserved group in the current or parental blocks + 1. For all values of zero and the application of rules of cutting the block of zeros coincides with the data block.
+
+  * Format Declaration (2)
+
+Format declaration allows you use either declaration from catalog or local format definition or both.
+
+  +CatalogFormatSpecPath catalogFormatSpecPath - Specification of format defined as path in catalog
+.br
+  +Natural formatSpecRevision - Specification's revision number
+.br
+  FormatDefinition formatDefinition
+
+  * Format Definition (3)
+
+This block allows to specify the basic structure of format specification. Specifies the sequence of parameters using either **join** or **consist** operation.
+
+  Any[] formatParameters - Join or Consist format parameters
+.br
+  +RevisionDefinition[] revisions
+
+  * Format Join Parameter (4)
+
+  +FormatDeclaration formatDeclaration
+
+ * Format Consist Parameter (5)
+
+  +GroupDeclaration groupDeclaration
+
+  * Group Declaration (6)
+
+Group declaration allows you use either declaration from catalog or local group definition or both.
+
+  +CatalogGroupSpecPath catalogGroupSpecPath - Specification of format defined as path in catalog
+.br
+  +Natural groupSpecRevision - Specification's revision number
+.br
+  GroupDefinition groupDefinition
+
+  * Group Definition (7)
+
+This block allows to specify the basic structure of group specification. Specifies the sequence of parameters using either **join** or **consist** operation.
+
+  Any[] groupParameters - Join or Consist group parameters
+.br
+  +RevisionDefinition[] revisions
+
+  * Group Join Parameter (8)
+
+  +GroupDeclaration groupDeclaration
+
+  * Group Consist Parameter (9)
+
+  +BlockDeclaration blockDeclaration
+
+  * Group Declaration (10)
+
+Block declaration allows you use either declaration from catalog or local block definition or both.
+
+  +CatalogBlockSpecPath catalogBlockSpecPath - Specification of format defined as path in catalog
+.br
+  +Natural blockSpecRevision - Specification's revision number
+.br
+  BlockDefinition blockDefinition
+
+  * Block Definition (11)
+
+This block allows to specify the basic structure of block specification. Specifies the sequence of parameters using either **join**, **consist**, **list join** or **list consist** operation.
+
+  Any[] blockParameters - Join or Consist or List Join or List Consist block parameters
+.br
+  +RevisionDefinition[] revisions
+
+  * Block Join Parameter (12)
+
+  +BlockDeclaration blockDeclaration
+
+  * Block Consist Parameter (13)
+
+  +BlockDeclaration blockDeclaration
+
+ * Block List Join Parameter (14)
+
+  +BlockDeclaration blockDeclaration
+
+  * Block List Consist Parameter (15)
+
+  +BlockDeclaration blockDeclaration
+
+  * Revision Definition (16)
+
+Block allows to define parameters count for particular specification definition.
+
+  +Natural parametersCount
+
+.ti 0
+2.2.4. Main Catalog
+
+To specify basic data types, catalog of block type definitions is established.
+
+Catalog is structured as a tree of definitions, where each block type has a unique identifier (sequence of natural numbers).
 
 .ti 0
 2.3. Level 2: Transformations

@@ -88,20 +88,20 @@ Table of Contents
        2.1.4. Validity  . . . . . . . . . . . . . . . . . . . . . . .  7
      2.2. Level 1: Block Types  . . . . . . . . . . . . . . . . . . .  8
        2.2.1. Block Type  . . . . . . . . . . . . . . . . . . . . . .  8
-       2.2.2. Block Type Definition . . . . . . . . . . . . . . . . .  8
-       2.2.3. Basic Blocks Definition . . . . . . . . . . . . . . . .  9
-     2.3. Level 2: Transformations  . . . . . . . . . . . . . . . . .  9
-   3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
-     3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . . 10
-     3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 11
-   4. Security Considerations . . . . . . . . . . . . . . . . . . . . 12
-   5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 12
-   6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 12
-     6.1.  Normative References . . . . . . . . . . . . . . . . . . . 12
-     6.2.  Informative References . . . . . . . . . . . . . . . . . . 12
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 12
-
-
+       2.2.2. Type Context  . . . . . . . . . . . . . . . . . . . . .  8
+       2.2.3. Block Type Definition . . . . . . . . . . . . . . . . .  9
+       2.2.4. Basic Blocks Definition . . . . . . . . . . . . . . . . 10
+       2.2.4. Main Catalog  . . . . . . . . . . . . . . . . . . . . . 12
+     2.3. Level 2: Transformations  . . . . . . . . . . . . . . . . . 12
+   3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+     3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . . 13
+     3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 13
+   4. Security Considerations . . . . . . . . . . . . . . . . . . . . 15
+   5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 15
+   6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+     6.1.  Normative References . . . . . . . . . . . . . . . . . . . 15
+     6.2.  Informative References . . . . . . . . . . . . . . . . . . 15
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 15
 
 
 
@@ -228,7 +228,7 @@ Internet-Draft                    XBUP                      <Issue Date>
 
      | 1 | Type System   |
      | 2 | Transformations   |
-     | 3 | Ontologies   |
+     | 3 | Relations   |
      +-------------------------------------------+
 
 2.1. Level 0: Tree Structure
@@ -241,6 +241,9 @@ Internet-Draft                    XBUP                      <Issue Date>
      * Blob - Sequence of bits (bytes) with unspecified length or length
    specified by some attribute
 
+   Nodes are represented as one or more blocks of bits with child blocks
+   representing child nodes of the tree.
+
 2.1.1. UBNumber Encoding
 
    UBNumber is encoding which combines unary and binary encoding to
@@ -252,8 +255,8 @@ Internet-Draft                    XBUP                      <Issue Date>
    recursively when unary part reaches all bits of byte.
 
    To decode value, non-zero bits are counted for length up to 8 bits
-   and then rest of bits is used as value while value is also shifted so
-   that there is only one code for each number.
+   and then rest of bits is used as value. Value is also shifted so that
+   there is only one code for each number.
 
    Examples of the UBNatural - codes sequence of bits = value
    represented value in basic natural non-negative integer number:
@@ -271,9 +274,6 @@ Internet-Draft                    XBUP                      <Issue Date>
      110 00000 | 00000000 | 00000000   = 4080h = 16512
      ...
 
-   Various interpretations can be mapped on UBNumber encoding. For level
-   0 following two are used:
-
  
 
 
@@ -281,6 +281,9 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 5]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
+
+   Various interpretations can be mapped on UBNumber encoding. For level
+   0 following two mappings are used:
 
      * UBNatural encoding using directly value from UBNumber basic
    mapping
@@ -295,9 +298,9 @@ Internet-Draft                    XBUP                      <Issue Date>
    Block" and any data after root block are optional blob called "Tail
    Data".
 
-   Header for current version of protocol with hexadecimal codes.
+   Header for current version of the protocol with hexadecimal codes.
    Explanation of the each value is non-conformant, primary use is
-   padding to help systems which uses begining of file for
+   padding to help systems which uses beginning of file for
    identification of file type.
 
      +-------------------------------------------+
@@ -327,9 +330,6 @@ Internet-Draft                    XBUP                      <Issue Date>
    a sequence of attributes encoded in UBNumber encoding.
 
    First attribute in attribute part represents value:
-
-     UBENatural dataPartSize
-
  
 
 
@@ -337,6 +337,8 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 6]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
+
+     UBENatural dataPartSize
 
    If dataPartSize value fills exactly whole attribute part then this
    block is called "Data Block".
@@ -374,18 +376,16 @@ Internet-Draft                    XBUP                      <Issue Date>
      +---------------------------------------+
      | == Data part (optional) ============= |
      |                                       |
-     | Binary data or child blocks           |
+     | Single data blob or child blocks   |
      +---------------------------------------+
 
-   See block examples for better understanding.
+   See [block examples.
 
 2.1.4. Validity
 
    Binary stream is structured correctly as XBUP document (well-formed)
    if the following conditions are met. Description of invalid state is
    also included for each condition.
-
-     * Optional: Stream header must be present (Corrupted or missing
  
 
 
@@ -394,21 +394,23 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 7]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
+     * Optional: Stream header must be present (Corrupted or missing
    header)
 
      * Optional: Header version must be in supported range (Unsupported
-   header)
+   version)
 
      * In each block the end of last attribute corresponds to the end of
-   the attribute part (Attribute Overflow)
+   the attribute part (Attribute overflow)
 
      * In each block the end of last subblock corresponds to the end of
-   the data block part (Block Overflow)
+   the data block part (Block overflow)
 
      * The terminal block is present only in blocks where it belongs to
-   (Unexpected Terminator)
+   (Unexpected terminator)
 
-     * End of file is after the end of the root block (Unexpected End)
+     * End of file is after the end of the root block (Unexpected end of
+   data)
 
 2.2. Level 1: Block Types
 
@@ -435,13 +437,11 @@ Internet-Draft                    XBUP                      <Issue Date>
    groups via block type declarations, definitions or links to catalog
    or external source.
 
-2.2.2. Block Type Definition
+2.2.2. Type Context
 
-   Block type is defined as a sequence of operations over build-in or
-   defined types. There are singular and list variants of 4 operations,
-   so 8 operations in total.
-
-   Each block type can be represented with one of eight of the following
+   For each block, there is type context which provides mapping of
+   particular block type (as defined above) to particular
+   declaration/definition. Context is typically same for block and it's
  
 
 
@@ -450,53 +450,53 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 8]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
-   operations:
+   childer, except for **declaration** blok and it's
+   **formatDeclaration** parameter, which affects context of
+   **documentRoot** block and also incrementally affects group and block
+   definitions which can use block types already defined in currently
+   processed declaration.
 
-     * Single block - Appends single child block of any type.
 
-     * Single attribute - Appends single attribute of any type.
+2.2.3. Block Type Definition
 
-     * Consist of definition - Appends single child block of defined
-   type (as a component/element).
+   Block type is defined as a finite sequence of operations where each
+   operation defines one or more attributes and/or child blocks.
+   Operation can define unspecified or refer build-in or previously
+   defined types. There are variants for singular item and list of
+   items, 8 operations in total:
+
+     * Single block - Single child block of any type.
+
+     * Single attribute - Single attribute of any type.
+
+     * Consist of definition - Single child block of referred type (as a
+   component/element).
 
      * Append definition - Appends all attributes and all child blocks
-   of defined type.
+   of referred type.
 
-     * List of any blocks - Appends single attribute of type UBENatural
-   to define count of blocks of any type and child blocks of that count.
-   When count equals infinity, list of blocks ends with empty block.
+     * List of any blocks - One attribute of type UBENatural to define
+   count of blocks of any type and child blocks of that count. When
+   count equals infinity, list of blocks ends with empty block.
 
-     * List of attributes - Appends single attribute of type UBNatural
-   to define count of attributes of any type and attributes of that
-   count.
+     * List of attributes - One attribute of type UBNatural to define
+   count of attributes of any type and attributes of that count.
 
-     * List of consist of definitions - Appends single attribute of type
-   UBENatural to define count of blocks of defined type and child blocks
-   of that count. When count equals infinity, list of blocks ends with
-   empty block.
+     * List of consist of definitions - One attribute of type UBENatural
+   to define count of blocks of referred type and child blocks of that
+   count. When count equals infinity, list of blocks ends with empty
+   block.
 
-     * List of appended definitions - Appends single attribute of type
+     * List of appended definitions - Appends one attribute of type
    UBNatural to define count of blocks of defined type and appends all
-   attributes and all child blocks of defined type of that count.
+   attributes and all child blocks of referred type of that count.
 
-   To simplify syntax, currently following shortcuts are used:
+   Following syntax is used:
 
    any - Single block
    attribute - Single attribute
    block_type_name - Consist of definition
    +block_type_name - Append definition
-
-   List variants of the operations ends with brackets "[]".
-
-2.2.3. Basic Blocks Definition
-
-     * Unspecified (0)
-
-   This block is used for unspecified block values or data padding.
-
-     * Document Declaration (1)
-
-2.3. Level 2: Transformations
 
  
 
@@ -506,6 +506,158 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 9]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
+   List variants of the operations ends with brackets "[]".
+
+2.2.4. Basic Blocks Definition
+
+     * Unspecified (0)
+
+   This block is used for unspecified block values or data padding. Can
+   be used to represent nil / null values.
+
+     * Document Declaration (1)
+
+   Declaration block determines the allowed range of groups. This block
+   should be located at the beginning of each file, if the application
+   didn't provide any static/special meaning, but it might be used
+   anywhere inside document as well.
+
+     +Natural groupsCount - The number of allocated groups
+     +Natural preserveGroups - The number of groups to keep from
+   previous declarations
+     FormatDeclaration formatDeclaration - Declaration of format
+     Any documentRoot - Root node of document
+
+   For subblocks of this block there is permitted range of values in the
+   interval group preserveGroups + 1 .. preserveGroups + groupsCount +
+   1. preservedGroups + groupsCount + 1. If the value reserveGroups = 0,
+   takes the highest not yet reserved group in the current or parental
+   blocks + 1. For all values of zero and the application of rules of
+   cutting the block of zeros coincides with the data block.
+
+     * Format Declaration (2)
+
+   Format declaration allows you use either declaration from catalog or
+   local format definition or both.
+
+     +CatalogFormatSpecPath catalogFormatSpecPath - Specification of
+   format defined as path in catalog
+     +Natural formatSpecRevision - Specification's revision number
+     FormatDefinition formatDefinition
+
+     * Format Definition (3)
+
+   This block allows to specify the basic structure of format
+   specification. Specifies the sequence of parameters using either
+   **join** or **consist** operation.
+
+     Any[] formatParameters - Join or Consist format parameters
+     +RevisionDefinition[] revisions
+
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                 [Page 10]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
+     * Format Join Parameter (4)
+
+     +FormatDeclaration formatDeclaration
+
+    * Format Consist Parameter (5)
+
+     +GroupDeclaration groupDeclaration
+
+     * Group Declaration (6)
+
+   Group declaration allows you use either declaration from catalog or
+   local group definition or both.
+
+     +CatalogGroupSpecPath catalogGroupSpecPath - Specification of
+   format defined as path in catalog
+     +Natural groupSpecRevision - Specification's revision number
+     GroupDefinition groupDefinition
+
+     * Group Definition (7)
+
+   This block allows to specify the basic structure of group
+   specification. Specifies the sequence of parameters using either
+   **join** or **consist** operation.
+
+     Any[] groupParameters - Join or Consist group parameters
+     +RevisionDefinition[] revisions
+
+     * Group Join Parameter (8)
+
+     +GroupDeclaration groupDeclaration
+
+     * Group Consist Parameter (9)
+
+     +BlockDeclaration blockDeclaration
+
+     * Group Declaration (10)
+
+   Block declaration allows you use either declaration from catalog or
+   local block definition or both.
+
+     +CatalogBlockSpecPath catalogBlockSpecPath - Specification of
+   format defined as path in catalog
+     +Natural blockSpecRevision - Specification's revision number
+     BlockDefinition blockDefinition
+
+     * Block Definition (11)
+
+   This block allows to specify the basic structure of block
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                 [Page 11]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
+   specification. Specifies the sequence of parameters using either
+   **join**, **consist**, **list join** or **list consist** operation.
+
+     Any[] blockParameters - Join or Consist or List Join or List
+   Consist block parameters
+     +RevisionDefinition[] revisions
+
+     * Block Join Parameter (12)
+
+     +BlockDeclaration blockDeclaration
+
+     * Block Consist Parameter (13)
+
+     +BlockDeclaration blockDeclaration
+
+    * Block List Join Parameter (14)
+
+     +BlockDeclaration blockDeclaration
+
+     * Block List Consist Parameter (15)
+
+     +BlockDeclaration blockDeclaration
+
+     * Revision Definition (16)
+
+   Block allows to define parameters count for particular specification
+   definition.
+
+     +Natural parametersCount
+
+2.2.4. Main Catalog
+
+   To specify basic data types, catalog of block type definitions is
+   established.
+
+   Catalog is structured as a tree of definitions, where each block type
+   has a unique identifier (sequence of natural numbers).
+
+2.3. Level 2: Transformations
+
 3. Todo
 
    <Document text>
@@ -514,6 +666,12 @@ Internet-Draft                    XBUP                      <Issue Date>
         line 1
         line 2
       }
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                 [Page 12]
+
+Internet-Draft                    XBUP                      <Issue Date>
 
 
    Special characters examples:
@@ -554,14 +712,6 @@ Internet-Draft                    XBUP                      <Issue Date>
 
      * Terminated empty data block
 
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                 [Page 10]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
-
    +---------------------------+
    | 01 | AttributePartSize    |
    | 7F | DataPartSize         |
@@ -572,6 +722,13 @@ Internet-Draft                    XBUP                      <Issue Date>
 3.1. Appendix 1: Parsing
 
    To process level 0 protocol following 4 types of tokens are used:
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                 [Page 13]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
 
      * begin (terminationMode flag)
 
@@ -610,10 +767,21 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
  
 
 
-Miroslav Hajda           Expires <Expiry Date>                 [Page 11]
+Miroslav Hajda           Expires <Expiry Date>                 [Page 14]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
@@ -669,4 +837,4 @@ Authors' Addresses
 
 
 
-Miroslav Hajda           Expires <Expiry Date>                 [Page 12]
+Miroslav Hajda           Expires <Expiry Date>                 [Page 15]
