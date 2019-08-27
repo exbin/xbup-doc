@@ -13,9 +13,9 @@ Expires: <Expiry Date>                                      <Issue Date>
 
 Abstract
 
-   The Extensible Binary Universal Protocol (XBUP) is a general purpose
-   binary data protocol and file format with primary focus on data
-   abstraction and transformation.
+   The Extensible Binary Universal Protocol (XBUP) is a prototype of
+   general purpose binary data protocol and file format with primary
+   focus on data abstraction and transformation.
 
    This documentation describes specification of bottom levels of
    protocol and set of basic data types and recommended API.
@@ -26,7 +26,7 @@ Contributing
    gather comments and raise interest in this project.
 
    To participate on the development of this project, visit
-   https://xbup.exbin.org/?development
+   https://xbup.exbin.org/?contribute
 
 Status of this Memo
 
@@ -85,17 +85,17 @@ Table of Contents
        2.1.1. UBNumber Encoding . . . . . . . . . . . . . . . . . . .  5
        2.1.2. Document  . . . . . . . . . . . . . . . . . . . . . . .  6
        2.1.3. Block . . . . . . . . . . . . . . . . . . . . . . . . .  6
-       2.1.4. Validity  . . . . . . . . . . . . . . . . . . . . . . .  7
+       2.1.4. Validity  . . . . . . . . . . . . . . . . . . . . . . .  8
      2.2. Level 1: Block Types  . . . . . . . . . . . . . . . . . . .  8
        2.2.1. Block Type  . . . . . . . . . . . . . . . . . . . . . .  8
-       2.2.2. Type Context  . . . . . . . . . . . . . . . . . . . . .  8
+       2.2.2. Type Context  . . . . . . . . . . . . . . . . . . . . .  9
        2.2.3. Block Type Definition . . . . . . . . . . . . . . . . .  9
        2.2.4. Basic Blocks Definition . . . . . . . . . . . . . . . . 10
        2.2.4. Main Catalog  . . . . . . . . . . . . . . . . . . . . . 12
      2.3. Level 2: Transformations  . . . . . . . . . . . . . . . . . 12
    3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
      3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . . 13
-     3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 13
+     3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 14
    4. Security Considerations . . . . . . . . . . . . . . . . . . . . 15
    5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 15
    6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 15
@@ -116,44 +116,45 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 1  Introduction
 
-   The Extensible Binary Universal Protocol (XBUP) is a general purpose
-   multi-layer binary data protocol and file format with primary focus
-   on abstraction and data transformation.
+   The Extensible Binary Universal Protocol (XBUP) is a prototype of
+   general purpose multi-layer binary data protocol and file format with
+   primary focus on abstraction and data transformation.
 
    Key features:
 
     *  Unified block-tree structure - Minimalist tree structure based on
    integer and blob only
 
-    *  Build-in and custom data types - Data type definitions and
-   catalog of types
+    *  Build-in and custom data types - Support for data type
+   definitions and catalog of types
 
     *  Transformation framework - Automatic and manual data conversions
    and compatibility handling
 
-   Secondary features includes some capabilities inspired from markup
+   Secondary features includes some capabilities inspired by markup
    languages like SGML/XML and data representation languages like YAML,
-   JSON [RFC4627] and similar binary formats like ASN.1 or HDF5.
+   JSON [RFC4627] and similar binary formats like ASN.1, HDF5 and
+   efficient XML.
 
     *  Extensibility
 
     *  Unconstrained values
 
-    *  Linking
+    *  Internal and external links / data pointers
 
     *  Namespaces
 
-    *  Data evolution
+    *  Data life-cycle / definition evolution
 
    Primary focus on abstraction makes this protocol somewhat different
-   compare to other similar binary formats which focus more on
+   as compared with other similar binary formats which focus on
    efficiency, serialization or binary representation of specific mark-
    up language. Please see "Formats comparison" section for more.
 
 1.1.  Objectives
 
    The primary goal of this project is to create a communication
-   protocol/data format with the following characteristics, ordered by
+   protocol / data format with the following characteristics, ordered by
    priority:
 
     *  Universal - Capable to represent any type of data, suitable for
@@ -161,7 +162,6 @@ Internet-Draft                    XBUP                      <Issue Date>
 
     *  Independent - Not tightly linked to particular spoken language,
    product, company, processing architecture or programming language
-
  
 
 
@@ -171,7 +171,7 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 
     *  Declarative - Self sufficient for data type definition and
-   ability to build data types on top of each other and link them
+   ability to build data types on top of each other and combine them
    together
 
     *  Normative - Providing reference form for data representation
@@ -213,10 +213,10 @@ Internet-Draft                    XBUP                      <Issue Date>
    constraints). Layers are indexed as levels by depth starting with
    level 0.
 
-   Applications can also support XBUP protocol up to particular level
-   only when full support is not necessary.
+   Applications can support only specific level of XBUP protocol when
+   full support is not necessary.
 
-     +-------------------------------------------+
+     +---+---------------------------------------+
      | 0 | Tree Structure |
  
 
@@ -229,7 +229,7 @@ Internet-Draft                    XBUP                      <Issue Date>
      | 1 | Type System   |
      | 2 | Transformations   |
      | 3 | Relations   |
-     +-------------------------------------------+
+     +---+---------------------------------------+
 
 2.1. Level 0: Tree Structure
 
@@ -249,10 +249,10 @@ Internet-Draft                    XBUP                      <Issue Date>
    UBNumber is encoding which combines unary and binary encoding to
    represent values with dynamic length. It is typically representing
    natural non-negative integer number or value of any other type with
-   mapping to countable set.
+   deterministic mapping to countable set.
 
    Encoding is similar to UTF-8, except that UBNumber is applied
-   recursively when unary part reaches all bits of byte.
+   recursively when unary part fills all bits of the first byte.
 
    To decode value, non-zero bits are counted for length up to 8 bits
    and then rest of bits is used as value. Value is also shifted so that
@@ -293,26 +293,30 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 2.1.2. Document
 
-   For version 0.2 of the document starts with fixed 6 bytes long blob
-   called "Document Header" followed by a single block called "Root
-   Block" and any data after root block are optional blob called "Tail
-   Data".
+   For storing data in file to passing thru file, information about
+   protocol version shall be included.
+
+   For version 0.2 of the document, data should start with fixed 6 bytes
+   long data blob called "Document Header" followed by a single block
+   called "Root Block" and any data after root block are optional blob
+   called "Tail Data".
 
    Header for current version of the protocol with hexadecimal codes.
    Explanation of the each value is non-conformant, primary use is
    padding to help systems which uses beginning of file for
    identification of file type.
 
-     +-------------------------------------------+
+     +----+--------------------------------------+
      | FE | Unary encoded size of cluster (byte) |
      | 00 | Reserved for future versions         |
      | 58 | Ascii constant 'X'                   |
      | 42 | Ascii constant 'B'                   |
      | 00 | UBNatural encoded major version      |
      | 02 | UBNatural encoded minor version      |
-     +-------------------------------------------+
+     +----+--------------------------------------+
 
-   If it is known information, it is possible to omit header.
+   If header information is known thru the communication channel,
+   document header can be omitted.
 
 2.1.3. Block
 
@@ -326,10 +330,6 @@ Internet-Draft                    XBUP                      <Issue Date>
    and block ends.
 
    Otherwise it is followed by blob of the length specified by
-   attributePartSize in bytes. Data in attribute part are interpreted as
-   a sequence of attributes encoded in UBNumber encoding.
-
-   First attribute in attribute part represents value:
  
 
 
@@ -337,6 +337,11 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 6]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
+
+   attributePartSize in bytes. Data in attribute part are interpreted as
+   a sequence of attributes encoded in UBNumber encoding.
+
+   First attribute in attribute part represents value:
 
      UBENatural dataPartSize
 
@@ -379,13 +384,8 @@ Internet-Draft                    XBUP                      <Issue Date>
      | Single data blob or child blocks   |
      +---------------------------------------+
 
-   See [block examples.
+   See [block examples].
 
-2.1.4. Validity
-
-   Binary stream is structured correctly as XBUP document (well-formed)
-   if the following conditions are met. Description of invalid state is
-   also included for each condition.
  
 
 
@@ -393,6 +393,12 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 7]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
+
+2.1.4. Validity
+
+   Binary stream is structured correctly as XBUP document (well-formed)
+   if the following conditions are met. Description of invalid state is
+   also included for each condition.
 
      * Optional: Stream header must be present (Corrupted or missing
    header)
@@ -409,8 +415,8 @@ Internet-Draft                    XBUP                      <Issue Date>
      * The terminal block is present only in blocks where it belongs to
    (Unexpected terminator)
 
-     * End of file is after the end of the root block (Unexpected end of
-   data)
+     * End of file is before the end of the root block (Unexpected end
+   of data)
 
 2.2. Level 1: Block Types
 
@@ -436,12 +442,6 @@ Internet-Draft                    XBUP                      <Issue Date>
    overridden. Basic blocks provides ability to specify meaning of other
    groups via block type declarations, definitions or links to catalog
    or external source.
-
-2.2.2. Type Context
-
-   For each block, there is type context which provides mapping of
-   particular block type (as defined above) to particular
-   declaration/definition. Context is typically same for block and it's
  
 
 
@@ -450,7 +450,12 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 8]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
-   childer, except for **declaration** blok and it's
+2.2.2. Type Context
+
+   For each block, there is type context which provides mapping of
+   particular block type (as defined above) to particular
+   declaration/definition. Context is typically same for block and it's
+   children, except for **declaration** block and it's
    **formatDeclaration** parameter, which affects context of
    **documentRoot** block and also incrementally affects group and block
    definitions which can use block types already defined in currently
@@ -493,11 +498,6 @@ Internet-Draft                    XBUP                      <Issue Date>
 
    Following syntax is used:
 
-   any - Single block
-   attribute - Single attribute
-   block_type_name - Consist of definition
-   +block_type_name - Append definition
-
  
 
 
@@ -505,6 +505,11 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 9]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
+
+   any - Single block
+   attribute - Single attribute
+   block_type_name - Consist of definition
+   +block_type_name - Append definition
 
    List variants of the operations ends with brackets "[]".
 
@@ -549,11 +554,6 @@ Internet-Draft                    XBUP                      <Issue Date>
 
    This block allows to specify the basic structure of format
    specification. Specifies the sequence of parameters using either
-   **join** or **consist** operation.
-
-     Any[] formatParameters - Join or Consist format parameters
-     +RevisionDefinition[] revisions
-
  
 
 
@@ -561,6 +561,11 @@ Miroslav Hajda           Expires <Expiry Date>                 [Page 10]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
+
+   **join** or **consist** operation.
+
+     Any[] formatParameters - Join or Consist format parameters
+     +RevisionDefinition[] revisions
 
      * Format Join Parameter (4)
 
@@ -605,11 +610,6 @@ Internet-Draft                    XBUP                      <Issue Date>
      +CatalogBlockSpecPath catalogBlockSpecPath - Specification of
    format defined as path in catalog
      +Natural blockSpecRevision - Specification's revision number
-     BlockDefinition blockDefinition
-
-     * Block Definition (11)
-
-   This block allows to specify the basic structure of block
  
 
 
@@ -618,6 +618,11 @@ Miroslav Hajda           Expires <Expiry Date>                 [Page 11]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
+     BlockDefinition blockDefinition
+
+     * Block Definition (11)
+
+   This block allows to specify the basic structure of block
    specification. Specifies the sequence of parameters using either
    **join**, **consist**, **list join** or **list consist** operation.
 
@@ -661,17 +666,18 @@ Internet-Draft                    XBUP                      <Issue Date>
 3. Todo
 
    <Document text>
-
-      Definitions and code {
-        line 1
-        line 2
-      }
  
 
 
 Miroslav Hajda           Expires <Expiry Date>                 [Page 12]
 
 Internet-Draft                    XBUP                      <Issue Date>
+
+
+      Definitions and code {
+        line 1
+        line 2
+      }
 
 
    Special characters examples:
@@ -696,32 +702,26 @@ Internet-Draft                    XBUP                      <Issue Date>
 
      * Terminated node block with one attribute
 
-   +------------------------+
+   +----+-------------------+
    | 02 | AttributePartSize |
    | 7F | DataPartSize      |
    | 05 | Attribute 1       |
    | 00 | Terminator
-   +------------------------+
+   +----+-------------------+
 
      * Fixed size empty data block
 
-   +------------------------+
+   +----+-------------------+
    | 01 | AttributePartSize |
    | 00 | DataPartSize      |
-   +------------------------+
+   +----+-------------------+
 
      * Terminated empty data block
 
-   +---------------------------+
+   +----+----------------------+
    | 01 | AttributePartSize    |
    | 7F | DataPartSize         |
    | 00 | Data block escape    |
-   | 00 | Termination value    |
-   +---------------------------+
-
-3.1. Appendix 1: Parsing
-
-   To process level 0 protocol following 4 types of tokens are used:
  
 
 
@@ -729,6 +729,13 @@ Miroslav Hajda           Expires <Expiry Date>                 [Page 13]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
+
+   | 00 | Termination value    |
+   +----+----------------------+
+
+3.1. Appendix 1: Parsing
+
+   To process level 0 protocol following 4 types of tokens are used:
 
      * begin (terminationMode flag)
 
@@ -744,13 +751,6 @@ Internet-Draft                    XBUP                      <Issue Date>
    Block ::= begin + Attributes + Blocks + end | begin + data + end
    Blocks ::= Block + Blocks | epsilon
    Attributes ::= attribute + Attributes | epsilon
-
-
-
-
-
-
-
 
 
 
@@ -813,7 +813,7 @@ Authors' Addresses
    and
    Zdechov, Czech Repubic
 
-   EMail: name@example.com
+   Email: hajdam@exbin.org
 
 
 

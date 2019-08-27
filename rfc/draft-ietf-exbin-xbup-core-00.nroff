@@ -41,7 +41,7 @@ draft-ietf-exbin-xbup-core-00
 .ti 0
 Abstract
 
-The Extensible Binary Universal Protocol (XBUP) is a general purpose binary data protocol and file format with primary focus on data abstraction and transformation.
+The Extensible Binary Universal Protocol (XBUP) is a prototype of general purpose binary data protocol and file format with primary focus on data abstraction and transformation.
 
 This documentation describes specification of bottom levels of protocol and set of basic data types and recommended API.
 
@@ -50,7 +50,10 @@ Contributing
 
 This document is being worked on by ExBin Project. Primary goal is to gather comments and raise interest in this project.
 
-To participate on the development of this project, visit https://xbup.exbin.org/?development
+To participate on the development of this project, visit
+.ur
+https://xbup.exbin.org/?contribute
+.ue
 
 .ti 0
 Status of this Memo
@@ -90,17 +93,17 @@ Table of Contents
        2.1.1. UBNumber Encoding . . . . . . . . . . . . . . . . . . .  5
        2.1.2. Document  . . . . . . . . . . . . . . . . . . . . . . .  6
        2.1.3. Block . . . . . . . . . . . . . . . . . . . . . . . . .  6
-       2.1.4. Validity  . . . . . . . . . . . . . . . . . . . . . . .  7
+       2.1.4. Validity  . . . . . . . . . . . . . . . . . . . . . . .  8
      2.2. Level 1: Block Types  . . . . . . . . . . . . . . . . . . .  8
        2.2.1. Block Type  . . . . . . . . . . . . . . . . . . . . . .  8
-       2.2.2. Type Context  . . . . . . . . . . . . . . . . . . . . .  8
+       2.2.2. Type Context  . . . . . . . . . . . . . . . . . . . . .  9
        2.2.3. Block Type Definition . . . . . . . . . . . . . . . . .  9
        2.2.4. Basic Blocks Definition . . . . . . . . . . . . . . . . 10
        2.2.4. Main Catalog  . . . . . . . . . . . . . . . . . . . . . 12
      2.3. Level 2: Transformations  . . . . . . . . . . . . . . . . . 12
    3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
      3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . . 13
-     3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 13
+     3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 14
    4. Security Considerations . . . . . . . . . . . . . . . . . . . . 15
    5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 15
    6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 15
@@ -116,40 +119,40 @@ Table of Contents
 .ti 0
 1  Introduction
 
-The Extensible Binary Universal Protocol (XBUP) is a general purpose multi-layer binary data protocol and file format with primary focus on abstraction and data transformation.
+The Extensible Binary Universal Protocol (XBUP) is a prototype of general purpose multi-layer binary data protocol and file format with primary focus on abstraction and data transformation.
 
 Key features:
 
  *  Unified block-tree structure - Minimalist tree structure based on integer and blob only
 
- *  Build-in and custom data types - Data type definitions and catalog of types
+ *  Build-in and custom data types - Support for data type definitions and catalog of types
 
  *  Transformation framework - Automatic and manual data conversions and compatibility handling
 
-Secondary features includes some capabilities inspired from markup languages like SGML/XML and data representation languages like YAML, JSON [RFC4627] and similar binary formats like ASN.1 or HDF5.
+Secondary features includes some capabilities inspired by markup languages like SGML/XML and data representation languages like YAML, JSON [RFC4627] and similar binary formats like ASN.1, HDF5 and efficient XML.
 
  *  Extensibility
 
  *  Unconstrained values
 
- *  Linking
+ *  Internal and external links / data pointers
 
  *  Namespaces
 
- *  Data evolution
+ *  Data life-cycle / definition evolution
 
-Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus more on efficiency, serialization or binary representation of specific mark-up language. Please see "Formats comparison" section for more.
+Primary focus on abstraction makes this protocol somewhat different as compared with other similar binary formats which focus on efficiency, serialization or binary representation of specific mark-up language. Please see "Formats comparison" section for more.
 
 .ti 0
 1.1.  Objectives
 
-The primary goal of this project is to create a communication protocol/data format with the following characteristics, ordered by priority:
+The primary goal of this project is to create a communication protocol / data format with the following characteristics, ordered by priority:
 
  *  Universal - Capable to represent any type of data, suitable for persistent and long-term storage and streaming
 
  *  Independent - Not tightly linked to particular spoken language, product, company, processing architecture or programming language
 
- *  Declarative - Self sufficient for data type definition and ability to build data types on top of each other and link them together
+ *  Declarative - Self sufficient for data type definition and ability to build data types on top of each other and combine them together
 
  *  Normative - Providing reference form for data representation
 
@@ -181,15 +184,15 @@ Stream: A sequence of data elements made available over time
 
 XBUP is multi-layer protocol, where each layer is build on top of previous layer providing new capabilities (new features and/or constraints). Layers are indexed as levels by depth starting with level 0.
 
-Applications can also support XBUP protocol up to particular level only when full support is not necessary.
+Applications can support only specific level of XBUP protocol when full support is not necessary.
 
 .nf
-  +-------------------------------------------+
+  +---+---------------------------------------+
   | 0 | Tree Structure |
   | 1 | Type System   |
   | 2 | Transformations   |
   | 3 | Relations   |
-  +-------------------------------------------+
+  +---+---------------------------------------+
 .fi
 
 .ti 0
@@ -206,9 +209,9 @@ Nodes are represented as one or more blocks of bits with child blocks representi
 .ti 0
 2.1.1. UBNumber Encoding
 
-UBNumber is encoding which combines unary and binary encoding to represent values with dynamic length. It is typically representing natural non-negative integer number or value of any other type with mapping to countable set.
+UBNumber is encoding which combines unary and binary encoding to represent values with dynamic length. It is typically representing natural non-negative integer number or value of any other type with deterministic mapping to countable set.
 
-Encoding is similar to UTF-8, except that UBNumber is applied recursively when unary part reaches all bits of byte.
+Encoding is similar to UTF-8, except that UBNumber is applied recursively when unary part fills all bits of the first byte.
 
 To decode value, non-zero bits are counted for length up to 8 bits and then rest of bits is used as value. Value is also shifted so that there is only one code for each number.
 
@@ -238,22 +241,24 @@ Various interpretations can be mapped on UBNumber encoding. For level 0 followin
 .ti 0
 2.1.2. Document
 
-For version 0.2 of the document starts with fixed 6 bytes long blob called "Document Header" followed by a single block called "Root Block" and any data after root block are optional blob called "Tail Data".
+For storing data in file to passing thru file, information about protocol version shall be included.
+
+For version 0.2 of the document, data should start with fixed 6 bytes long data blob called "Document Header" followed by a single block called "Root Block" and any data after root block are optional blob called "Tail Data".
 
 Header for current version of the protocol with hexadecimal codes. Explanation of the each value is non-conformant, primary use is padding to help systems which uses beginning of file for identification of file type.
 
 .nf
-  +-------------------------------------------+
+  +----+--------------------------------------+
   | FE | Unary encoded size of cluster (byte) |
   | 00 | Reserved for future versions         |
   | 58 | Ascii constant 'X'                   |
   | 42 | Ascii constant 'B'                   |
   | 00 | UBNatural encoded major version      |
   | 02 | UBNatural encoded minor version      |
-  +-------------------------------------------+
+  +----+--------------------------------------+
 .fi
 
-If it is known information, it is possible to omit header.
+If header information is known thru the communication channel, document header can be omitted.
 
 .ti 0
 2.1.3. Block
@@ -303,7 +308,7 @@ After data part block ends.
   +---------------------------------------+
 .fi
 
-See [block examples.
+See [block examples].
 
 .ti 0
 2.1.4. Validity
@@ -320,7 +325,7 @@ Binary stream is structured correctly as XBUP document (well-formed) if the foll
 
   * The terminal block is present only in blocks where it belongs to (Unexpected terminator)
 
-  * End of file is after the end of the root block (Unexpected end of data)
+  * End of file is before the end of the root block (Unexpected end of data)
 
 .ti 0
 2.2. Level 1: Block Types
@@ -345,7 +350,7 @@ TypeGroup with value 0 is basic build-in group and cannot be overridden. Basic b
 .ti 0
 2.2.2. Type Context
 
-For each block, there is type context which provides mapping of particular block type (as defined above) to particular declaration/definition. Context is typically same for block and it's childer, except for **declaration** blok and it's **formatDeclaration** parameter, which affects context of **documentRoot** block and also incrementally affects group and block definitions which can use block types already defined in currently processed declaration.
+For each block, there is type context which provides mapping of particular block type (as defined above) to particular declaration/definition. Context is typically same for block and it's children, except for **declaration** block and it's **formatDeclaration** parameter, which affects context of **documentRoot** block and also incrementally affects group and block definitions which can use block types already defined in currently processed declaration.
 
 
 .ti 0
@@ -440,7 +445,8 @@ Group declaration allows you use either declaration from catalog or local group 
 
   * Group Definition (7)
 
-This block allows to specify the basic structure of group specification. Specifies the sequence of parameters using either **join** or **consist** operation.
+This block allows to specify the basic structure of group specification. Specifies the sequence of parameters using either
+**join** or **consist** operation.
 
   Any[] groupParameters - Join or Consist group parameters
 .br
@@ -552,32 +558,32 @@ C:\\dir\\subdir\\file.ext  Shows inclusion of backslash "\\".
   * Terminated node block with one attribute
 
 .nf
-+------------------------+
++----+-------------------+
 | 02 | AttributePartSize |
 | 7F | DataPartSize      |
 | 05 | Attribute 1       |
 | 00 | Terminator
-+------------------------+
++----+-------------------+
 .fi
 
   * Fixed size empty data block
 
 .nf
-+------------------------+
++----+-------------------+
 | 01 | AttributePartSize |
 | 00 | DataPartSize      |
-+------------------------+
++----+-------------------+
 .fi
 
   * Terminated empty data block
 
 .nf
-+---------------------------+
++----+----------------------+
 | 01 | AttributePartSize    |
 | 7F | DataPartSize         |
 | 00 | Data block escape    |
 | 00 | Termination value    |
-+---------------------------+
++----+----------------------+
 .fi
 
 .ti 0
@@ -624,7 +630,7 @@ Attributes ::= attribute + Attributes | epsilon
 
 .in 14
 .\" \# REF  -- Managed reference list. Syntax: [RFC]nnnn[;Label], ... ,[RFC]nnnn[;Label]
-.\" \# 2119;KEYWORDS, 1776, RFC1925;TRUTHS
+.\" \# RFC2119;KEYWORDS, 1776, RFC1925;TRUTHS, RFC4627;
 .\" \# ERF -- End of managed reference list
 .\" ----------------------------------------
 .\" The reference list can be changed at any time by altering the RFC list in the line below the .\" \# REF directive
@@ -637,7 +643,7 @@ Attributes ::= attribute + Attributes | epsilon
 
 .in 14
 .\" \# REF  -- Managed reference list. Syntax: [RFC]nnnn[;Label], ... ,[RFC]nnnn[;Label]
-.\" \# 3514;EVILBIT, 5513, 5514
+.\" \# RFC2119, 3514;EVILBIT, 5513, 5514, RFC4627
 .\" \# ERF -- End of managed reference list
 .in 3
 
@@ -651,7 +657,7 @@ Miroslav Hajda
 and
 Zdechov, Czech Repubic
 
-EMail: name@example.com
+Email: hajdam@exbin.org
 .sp
 .fi
 
