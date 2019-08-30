@@ -79,30 +79,30 @@ Table of Contents
 
    1  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .  3
      1.1.  Objectives . . . . . . . . . . . . . . . . . . . . . . . .  3
-     1.2.  Terminology  . . . . . . . . . . . . . . . . . . . . . . .  4
-   2.  XBUP Specification . . . . . . . . . . . . . . . . . . . . . .  4
-     2.1. Level 0: Tree Structure . . . . . . . . . . . . . . . . . .  5
-       2.1.1. UBNumber Encoding . . . . . . . . . . . . . . . . . . .  5
-       2.1.2. Document  . . . . . . . . . . . . . . . . . . . . . . .  6
-       2.1.3. Block . . . . . . . . . . . . . . . . . . . . . . . . .  6
+     1.2.  Motivation . . . . . . . . . . . . . . . . . . . . . . . .  4
+     1.3.  Terminology  . . . . . . . . . . . . . . . . . . . . . . .  5
+   2.  XBUP Specification . . . . . . . . . . . . . . . . . . . . . .  5
+     2.1. Level 0: Tree Structure . . . . . . . . . . . . . . . . . .  6
+       2.1.1. UBNumber Encoding . . . . . . . . . . . . . . . . . . .  6
+       2.1.2. Document  . . . . . . . . . . . . . . . . . . . . . . .  7
+       2.1.3. Block . . . . . . . . . . . . . . . . . . . . . . . . .  7
        2.1.4. Validity  . . . . . . . . . . . . . . . . . . . . . . .  8
-     2.2. Level 1: Block Types  . . . . . . . . . . . . . . . . . . .  8
-       2.2.1. Block Type  . . . . . . . . . . . . . . . . . . . . . .  8
+     2.2. Level 1: Block Types  . . . . . . . . . . . . . . . . . . .  9
+       2.2.1. Block Type  . . . . . . . . . . . . . . . . . . . . . .  9
        2.2.2. Type Context  . . . . . . . . . . . . . . . . . . . . .  9
-       2.2.3. Block Type Definition . . . . . . . . . . . . . . . . .  9
-       2.2.4. Basic Blocks Definition . . . . . . . . . . . . . . . . 10
-       2.2.4. Main Catalog  . . . . . . . . . . . . . . . . . . . . . 12
-     2.3. Level 2: Transformations  . . . . . . . . . . . . . . . . . 12
-   3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
-     3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . . 13
+       2.2.3. Block Type Definition . . . . . . . . . . . . . . . . . 10
+       2.2.4. Basic Blocks Definition . . . . . . . . . . . . . . . . 11
+       2.2.4. Main Catalog  . . . . . . . . . . . . . . . . . . . . . 13
+     2.3. Level 2: Transformations  . . . . . . . . . . . . . . . . . 13
+   3. Todo  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+     3.1. Examples of Blocks  . . . . . . . . . . . . . . . . . . . . 14
      3.1. Appendix 1: Parsing . . . . . . . . . . . . . . . . . . . . 14
-   4. Security Considerations . . . . . . . . . . . . . . . . . . . . 15
-   5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 15
-   6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 15
-     6.1.  Normative References . . . . . . . . . . . . . . . . . . . 15
-     6.2.  Informative References . . . . . . . . . . . . . . . . . . 15
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 15
-
+   4. Security Considerations . . . . . . . . . . . . . . . . . . . . 16
+   5. IANA Considerations . . . . . . . . . . . . . . . . . . . . . . 16
+   6. References  . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+     6.1.  Normative References . . . . . . . . . . . . . . . . . . . 16
+     6.2.  Informative References . . . . . . . . . . . . . . . . . . 16
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 16
 
 
 
@@ -140,9 +140,7 @@ Internet-Draft                    XBUP                      <Issue Date>
 
     *  Unconstrained values
 
-    *  Internal and external links / data pointers
-
-    *  Namespaces
+    *  Internal and external referencing
 
     *  Data life-cycle / definition evolution
 
@@ -158,10 +156,12 @@ Internet-Draft                    XBUP                      <Issue Date>
    priority:
 
     *  Universal - Capable to represent any type of data, suitable for
-   persistent and long-term storage and streaming
+   wide use including streaming, persistent and long-term storage and so
+   on
 
     *  Independent - Not tightly linked to particular spoken language,
    product, company, processing architecture or programming language
+
  
 
 
@@ -182,7 +182,59 @@ Internet-Draft                    XBUP                      <Issue Date>
     *  Efficient - Effective data compacting / compression support for
    plain binary and structured data
 
-1.2.  Terminology
+1.2.  Motivation
+
+    Project should provide universal protocol as a more feature-rich
+   alternative to currently used binary protocols. It should provide
+   general methods for handling various types of data including:
+
+    * Multimedia files - Audio, Video, Animation * Filesystem structure
+   - Allow to represent data in the form of filesystem or as compressed
+   archive * Application API - Remote or local methods execution
+   supporting parameters and result passing * Serialization protocol -
+   Provide ability to serialize structured data * Data for long-term
+   storage - Provide way to define data with separate or integrated
+   specification * Huge data - Use dynamic numeric values to allow
+   support for data in terabytes range or greater * Segmented, paged,
+   fragmented data * Indexes, error detection and correction data
+
+   While there are various binary formats and markup languages
+   available, this project aims to take somewhat different approach to
+   data representation.
+
+    * While SGML, XML and related technologies were huge inspiration for
+   this project, it seems that it wouldn't be feasible to use them as
+   base for the binary variant due to attribute vs. child tag duality
+   and use of unicode string as a primitive data type in contrast to
+   countable set used by this project
+
+    * Using binary format is basically a necessity to make protocol
+   reasonable usable for universal data like for example audio or video
+   even thou text formats (for example JSON, YAML) provide easy of use
+   and readability advantages
+
+    * Compare to wide range of existing binary formats with fixed block
+   structure (for example RIFF), this project aims to provide more
+   unified access to all data structures and their definitions
+
+    * Compare to formats based on serialization of data primitives (for
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 4]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
+   example Protocol Buffers) this project aims to provide capability for
+   data definitions which would make transmitting primitive types
+   unnecessary
+
+    * Multi-level approach should allow to simplify and improve use
+   compare to other dynamic binary formats (for example HDF5, ASN.1 and
+   EBML)
+
+1.3.  Terminology
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
@@ -218,18 +270,17 @@ Internet-Draft                    XBUP                      <Issue Date>
 
      +---+---------------------------------------+
      | 0 | Tree Structure |
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                  [Page 4]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
-
      | 1 | Type System   |
      | 2 | Transformations   |
      | 3 | Relations   |
      +---+---------------------------------------+
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 5]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
 
 2.1. Level 0: Tree Structure
 
@@ -274,19 +325,18 @@ Internet-Draft                    XBUP                      <Issue Date>
      110 00000 | 00000000 | 00000000   = 4080h = 16512
      ...
 
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                  [Page 5]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
-
    Various interpretations can be mapped on UBNumber encoding. For level
    0 following two mappings are used:
 
      * UBNatural encoding using directly value from UBNumber basic
    mapping
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 6]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
 
      * UBENatural where value 7Fh is reserved for infinity constant and
    higher values are shifted by one
@@ -330,20 +380,19 @@ Internet-Draft                    XBUP                      <Issue Date>
    and block ends.
 
    Otherwise it is followed by blob of the length specified by
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                  [Page 6]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
-
    attributePartSize in bytes. Data in attribute part are interpreted as
    a sequence of attributes encoded in UBNumber encoding.
 
    First attribute in attribute part represents value:
 
      UBENatural dataPartSize
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 7]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
 
    If dataPartSize value fills exactly whole attribute part then this
    block is called "Data Block".
@@ -386,14 +435,6 @@ Internet-Draft                    XBUP                      <Issue Date>
 
    See [block examples].
 
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                  [Page 7]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
-
 2.1.4. Validity
 
    Binary stream is structured correctly as XBUP document (well-formed)
@@ -401,6 +442,14 @@ Internet-Draft                    XBUP                      <Issue Date>
    also included for each condition.
 
      * Optional: Stream header must be present (Corrupted or missing
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 8]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
    header)
 
      * Optional: Header version must be in supported range (Unsupported
@@ -442,13 +491,6 @@ Internet-Draft                    XBUP                      <Issue Date>
    overridden. Basic blocks provides ability to specify meaning of other
    groups via block type declarations, definitions or links to catalog
    or external source.
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                  [Page 8]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
 
 2.2.2. Type Context
 
@@ -456,6 +498,14 @@ Internet-Draft                    XBUP                      <Issue Date>
    particular block type (as defined above) to particular
    declaration/definition. Context is typically same for block and it's
    children, except for **declaration** block and it's
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                  [Page 9]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
+
    **formatDeclaration** parameter, which affects context of
    **documentRoot** block and also incrementally affects group and block
    definitions which can use block types already defined in currently
@@ -498,20 +548,19 @@ Internet-Draft                    XBUP                      <Issue Date>
 
    Following syntax is used:
 
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                  [Page 9]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
-
    any - Single block
    attribute - Single attribute
    block_type_name - Consist of definition
    +block_type_name - Append definition
 
    List variants of the operations ends with brackets "[]".
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                 [Page 10]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
 
 2.2.4. Basic Blocks Definition
 
@@ -554,20 +603,20 @@ Internet-Draft                    XBUP                      <Issue Date>
 
    This block allows to specify the basic structure of format
    specification. Specifies the sequence of parameters using either
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                 [Page 10]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
-
    **join** or **consist** operation.
 
      Any[] formatParameters - Join or Consist format parameters
      +RevisionDefinition[] revisions
 
      * Format Join Parameter (4)
+
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                 [Page 11]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
 
      +FormatDeclaration formatDeclaration
 
@@ -610,14 +659,6 @@ Internet-Draft                    XBUP                      <Issue Date>
      +CatalogBlockSpecPath catalogBlockSpecPath - Specification of
    format defined as path in catalog
      +Natural blockSpecRevision - Specification's revision number
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                 [Page 11]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
-
      BlockDefinition blockDefinition
 
      * Block Definition (11)
@@ -625,6 +666,13 @@ Internet-Draft                    XBUP                      <Issue Date>
    This block allows to specify the basic structure of block
    specification. Specifies the sequence of parameters using either
    **join**, **consist**, **list join** or **list consist** operation.
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                 [Page 12]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
 
      Any[] blockParameters - Join or Consist or List Join or List
    Consist block parameters
@@ -666,13 +714,6 @@ Internet-Draft                    XBUP                      <Issue Date>
 3. Todo
 
    <Document text>
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                 [Page 12]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
 
       Definitions and code {
         line 1
@@ -681,6 +722,13 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 
    Special characters examples:
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                 [Page 13]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
 
    The characters  , , , 
    However, the characters \0, \&, \%, \" are displayed.
@@ -722,14 +770,6 @@ Internet-Draft                    XBUP                      <Issue Date>
    | 01 | AttributePartSize    |
    | 7F | DataPartSize         |
    | 00 | Data block escape    |
- 
-
-
-Miroslav Hajda           Expires <Expiry Date>                 [Page 13]
-
-Internet-Draft                    XBUP                      <Issue Date>
-
-
    | 00 | Termination value    |
    +----+----------------------+
 
@@ -738,6 +778,13 @@ Internet-Draft                    XBUP                      <Issue Date>
    To process level 0 protocol following 4 types of tokens are used:
 
      * begin (terminationMode flag)
+ 
+
+
+Miroslav Hajda           Expires <Expiry Date>                 [Page 14]
+
+Internet-Draft                    XBUP                      <Issue Date>
+
 
      * attribute (UBNumber value)
 
@@ -778,10 +825,19 @@ Internet-Draft                    XBUP                      <Issue Date>
 
 
 
+
+
+
+
+
+
+
+
+
  
 
 
-Miroslav Hajda           Expires <Expiry Date>                 [Page 14]
+Miroslav Hajda           Expires <Expiry Date>                 [Page 15]
 
 Internet-Draft                    XBUP                      <Issue Date>
 
@@ -837,4 +893,4 @@ Authors' Addresses
 
 
 
-Miroslav Hajda           Expires <Expiry Date>                 [Page 15]
+Miroslav Hajda           Expires <Expiry Date>                 [Page 16]
