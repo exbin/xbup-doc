@@ -26,7 +26,7 @@ Contributing
    gather comments and raise interest in this project.
 
    To participate on the development of this project, visit
-   https://xbup.exbin.org/?contribute
+   https://xbup.exbin.org/?participate
 
 Status of this Memo
 
@@ -123,7 +123,7 @@ Internet-Draft                    XBUP                      <Issue Date>
    Key features:
 
     *  Unified block-tree structure - Minimalist tree structure based on
-   integer and blob only
+   integer and binary blob only
 
     *  Build-in and custom data types - Support for data type
    definitions and catalog of types
@@ -145,9 +145,9 @@ Internet-Draft                    XBUP                      <Issue Date>
     *  Data life-cycle / definition evolution
 
    Primary focus on abstraction makes this protocol somewhat different
-   as compared with other similar binary formats which focus on
-   efficiency, serialization or binary representation of specific mark-
-   up language. Please see "Formats comparison" section for more.
+   compare to other similar binary formats which focus on efficiency,
+   serialization or binary representation of specific mark-up language.
+   Please see "Formats comparison" section for more.
 
 1.1.  Objectives
 
@@ -156,12 +156,12 @@ Internet-Draft                    XBUP                      <Issue Date>
    priority:
 
     *  Universal - Capable to represent any type of data, suitable for
-   wide use including streaming, persistent and long-term storage and so
-   on
+   wide use including streaming, long-term storage and parallel access
 
     *  Independent - Not tightly linked to particular spoken language,
    product, company, processing architecture or programming language
 
+    *  Declarative - Self sufficient for data type definition and
  
 
 
@@ -170,7 +170,6 @@ Miroslav Hajda           Expires <Expiry Date>                  [Page 3]
 Internet-Draft                    XBUP                      <Issue Date>
 
 
-    *  Declarative - Self sufficient for data type definition and
    ability to build data types on top of each other and combine them
    together
 
@@ -192,11 +191,12 @@ Internet-Draft                    XBUP                      <Issue Date>
    - Allow to represent data in the form of filesystem or as compressed
    archive * Application API - Remote or local methods execution
    supporting parameters and result passing * Serialization protocol -
-   Provide ability to serialize structured data * Data for long-term
-   storage - Provide way to define data with separate or integrated
-   specification * Huge data - Use dynamic numeric values to allow
-   support for data in terabytes range or greater * Segmented, paged,
-   fragmented data * Indexes, error detection and correction data
+   Provide ability to serialize structured data * Long-term storage -
+   Provide way to define data with separate or integrated specification
+   * Huge data - Use dynamic numeric values to allow support for data in
+   terabytes range or greater * Segmented, paged, fragmented data *
+   Structural data for database representation * Indexes, error
+   detection and correction data
 
    While there are various binary formats and markup languages
    available, this project aims to take somewhat different approach to
@@ -205,7 +205,7 @@ Internet-Draft                    XBUP                      <Issue Date>
     * While SGML, XML and related technologies were huge inspiration for
    this project, it seems that it wouldn't be feasible to use them as
    base for the binary variant due to attribute vs. child tag duality
-   and use of unicode string as a primitive data type in contrast to
+   and use of Unicode string as a primitive data type in contrast to
    countable set used by this project
 
     * Using binary format is basically a necessity to make protocol
@@ -359,8 +359,8 @@ Internet-Draft                    XBUP                      <Issue Date>
      +----+--------------------------------------+
      | FE | Unary encoded size of cluster (byte) |
      | 00 | Reserved for future versions         |
-     | 58 | Ascii constant 'X'                   |
-     | 42 | Ascii constant 'B'                   |
+     | 58 | ASCII constant 'X'                   |
+     | 42 | ASCII constant 'B'                   |
      | 00 | UBNatural encoded major version      |
      | 02 | UBNatural encoded minor version      |
      +----+--------------------------------------+
