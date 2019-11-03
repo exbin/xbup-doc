@@ -1,0 +1,38 @@
+
+Show XBUP number encoding, block, tree
+
+Data types:
+- compacting transformations
+- numbers with units
+- numbers with range limits
+
+catalog
+- external catalogs / definitions
+- support for multiple languages
+- layers of description
+
+system service
+- two-way transformation for required type
+
+Use for:
+- multimedia
+- archives / filesystem
+- RPC (remote calling)
+- long term storage
+- upgradeable apps (+multimedia framework)
+
+programming language
+- data flow based
+- multilevel (low level instruction)
+- evolvable / transformable structure
+- multiple syntaxes
+
+database
+- paralel editation
+- relational, graph, object or plain
+- custom indexing / structuring - including values processed as trees
+- processing engine
+
+Demo:
+- editor
+- catalog
