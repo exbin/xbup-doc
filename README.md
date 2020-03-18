@@ -3,15 +3,17 @@ XBUP Documentation
 
 This repository contains documentation for eXtensible Binary Universal Protocol.
 
-Homepage: http://xbup.exbin.org  
+Homepage: https://xbup.exbin.org  
 
 Structure
 ---------
 
-Documentation is stored as content of Dokuwiki data folder. See Dokuwiki (http://dokuwiki.org) project homepage for syntax and related information.
+Some documentation is stored as content of Dokuwiki data folder. See Dokuwiki (http://dokuwiki.org) project homepage for syntax and related information.
 
  * media - Related resources, like images and sample files
  * pages - Documentation files using dokuwiki syntax
+ * rfc - RFC document
+ * presentation - Presentations
 
 License
 -------

@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM
+  "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
+]>
+
+<?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?>
+<?rfc strict="yes" ?>
+
+<rfc
+  category="std"
+  docName="draft-ietf-exbin-xbup-core-00"
+  ipr="trust200902"
+  consensus="no"
+  submissionType="IETF"
+  xml:lang="en"
+>
+
+<front>
+<title abbrev="XBUP">
+Extensible Binary Universal Protocol (XBUP)
+</title>
+
+<author fullname="Miroslav Hajda" surname="Hajda" initials="M.">
+<organization>ExBin Project</organization>
+<address>
+<email>exbinproject@gmail.com</email>
+<uri>https://exbin.org/</uri>
+</address>
+</author>
+
+<date year="2020" month="March"/>
+
+<area>General</area>
+<workgroup>(TBD)</workgroup>
+<keyword>Binary</keyword>
+<keyword>Protocol</keyword>
+
+<abstract>
+<t>The Extensible Binary Universal Protocol (XBUP) is a prototype of general purpose binary data protocol and file format with primary focus on data abstraction and transformation.</t>
+<t>This proposal describes specification of bottom levels of protocol and set of basic data types and recommended API.</t>
+</abstract>
+
+<note title="Contributing">
+<t>This document is being worked on by ExBin Project. Primary goal is to gather comments and raise interest in this project.</t>
+<t>To participate on the development of this project, visit <eref target="https://xbup.exbin.org/?participate">https://xbup.exbin.org/?participate</eref>.</t>
+</note>
+
+</front>
+
+<middle>
+
+<section anchor="intro" title="Introduction">
+
+<t>The Extensible Binary Universal Protocol (XBUP) is a prototype of general purpose multi-layer binary data protocol and file format with primary focus on abstraction and data transformation.</t>
+
+<t>Key features:
+<list style="symbols">
+ <t>Unified block-tree structure - Minimalist tree structure based on integer and binary blob only</t>
+ <t>Build-in and custom data types - Support for data type definitions and catalog of types</t>
+ <t>Transformation framework - Automatic and manual data conversions and compatibility handling</t>
+</list>
+</t>
+
+<t>Secondary features includes some capabilities inspired by markup languages like SGML/XML and data representation languages like YAML, JSON [RFC4627] and similar binary formats like ASN.1, HDF5 and efficient XML.
+<list style="symbols">
+ <t>Extensibility</t>
+ <t>Unconstrained values</t>
+ <t>Internal and external referencing</t>
+ <t>Data life-cycle / definition evolution</t>
+</list>
+</t>
+
+<t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of specific mark-up language. Please see "Formats comparison" section for more.</t>
+
+<section anchor="objectives" title="Objectives">
+
+<t>The primary goal of this project is to create a communication protocol / data format with the following characteristics, ordered by priority:
+
+<list style="symbols">
+ <t>Universal - Capable to represent any type of data, suitable for wide use including streaming, long-term storage and parallel access</t>
+ <t>Independent - Not tightly linked to particular spoken language, product, company, processing architecture or programming language</t>
+ <t>Declarative - Self sufficient for data type definition and ability to build data types on top of each other and combine them together</t>
+ <t>Normative - Providing reference form for data representation</t>
+ <t>Flexible - Support for data transformations, compatibility and extensibility</t>
+ <t>Efficient - Effective data compacting / compression support for plain binary and structured data</t>
+</list>
+</t>
+
+</section>
+
+<section anchor="motivation" title="Motivation">
+
+<t>Project should provide universal protocol as a more feature-rich alternative to currently used binary protocols. It should provide general methods for handling various types of data including:
+
+<list style="symbols">
+ <t>Multimedia files - Audio, Video, Animation</t>
+ <t>Filesystem structure - Allow to represent data in the form of filesystem or as compressed archive</t>
+ <t>Application API - Remote or local methods execution supporting parameters and result passing</t>
+ <t>Serialization protocol - Provide ability to serialize structured data</t>
+ <t>Long-term storage - Provide way to define data with separate or integrated specification</t>
+ <t>Huge data - Use dynamic numeric values to allow support for data in terabytes range or greater</t>
+ <t>Segmented, paged, fragmented data</t>
+ <t>Structural data for database representation</t>
+ <t>Indexes, error detection and correction data</t>
+</list>
+</t>
+
+<t>While there are various binary formats and markup languages available, this project aims to take somewhat different approach to data representation.</t>
+
+<t>
+<list style="symbols">
+ <t>While SGML, XML and related technologies were huge inspiration for this project, it seems that it wouldn't be feasible to use them as base for the binary variant due to attribute vs. child tag duality and use of Unicode string as a primitive data type in contrast to countable set used by this project</t>
+
+ <t>Using binary format is basically a necessity to make protocol reasonable usable for universal data like for example audio or video even thou text formats (for example JSON, YAML) provide easy of use and readability advantages</t>
+
+ <t>Compare to wide range of existing binary formats with fixed block structure (for example RIFF), this project aims to provide more unified access to all data structures and their definitions</t>
+
+ <t>Compare to formats based on serialization of data primitives (for example Protocol Buffers) this project aims to provide capability for data definitions which would make transmitting primitive types unnecessary</t>
+
+ <t>Multi-level approach should allow to simplify and improve use compare to other dynamic binary formats (for example HDF5, ASN.1 and EBML)</t>
+</list>
+</t>
+
+</section>
+
+<section title="Terminology">
+
+<t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL"
+in this document are to be interpreted as described in
+<xref target="RFC2119"/>.</t>
+
+</section>
+</section>
+
+<section anchor="specification" title="XBUP Specification">
+
+<t>XBUP is multi-layer protocol, where each layer is build on top of previous layer providing new capabilities (new features and/or constraints). Layers are indexed as levels by depth starting with level 0.</t>
+
+<t>Applications can support only specific level of XBUP protocol when full support is not necessary.</t>
+
+<texttable title="Layers">
+  <preamble>Layers of the protocol</preamble>
+  <ttcol>Level</ttcol>
+  <ttcol>Layer</ttcol>
+
+  <c>0</c><c>Tree Structure</c>
+
+  <c>1</c><c>Type System</c>
+
+  <c>2</c><c>Transformations</c>
+
+  <c>3</c><c>Relations</c>
+</texttable>
+
+<t>This is a reference to <xref target="RFC6949"/>.
+Actually, the reference itself is not all that interesting, but the
+way that the reference is incorporated is. Note that the inclusion
+of RFC 2119 was done at the top of the XML, while the information
+for RFC 6949 is done directly in the references section.</t>
+
+<t>The <eref target="http://www.ietf.org">IETF web site</eref> is
+<spanx style="emph">quite</spanx>
+<spanx style="strong">nice</spanx>,
+<spanx style="verb">isn't it</spanx>?
+Unlike other web sites, it doesn't use
+<vspace blankLines="2" />gratuitous vertical space.</t>
+
+</section>
+
+<section title="Basic Lists">
+
+<t>Bulleted lists are good for items that
+are not ordered:
+
+<list style="symbols">
+
+<t>This is the first item.</t>
+
+<t>This is the second item. Here comes a sub-list:
+
+<list style="symbols">
+
+<t>This is the first sub-item.</t>
+
+<t>This is the second sub-item<vspace/>
+and some more detail on the second sub-item.</t>
+
+</list></t>
+
+<t>This is the item after the sub-list.</t>
+
+</list></t>
+
+<t>Numbered lists are good for items that are ordered:
+
+<list style="numbers">
+
+<t>This is the first item.</t>
+
+<t>This is the second item. Here comes a sub-list, but
+with letters:
+
+<list style="letters">
+
+<t>This is the first sub-item.</t>
+
+<t>This is the second sub-item</t>
+
+</list></t>
+
+<t>This is the item after the sub-list.</t>
+
+</list></t>
+
+<t>And an example of hanging indent.
+
+<list style="hanging" hangIndent="15">
+
+<t hangText="Trees">These are bigger plants</t>
+
+<t hangText="Lichen">These are smaller plants</t>
+
+</list></t>
+
+<t>And the always-interesting "format" for lists.
+
+<list style="format --%d--">
+
+<t>An element that gets a funny bullet.</t>
+
+</list></t>
+
+</section>
+
+<section title="Figures">
+
+<t>The following is a figure with a caption.
+Also, it uses the ampersand (&amp;) and less than
+(&lt;) characters in the example text.</t>
+
+<figure title="This could be haiku" anchor="haiku">
+<artwork type="haiku" align="left">
+   The ampersand (&amp;) and
+   less than (&lt;) are two characters
+   that need escaping. 
+</artwork>
+</figure>
+
+<t>Here are two short figures with no titles and with
+odd alignment.</t>
+
+<figure><artwork align="center">
+This might appear in the center.
+</artwork></figure>
+
+<figure><artwork align="right">
+This might appear right-aligned.
+</artwork></figure>
+
+<t>Here is a figure that is actually pulled from somewhere else.
+<cref source="cs" anchor="rememberme">
+Remember to check whether that file still exists.</cref></t>
+
+<figure><artwork
+  src="http://www.example.com/~employees/chrissmith/artwork.txt" />
+</figure>
+
+</section>
+
+<section title="Tables">
+
+<t>The following is a table example.</t>
+
+<texttable title="The Noble Gases">
+  <preamble>These are sometimes called "inert" gasses.</preamble>
+  <ttcol>Name</ttcol>
+  <ttcol align="center" width="50%">Symbol</ttcol>
+  <ttcol align="center">Atomic Number</ttcol>
+
+  <c>Helium</c>
+  <c>He</c>
+  <c>2</c>
+
+  <c>Neon</c>
+  <c>Ne</c>
+  <c>10</c>
+
+  <c>Argon</c>
+  <c>Ar</c>
+  <c>18</c>
+
+  <c>Krypton</c>
+  <c>Kr</c>
+  <c>36</c>
+
+  <c>Xenon</c>
+  <c>Xe</c>
+  <c>54</c>
+
+  <c>Radon</c>
+  <c>Rn</c>
+  <c>86</c>
+
+  <postamble>Source: Chemistry 101</postamble>
+</texttable>
+
+<t>The following is a right-aligned table with "full" (but not "all")
+lines between cells.</t>
+
+<texttable align="right" style="full">
+  <ttcol>Time</ttcol>
+  <ttcol align="right">Mood</ttcol>
+
+  <c>Morning</c>
+  <c>Happy!</c>
+
+  <c>Afternoon</c>
+  <c>Happy!</c>
+
+  <c>Evening</c>
+  <c>Somber</c>
+
+</texttable>
+
+</section>
+
+<section anchor="IANA" title="IANA Considerations">
+
+<t>None.</t>
+
+</section>
+
+<section anchor="Security" title="Security Considerations">
+
+<t>There are no security considerations for an imaginary
+Internet Draft.</t>
+
+</section>
+
+<section anchor="Acknowledgements" title="Acknowledgements">
+
+<t>Some of the things included in this draft came from
+Elwyn Davies' templates.</t>
+
+<t>Something to note about this paragraph is that it has a
+pointer to <xref target="specification"/>, and one to
+<xref target="haiku"/>, both of which appear later in the
+document.</t>
+
+<iref item="Introduction" subitem="verbiage" primary="true"/>
+
+</section>
+
+</middle>
+
+<back>
+
+<references title="Normative References">
+
+&RFC2119;
+
+</references>
+
+<references title="Informative References">
+
+<reference anchor="RFC6949">
+<front>
+<title>RFC Series Format Requirements and Future Development</title>
+<author initials="H." surname="Flanagan" fullname="H. Flanagan">
+<organization/></author>
+<author initials="N." surname="Brownlee" fullname="N. Brownlee">
+<organization/></author>
+<date year="2013" month="May"/>
+</front>
+<seriesInfo name="RFC" value="6949"/>
+<annotation>This is a primary reference work.</annotation>
+</reference>
+
+<reference anchor="RED"
+target="http://www.aciri.org/floyd/papers/early.pdf">
+<front>
+<title>Random Early Detection (RED) gateways for Congestion
+Avoidance</title>
+<author fullname="Sally Floyd" initials="S" surname="Floyd">
+<organization>LBL</organization>
+</author>
+<author fullname="Van Jacobson" initials="V" surname="Jacobson">
+<organization>LBL</organization>
+</author>
+<date month="August" year="1993"/>
+</front>
+<seriesInfo name="IEEE/ACM Transactions on Networking"
+value="1(4) 397--413"/>
+<format target="http://www.aciri.org/floyd/papers/early.pdf"
+octets="318703" type="PDF"/>
+</reference>
+
+</references>
+
+</back>
+</rfc>
