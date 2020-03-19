@@ -142,8 +142,7 @@ in this document are to be interpreted as described in
 
 <texttable title="Layers">
   <preamble>Layers of the protocol</preamble>
-  <ttcol>Level</ttcol>
-  <ttcol>Layer</ttcol>
+  <ttcol>Level</ttcol><ttcol>Layer</ttcol>
 
   <c>0</c><c>Tree Structure</c>
 
@@ -153,6 +152,252 @@ in this document are to be interpreted as described in
 
   <c>3</c><c>Relations</c>
 </texttable>
+
+<section anchor="level_0" title="Level 0: Tree Structure">
+
+<t>Lowest protocol's level defines basic tree structure using two primitive types.</t>
+
+<t>
+<list style="symbols">
+
+ <t>Attribute - Value encoded using UBNumber encoding</t>
+
+ <t>Blob - Sequence of bits (bytes) with unspecified length or length specified by some attribute</t>
+</list>
+</t>
+
+<t>Nodes are represented as one or more blocks of bits with child blocks representing child nodes of the tree.</t>
+
+<section anchor="ubnumber_encoding" title="UBNumber Encoding">
+
+<t>UBNumber is encoding which combines unary and binary encoding to represent values with dynamic length. It is typically representing natural non-negative integer number or value of any other type with deterministic mapping to countable set.</t>
+
+<t>Encoding is similar to UTF-8, except that UBNumber is applied recursively when unary part fills all bits of the first byte.</t>
+
+<t>To decode value, non-zero bits are counted for length up to 8 bits and then rest of bits is used as value. Value is also shifted so that there is only one code for each number.</t>
+
+<t>Examples of the UBNatural - codes sequence of bits = value represented value in basic natural non-negative integer number:
+
+<figure title="ALPS Contact Profile document">
+ <artwork><![CDATA[
+  0 0000000                                 = 0
+  0 0000001                                 = 1
+  0 0000010                                 = 2
+  0 0000011                                 = 3
+  ...
+  0 1111111                                 = 7Fh = 127
+  10 000000 | 00000000                      = 80h = 128
+  10 000000 | 00000001                      = 81h = 129
+  ...
+  10 111111 | 11111111                      = 407Fh = 16511
+  110 00000 | 00000000 | 00000000           = 4080h = 16512
+  ...
+]]></artwork>
+</figure>
+</t>
+
+<t>Various interpretations can be mapped on UBNumber encoding. For level 0 following two mappings are used:
+
+<list style="symbols">
+ <t>UBNatural encoding using directly value from UBNumber basic mapping</t>
+
+ <t>UBENatural where value 7Fh is reserved for infinity constant and higher values are shifted by one</t>
+</list>
+</t>
+
+</section>
+
+<section anchor="document" title="Document">
+
+<t>For storing data in file to passing thru file, information about protocol version shall be included.</t>
+
+<t>For version 0.2 of the document, data should start with fixed 6 bytes long data blob called "Document Header" followed by a single block called "Root Block" and any data after root block are optional blob called "Tail Data".</t>
+
+<t>Header for current version of the protocol with hexadecimal codes. Explanation of the each value is non-conformant, primary use is padding to help systems which uses beginning of file for identification of file type.</t>
+
+<texttable title="Header Bytes">
+  <preamble>Structure of file header</preamble>
+  
+  <ttcol>Byte</ttcol><ttcol>Content</ttcol>
+
+  <c>FE</c><c>Unary encoded size of cluster (byte)</c>
+  <c>00</c><c>Reserved for future versions</c>
+  <c>58</c><c>ASCII constant 'X'</c>
+  <c>42</c><c>ASCII constant 'B'</c>
+  <c>00</c><c>UBNatural encoded major version</c>
+  <c>02</c><c>UBNatural encoded minor version</c>
+</texttable>
+
+<t>If header information is known thru the communication channel, document header can be omitted.</t>
+
+</section>
+
+<section anchor="block" title="Block">
+
+<t>There are 3 kinds of blocks: Node Block, Data Block and Terminator</t>
+
+<t>Each block starts with single attribute:
+
+<figure title="">
+ <artwork><![CDATA[
+  UBNatural attributePartSize
+]]></artwork>
+</figure>
+</t>
+
+<t>If attributePartSize equals 0 then this block is called "Terminator" and block ends.</t>
+
+<t>Otherwise it is followed by blob of the length specified by attributePartSize in bytes. Data in attribute part are interpreted as a sequence of attributes encoded in UBNumber encoding.</t>
+
+<t>First attribute in attribute part represents value:
+
+<figure title="">
+ <artwork><![CDATA[
+  UBENatural dataPartSize
+]]></artwork>
+</figure>
+</t>
+
+<t>If dataPartSize value fills exactly whole attribute part then this block is called "Data Block".</t>
+
+<t>Binary blob called data part follows after attribute part and has length in bytes specified by dataPartSize value or if dataPartSize equals infinity bytes in data part are processed and when byte with value zero is used as escape code and, following byte represents how many bytes of zero it represents or end of the data part if it equals zero as well.</t>
+
+<t>If dataPartSize value fills only part of the attribute part then this block is called "Node Block".</t>
+
+<t>Binary blob called data part follows after attribute part. Data in data part are interpreted as a sequence of (child) blocks.</t>
+
+<t>Data part has length in bytes specified by dataPartSize value or if dataPartSize equals infinity, sequence of blocks must be terminated by terminator block.</t>
+
+<t>After data part block ends.</t>
+
+<t>
+<figure title="">
+ <artwork><![CDATA[
+  +---------------------------------------+
+  | == First block's attribute ========== |
+  |                                       |
+  | UBNatural attributePartSize           |
+  +---------------------------------------+
+  | == Attribute part (optional) ======== |
+  |                                       |
+  | UBENatural dataPartSize               |
+  | UBNumber attribute 1                  |
+  | ...                                   |
+  | UBNumber attribute n                  |
+  +---------------------------------------+
+  | == Data part (optional) ============= |
+  |                                       |
+  | Single data blob or child blocks      |
+  +---------------------------------------+
+]]></artwork>
+</figure>
+</t>
+  
+<t>See [block examples].</t>
+
+</section>
+
+<section anchor="validity" title="Validity">
+
+<t>Binary stream is structured correctly as XBUP document (well-formed) if the following conditions are met. Description of invalid state is also included for each condition.</t>
+
+<t>
+<list style="symbols">
+ <t>Optional: Stream header must be present (Corrupted or missing header)</t>
+
+ <t>Optional: Header version must be in supported range (Unsupported version)</t>
+
+ <t>In each block the end of last attribute corresponds to the end of the attribute part (Attribute overflow)</t>
+
+ <t>In each block the end of last subblock corresponds to the end of the data block part (Block overflow)</t>
+
+ <t>The terminal block is present only in blocks where it belongs to (Unexpected terminator)</t>
+
+ <t>End of file is before the end of the root block (Unexpected end of data)</t>
+</list>
+</t>
+
+</section>
+
+</section>
+
+<section anchor="level_1" title="Level 1: Block Types">
+
+<t>Level 1 introduces block types and catalog of types. Since this level, if attribute is defined, but not present, it's value is considered as zero as in the form of UBNumber encoding.</t>
+
+<section anchor="block_type" title="Block Type">
+
+<t>First two attributes in node block are interpreted as follows (somewhat similar to XML Namespaces):</t>
+
+<t>
+<figure title="Block type attributes">
+ <artwork><![CDATA[
+  UBNatural - TypeGroup
+  UBNatural - BlockType
+]]></artwork>
+</figure>
+</t>
+
+<t>These two values determines blocks type.</t>
+
+<t>Block types are organized into groups where TypeGroup value specifies to which group block type belongs and BlockType value specifies particular block type in the corresponding group.</t>
+
+<t>TypeGroup with value 0 is basic build-in group and cannot be overridden. Basic blocks provides ability to specify meaning of other groups via block type declarations, definitions or links to catalog or external source.</t>
+
+</section>
+
+<section anchor="type_context" title="Type Context">
+
+<t>For each block, there is type context which provides mapping of particular block type (as defined above) to particular declaration/definition. Context is typically same for block and it's children, except for **declaration** block and it's **formatDeclaration** parameter, which affects context of **documentRoot** block and also incrementally affects group and block definitions which can use block types already defined in currently processed declaration.</t>
+
+</section>
+
+<section anchor="block_type_definition" title="Block Type Definition">
+
+<t>Block type is defined as a finite sequence of operations where each operation defines one or more attributes and/or child blocks. Operation can define unspecified or refer build-in or previously defined types. There are variants for singular item and list of items, 8 operations in total:
+
+<list style="symbols">
+ <t>Single block - Single child block of any type.</t>
+
+ <t>Single attribute - Single attribute of any type.</t>
+
+ <t>Consist of definition - Single child block of referred type (as a component/element).</t>
+
+ <t>Append definition - Appends all attributes and all child blocks of referred type.</t>
+
+ <t>List of any blocks - One attribute of type UBENatural to define count of blocks of any type and child blocks of that count. When count equals infinity, list of blocks ends with empty block.</t>
+
+ <t>List of attributes - One attribute of type UBNatural to define count of attributes of any type and attributes of that count.</t>
+
+ <t>List of consist of definitions - One attribute of type UBENatural to define count of blocks of referred type and child blocks of that count. When count equals infinity, list of blocks ends with empty block.</t>
+
+ <t>List of appended definitions - Appends one attribute of type UBNatural to define count of blocks of defined type and appends all attributes and all child blocks of referred type of that count.</t>
+</list>
+</t>
+
+<t>Following syntax is used:</t>
+
+<t>
+<figure title="Block type attributes">
+ <artwork><![CDATA[
+  any - Single block
+  attribute - Single attribute
+  block_type_name - Consist of definition
+  +block_type_name - Append definition
+]]></artwork>
+</figure>
+</t>
+
+<t>List variants of the operations ends with brackets "[]".</t>
+
+</section>
+
+
+</section>
+
+</section>
+
+<section anchor="out" title="Out">
 
 <t>This is a reference to <xref target="RFC6949"/>.
 Actually, the reference itself is not all that interesting, but the
