@@ -178,7 +178,7 @@ in this document are to be interpreted as described in
 
 <t>Examples of the UBNatural - codes sequence of bits = value represented value in basic natural non-negative integer number:
 
-<figure title="ALPS Contact Profile document">
+<figure title="UBNumber codes and values">
  <artwork><![CDATA[
   0 0000000                                 = 0
   0 0000001                                 = 1
@@ -392,207 +392,315 @@ in this document are to be interpreted as described in
 
 </section>
 
+<section anchor="basic_blocks_definition" title="Basic Blocks Definition">
+
+<t>Following blocks are defined as build-in. TODO: Move to appendix?</t>
+
+<t>
+<list style="symbols">
+
+ <t>Unspecified (0)<vspace/>
+
+ This block is used for unspecified block values or data padding. Can be used to represent nil / null values.</t>
+
+ <t>Document Declaration (1)<vspace/>
+
+ Declaration block determines the allowed range of groups. This block should be located at the beginning of each file, if the application didn't provide any static/special meaning, but it might be used anywhere inside document as well.
+
+<figure title="Document Declaration">
+ <artwork><![CDATA[
+  +Natural groupsCount - The number of allocated groups
+  +Natural preserveGroups - The number of groups to keep from
+    previous declarations
+  FormatDeclaration formatDeclaration - Declaration of format
+  Any documentRoot - Root node of document
+]]></artwork>
+</figure>
+
+For subblocks of this block there is permitted range of values in the interval group preserveGroups + 1 .. preserveGroups + groupsCount + 1. preservedGroups + groupsCount + 1. If the value reserveGroups = 0, takes the highest not yet reserved group in the current or parental blocks + 1. For all values of zero and the application of rules of cutting the block of zeros coincides with the data block.</t>
+
+ <t>Format Declaration (2)<vspace/>
+
+ Format declaration allows you use either declaration from catalog or local format definition or both.
+
+<figure title="Format Declaration">
+ <artwork><![CDATA[
+  +CatalogFormatSpecPath catalogFormatSpecPath - Specification
+    of format defined as path in catalog
+  +Natural formatSpecRevision - Specification's revision number
+  FormatDefinition formatDefinition
+]]></artwork>
+</figure>
+</t>
+
+ <t>Format Definition (3)
+
+This block allows to specify the basic structure of format specification. Specifies the sequence of parameters using either **join** or **consist** operation.
+
+<figure title="Format Definition">
+ <artwork><![CDATA[
+  Any[] formatParameters - Join or Consist format parameters
+  +RevisionDefinition[] revisions
+]]></artwork>
+</figure>
+ </t>
+
+ <t>Format Join Parameter (4)
+
+<figure title="Format Join Parameter">
+ <artwork><![CDATA[
+  +FormatDeclaration formatDeclaration
+]]></artwork>
+</figure>
+ </t>
+
+ <t>Format Consist Parameter (5)
+
+<figure title="Format Consist Parameter">
+ <artwork><![CDATA[
+  +GroupDeclaration groupDeclaration
+]]></artwork>
+</figure>
+ </t>
+
+ <t>Group Declaration (6)
+
+Group declaration allows you use either declaration from catalog or local group definition or both.
+
+<figure title="Group Declaration">
+ <artwork><![CDATA[
+  +CatalogGroupSpecPath catalogGroupSpecPath - Specification
+    of format defined as path in catalog
+  +Natural groupSpecRevision - Specification's revision number
+  GroupDefinition groupDefinition
+]]></artwork>
+</figure>
+</t>
+
+ <t>Group Definition (7)
+
+This block allows to specify the basic structure of group specification. Specifies the sequence of parameters using either
+**join** or **consist** operation.
+
+<figure title="Group Definition">
+ <artwork><![CDATA[
+  Any[] groupParameters - Join or Consist group parameters
+  +RevisionDefinition[] revisions
+]]></artwork>
+</figure>
+</t>
+
+ <t>Group Join Parameter (8)
+
+<figure title="Group Join Parameter">
+ <artwork><![CDATA[
+  +GroupDeclaration groupDeclaration
+]]></artwork>
+</figure>
+</t>
+
+ <t>Group Consist Parameter (9)
+
+<figure title="Group Consist Parameter">
+ <artwork><![CDATA[
+  +BlockDeclaration blockDeclaration
+]]></artwork>
+</figure>
+</t>
+
+ <t>Group Declaration (10)
+
+Block declaration allows you use either declaration from catalog or local block definition or both.
+
+<figure title="Group Declaration">
+ <artwork><![CDATA[
+  +CatalogBlockSpecPath catalogBlockSpecPath - Specification
+    of format defined as path in catalog
+  +Natural blockSpecRevision - Specification's revision number
+  BlockDefinition blockDefinition
+]]></artwork>
+</figure>
+</t>
+
+ <t>Block Definition (11)
+
+This block allows to specify the basic structure of block specification. Specifies the sequence of parameters using either **join**, **consist**, **list join** or **list consist** operation.
+
+<figure title="Block Definition">
+ <artwork><![CDATA[
+  Any[] blockParameters - Join or Consist or List Join or List
+    Consist block parameters
+  +RevisionDefinition[] revisions
+]]></artwork>
+</figure>
+</t>
+
+ <t>Block Join Parameter (12)
+
+<figure title="Block Join Parameter">
+ <artwork><![CDATA[
+  +BlockDeclaration blockDeclaration
+]]></artwork>
+</figure>
+</t>
+  
+ <t>Block Consist Parameter (13)
+
+<figure title="Block Consist Parameter">
+ <artwork><![CDATA[
+  +BlockDeclaration blockDeclaration
+]]></artwork>
+</figure>
+</t>
+
+ <t>Block List Join Parameter (14)
+
+<figure title="Block List Join Parameter">
+ <artwork><![CDATA[
+  +BlockDeclaration blockDeclaration
+]]></artwork>
+</figure>
+</t>
+
+ <t>Block List Consist Parameter (15)
+
+<figure title="Block List Consist Parameter">
+ <artwork><![CDATA[
+  +BlockDeclaration blockDeclaration
+]]></artwork>
+</figure>
+</t>
+
+ <t>Revision Definition (16)
+
+Block allows to define parameters count for particular specification definition.
+
+<figure title="Revision Definition">
+ <artwork><![CDATA[
+  +Natural parametersCount
+]]></artwork>
+</figure>
+</t>
+
+</list>
+</t>
+
+</section>
+
+<section anchor="main_catalog" title="Main Catalog">
+
+<t>To specify basic data types, catalog of block type definitions is established.</t>
+
+<t>Catalog is structured as a tree of definitions, where each block type has a unique identifier (sequence of natural numbers).</t>
 
 </section>
 
 </section>
 
-<section anchor="out" title="Out">
+<section anchor="level_2" title="Level 2: Transformations">
 
-<t>This is a reference to <xref target="RFC6949"/>.
-Actually, the reference itself is not all that interesting, but the
-way that the reference is incorporated is. Note that the inclusion
-of RFC 2119 was done at the top of the XML, while the information
-for RFC 6949 is done directly in the references section.</t>
-
-<t>The <eref target="http://www.ietf.org">IETF web site</eref> is
-<spanx style="emph">quite</spanx>
-<spanx style="strong">nice</spanx>,
-<spanx style="verb">isn't it</spanx>?
-Unlike other web sites, it doesn't use
-<vspace blankLines="2" />gratuitous vertical space.</t>
 
 </section>
 
-<section title="Basic Lists">
+</section>
 
-<t>Bulleted lists are good for items that
-are not ordered:
+<section anchor="todo" title="Todo">
+
+<section anchor="examples_of_blocks" title="Examples of Blocks">
+	
+<t>Fixed size Node block with one attribute</t>
+
+<texttable title="Layers">
+  <preamble>Fixed size Node block with one attribute</preamble>
+  <ttcol>Byte</ttcol><ttcol>Value</ttcol>
+
+  <c>02</c><c>AttributePartSize</c>
+  <c>00</c><c>DataPartSize</c>
+  <c>00</c><c>Attribute 1</c>
+</texttable>
+
+<t>Terminated node block with one attribute</t>
+
+<texttable title="Layers">
+  <preamble>Fixed size Node block with one attribute</preamble>
+  <ttcol>Byte</ttcol><ttcol>Value</ttcol>
+
+  <c>02</c><c>AttributePartSize</c>
+  <c>7F</c><c>DataPartSize</c>
+  <c>05</c><c>Attribute 1</c>
+  <c>00</c><c>Terminator</c>
+</texttable>
+
+<t>Fixed size empty data block</t>
+
+<texttable title="Layers">
+  <preamble>Fixed size Node block with one attribute</preamble>
+  <ttcol>Byte</ttcol><ttcol>Value</ttcol>
+
+  <c>01</c><c>AttributePartSize</c>
+  <c>00</c><c>DataPartSize</c>
+</texttable>
+
+<t>Terminated empty data block</t>
+
+<texttable title="Layers">
+  <preamble>Fixed size Node block with one attribute</preamble>
+  <ttcol>Byte</ttcol><ttcol>Value</ttcol>
+
+  <c>01</c><c>AttributePartSize</c>
+  <c>7F</c><c>DataPartSize</c>
+  <c>00</c><c>Data block escape</c>
+  <c>00</c><c>Termination value</c>
+</texttable>
+
+</section>
+
+<section anchor="appendix_parsing" title="Appendix 1: Parsing">
+
+<t>To process level 0 protocol following 4 types of tokens are used:
 
 <list style="symbols">
 
-<t>This is the first item.</t>
+ <t>begin (terminationMode flag)</t>
+ <t>attribute (UBNumber value)</t>
+ <t>data (Binary data)</t>
+ <t>end</t>
 
-<t>This is the second item. Here comes a sub-list:
+</list>
+</t>
 
-<list style="symbols">
+<t>Following simplified grammar can be used for token processing.</t>
 
-<t>This is the first sub-item.</t>
-
-<t>This is the second sub-item<vspace/>
-and some more detail on the second sub-item.</t>
-
-</list></t>
-
-<t>This is the item after the sub-list.</t>
-
-</list></t>
-
-<t>Numbered lists are good for items that are ordered:
-
-<list style="numbers">
-
-<t>This is the first item.</t>
-
-<t>This is the second item. Here comes a sub-list, but
-with letters:
-
-<list style="letters">
-
-<t>This is the first sub-item.</t>
-
-<t>This is the second sub-item</t>
-
-</list></t>
-
-<t>This is the item after the sub-list.</t>
-
-</list></t>
-
-<t>And an example of hanging indent.
-
-<list style="hanging" hangIndent="15">
-
-<t hangText="Trees">These are bigger plants</t>
-
-<t hangText="Lichen">These are smaller plants</t>
-
-</list></t>
-
-<t>And the always-interesting "format" for lists.
-
-<list style="format --%d--">
-
-<t>An element that gets a funny bullet.</t>
-
-</list></t>
+<t>
+<figure title="Simplified grammar">
+ <artwork><![CDATA[
+  Document ::= header + Block + data
+  Block ::= begin + Attributes + Blocks + end | begin + data + end
+  Blocks ::= Block + Blocks | epsilon
+  Attributes ::= attribute + Attributes | epsilon
+]]></artwork>
+</figure>
+</t>
 
 </section>
-
-<section title="Figures">
-
-<t>The following is a figure with a caption.
-Also, it uses the ampersand (&amp;) and less than
-(&lt;) characters in the example text.</t>
-
-<figure title="This could be haiku" anchor="haiku">
-<artwork type="haiku" align="left">
-   The ampersand (&amp;) and
-   less than (&lt;) are two characters
-   that need escaping. 
-</artwork>
-</figure>
-
-<t>Here are two short figures with no titles and with
-odd alignment.</t>
-
-<figure><artwork align="center">
-This might appear in the center.
-</artwork></figure>
-
-<figure><artwork align="right">
-This might appear right-aligned.
-</artwork></figure>
-
-<t>Here is a figure that is actually pulled from somewhere else.
-<cref source="cs" anchor="rememberme">
-Remember to check whether that file still exists.</cref></t>
-
-<figure><artwork
-  src="http://www.example.com/~employees/chrissmith/artwork.txt" />
-</figure>
-
-</section>
-
-<section title="Tables">
-
-<t>The following is a table example.</t>
-
-<texttable title="The Noble Gases">
-  <preamble>These are sometimes called "inert" gasses.</preamble>
-  <ttcol>Name</ttcol>
-  <ttcol align="center" width="50%">Symbol</ttcol>
-  <ttcol align="center">Atomic Number</ttcol>
-
-  <c>Helium</c>
-  <c>He</c>
-  <c>2</c>
-
-  <c>Neon</c>
-  <c>Ne</c>
-  <c>10</c>
-
-  <c>Argon</c>
-  <c>Ar</c>
-  <c>18</c>
-
-  <c>Krypton</c>
-  <c>Kr</c>
-  <c>36</c>
-
-  <c>Xenon</c>
-  <c>Xe</c>
-  <c>54</c>
-
-  <c>Radon</c>
-  <c>Rn</c>
-  <c>86</c>
-
-  <postamble>Source: Chemistry 101</postamble>
-</texttable>
-
-<t>The following is a right-aligned table with "full" (but not "all")
-lines between cells.</t>
-
-<texttable align="right" style="full">
-  <ttcol>Time</ttcol>
-  <ttcol align="right">Mood</ttcol>
-
-  <c>Morning</c>
-  <c>Happy!</c>
-
-  <c>Afternoon</c>
-  <c>Happy!</c>
-
-  <c>Evening</c>
-  <c>Somber</c>
-
-</texttable>
 
 </section>
 
 <section anchor="IANA" title="IANA Considerations">
 
-<t>None.</t>
+<t>TBD</t>
 
 </section>
 
 <section anchor="Security" title="Security Considerations">
 
-<t>There are no security considerations for an imaginary
-Internet Draft.</t>
+<t>TBD</t>
 
 </section>
 
 <section anchor="Acknowledgements" title="Acknowledgements">
 
-<t>Some of the things included in this draft came from
-Elwyn Davies' templates.</t>
-
-<t>Something to note about this paragraph is that it has a
-pointer to <xref target="specification"/>, and one to
-<xref target="haiku"/>, both of which appear later in the
-document.</t>
+<t>TBD</t>
 
 <iref item="Introduction" subitem="verbiage" primary="true"/>
 
@@ -605,42 +713,6 @@ document.</t>
 <references title="Normative References">
 
 &RFC2119;
-
-</references>
-
-<references title="Informative References">
-
-<reference anchor="RFC6949">
-<front>
-<title>RFC Series Format Requirements and Future Development</title>
-<author initials="H." surname="Flanagan" fullname="H. Flanagan">
-<organization/></author>
-<author initials="N." surname="Brownlee" fullname="N. Brownlee">
-<organization/></author>
-<date year="2013" month="May"/>
-</front>
-<seriesInfo name="RFC" value="6949"/>
-<annotation>This is a primary reference work.</annotation>
-</reference>
-
-<reference anchor="RED"
-target="http://www.aciri.org/floyd/papers/early.pdf">
-<front>
-<title>Random Early Detection (RED) gateways for Congestion
-Avoidance</title>
-<author fullname="Sally Floyd" initials="S" surname="Floyd">
-<organization>LBL</organization>
-</author>
-<author fullname="Van Jacobson" initials="V" surname="Jacobson">
-<organization>LBL</organization>
-</author>
-<date month="August" year="1993"/>
-</front>
-<seriesInfo name="IEEE/ACM Transactions on Networking"
-value="1(4) 397--413"/>
-<format target="http://www.aciri.org/floyd/papers/early.pdf"
-octets="318703" type="PDF"/>
-</reference>
 
 </references>
 
