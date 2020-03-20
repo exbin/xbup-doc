@@ -38,7 +38,7 @@ Extensible Binary Universal Protocol (XBUP)
 
 <abstract>
 <t>The Extensible Binary Universal Protocol (XBUP) is a prototype of general purpose binary data protocol and file format with primary focus on data abstraction and transformation.</t>
-<t>This proposal describes specification of bottom levels of protocol and set of basic data types and recommended API.</t>
+<t>This proposal describes specification of version 0.2 of bottom levels of the protocol and set of basic data types and recommended API.</t>
 </abstract>
 
 <note title="Contributing">
@@ -136,9 +136,11 @@ in this document are to be interpreted as described in
 
 <section anchor="specification" title="XBUP Specification">
 
-<t>XBUP is multi-layer protocol, where each layer is build on top of previous layer providing new capabilities (new features and/or constraints). Layers are indexed as levels by depth starting with level 0.</t>
+<t>XBUP is multi-layer protocol for representation of data in bit/byte stream, where each layer is build on top of previous layer providing new capabilities (new constraints and/or features).</t>
 
 <t>Applications can support only specific level of XBUP protocol when full support is not necessary.</t>
+
+<t>Layers are indexed as levels by depth starting with level 0.</t>
 
 <texttable title="Layers">
   <preamble>Layers of the protocol</preamble>
@@ -170,7 +172,7 @@ in this document are to be interpreted as described in
 
 <section anchor="ubnumber_encoding" title="UBNumber Encoding">
 
-<t>UBNumber is encoding which combines unary and binary encoding to represent values with dynamic length. It is typically representing natural non-negative integer number or value of any other type with deterministic mapping to countable set.</t>
+<t>UBNumber is encoding which combines unary and binary encoding to represent values with dynamic length. It is typically representing natural non-negative integer number (or value of any other type with deterministic mapping to well ordered / countably infinite set).</t>
 
 <t>Encoding is similar to UTF-8, except that UBNumber is applied recursively when unary part fills all bits of the first byte.</t>
 
@@ -209,13 +211,15 @@ in this document are to be interpreted as described in
 
 <section anchor="document" title="Document">
 
-<t>For storing data in file to passing thru file, information about protocol version shall be included.</t>
+<t>Single document is typically represented as a single block, but there can be additional optional data present.</t>
 
-<t>For version 0.2 of the document, data should start with fixed 6 bytes long data blob called "Document Header" followed by a single block called "Root Block" and any data after root block are optional blob called "Tail Data".</t>
+<t>To store document in the file in file system or for use in the undeclared data stream, additional "Document header" should be present.</t>
 
-<t>Header for current version of the protocol with hexadecimal codes. Explanation of the each value is non-conformant, primary use is padding to help systems which uses beginning of file for identification of file type.</t>
+<t>Document header contains information about protocol version shall be included. For the version 0.2 of the protocol, it is 6 bytes long data blob. Explanation of the each value is non-conformant, primary use is padding to help systems which uses beginning of file for identification of file type.</t>
 
-<texttable title="Header Bytes">
+<t>Document header with hexadecimal values.</t>
+
+<texttable title="Document Header Bytes">
   <preamble>Structure of file header</preamble>
   
   <ttcol>Byte</ttcol><ttcol>Content</ttcol>
@@ -228,7 +232,7 @@ in this document are to be interpreted as described in
   <c>02</c><c>UBNatural encoded minor version</c>
 </texttable>
 
-<t>If header information is known thru the communication channel, document header can be omitted.</t>
+<t>Primary block called "Root Block" follows and any data after root block are optional blob called "Tail Data".</t>
 
 </section>
 
@@ -247,7 +251,7 @@ in this document are to be interpreted as described in
 
 <t>If attributePartSize equals 0 then this block is called "Terminator" and block ends.</t>
 
-<t>Otherwise it is followed by blob of the length specified by attributePartSize in bytes. Data in attribute part are interpreted as a sequence of attributes encoded in UBNumber encoding.</t>
+<t>Otherwise it is followed by blob of the length specified by attributePartSize in bytes. Data in attribute part are interpreted as a nonempty sequence of attributes encoded in UBNumber encoding.</t>
 
 <t>First attribute in attribute part represents value:
 
@@ -260,7 +264,7 @@ in this document are to be interpreted as described in
 
 <t>If dataPartSize value fills exactly whole attribute part then this block is called "Data Block".</t>
 
-<t>Binary blob called data part follows after attribute part and has length in bytes specified by dataPartSize value or if dataPartSize equals infinity bytes in data part are processed and when byte with value zero is used as escape code and, following byte represents how many bytes of zero it represents or end of the data part if it equals zero as well.</t>
+<t>Binary blob called data part follows after attribute part and has length in bytes specified by dataPartSize value or if dataPartSize equals infinity, bytes in data part are processed and when byte with value zero is used as escape code and, following byte represents how many bytes of zero it represents or end of the data part if it equals zero as well.</t>
 
 <t>If dataPartSize value fills only part of the attribute part then this block is called "Node Block".</t>
 
