@@ -38,11 +38,11 @@ Extensible Binary Universal Protocol (XBUP)
 
 <abstract>
 <t>The Extensible Binary Universal Protocol (XBUP) is a prototype of general purpose binary data protocol and file format with primary focus on data abstraction and transformation.</t>
-<t>This proposal describes specification of version 0.2 of bottom levels of the protocol and set of basic data types and recommended API.</t>
+<t>This proposal describes specification of version 0.2 of bottom levels of the protocol and set of basic data types and the recommended API.</t>
 </abstract>
 
 <note title="Contributing">
-<t>This document is being worked on by ExBin Project. Primary goal is to gather comments and raise interest in this project.</t>
+<t>This document is being worked on by ExBin Project, aiming to gather comments and to raise interest in this project.</t>
 <t>To participate on the development of this project, visit <eref target="https://xbup.exbin.org/?participate">https://xbup.exbin.org/?participate</eref>.</t>
 </note>
 
@@ -71,18 +71,18 @@ Extensible Binary Universal Protocol (XBUP)
 </list>
 </t>
 
-<t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of specific mark-up language. Please see "Formats comparison" section for more.</t>
+<t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of specific mark-up language. See "Formats comparison" section for more information about this topic.</t>
 
-<section anchor="objectives" title="Objectives">
+<section anchor="goals" title="Goals">
 
 <t>The primary goal of this project is to create a communication protocol / data format with the following characteristics, ordered by priority:
 
 <list style="symbols">
- <t>Universal - Capable to represent any type of data, suitable for wide use including streaming, long-term storage and parallel access</t>
- <t>Independent - Not tightly linked to particular spoken language, product, company, processing architecture or programming language</t>
- <t>Declarative - Self sufficient for data type definition and ability to build data types on top of each other and combine them together</t>
+ <t>Universal - Capable of representation of any type of data, suitable for wide use including streaming, long-term storage and parallel access</t>
+ <t>Independent - Not tightly linked to a particular spoken language, product, company, processing architecture or programming language</t>
+ <t>Declarative - Self sufficient for data type definition and with ability to build data types on top of each other and to combine them together</t>
  <t>Normative - Providing reference form for data representation</t>
- <t>Flexible - Support for data transformations, compatibility and extensibility</t>
+ <t>Flexible - Support for data transformations, compatibility and extensibility handling</t>
  <t>Efficient - Effective data compacting / compression support for plain binary and structured data</t>
 </list>
 </t>
@@ -91,18 +91,18 @@ Extensible Binary Universal Protocol (XBUP)
 
 <section anchor="motivation" title="Motivation">
 
-<t>Project should provide universal protocol as a more feature-rich alternative to currently used binary protocols. It should provide general methods for handling various types of data including:
+<t>Project should provide universal protocol as a more feature-rich alternative to currently used binary protocols. It should provide general methods for handling data of various character and types including:
 
 <list style="symbols">
- <t>Multimedia files - Audio, Video, Animation</t>
- <t>Filesystem structure - Allow to represent data in the form of filesystem or as compressed archive</t>
- <t>Application API - Remote or local methods execution supporting parameters and result passing</t>
+ <t>Multimedia files - Audio, video, animation, 3D</t>
+ <t>Filesystem structure - Allow to represent data in the form of filesystem or as a compressed archive</t>
+ <t>Application API - Remote or local method call execution, supporting parameters and result passing and error handling</t>
  <t>Serialization protocol - Provide ability to serialize structured data</t>
- <t>Long-term storage - Provide way to define data with separate or integrated specification</t>
+ <t>Long-term storage - Provide way to define data with external or integrated specification</t>
  <t>Huge data - Use dynamic numeric values to allow support for data in terabytes range or greater</t>
- <t>Segmented, paged, fragmented data</t>
- <t>Structural data for database representation</t>
- <t>Indexes, error detection and correction data</t>
+ <t>Random access - Segmented, paged, fragmented data</t>
+ <t>Parallel processing - Atomicity, structural data for database representation</t>
+ <t>Indexes, error detection and data correction</t>
 </list>
 </t>
 
@@ -116,7 +116,7 @@ Extensible Binary Universal Protocol (XBUP)
 
  <t>Compare to wide range of existing binary formats with fixed block structure (for example RIFF), this project aims to provide more unified access to all data structures and their definitions</t>
 
- <t>Compare to formats based on serialization of data primitives (for example Protocol Buffers) this project aims to provide capability for data definitions which would make transmitting primitive types unnecessary</t>
+ <t>Compare to formats based on serialization of data primitives (for example Protocol Buffers, CBOR) this project aims to provide capability for data definitions which would make transmitting primitive types unnecessary</t>
 
  <t>Multi-level approach should allow to simplify and improve use compare to other dynamic binary formats (for example HDF5, ASN.1 and EBML)</t>
 </list>
@@ -211,13 +211,13 @@ in this document are to be interpreted as described in
 
 <section anchor="document" title="Document">
 
-<t>Single document is typically represented as a single block, but there can be additional optional data present.</t>
+<t>Single document is typically represented as a single block, but there can be additional optional tail data present.</t>
 
 <t>To store document in the file in file system or for use in the undeclared data stream, additional "Document header" should be present.</t>
 
 <t>Document header contains information about protocol version shall be included. For the version 0.2 of the protocol, it is 6 bytes long data blob. Explanation of the each value is non-conformant, primary use is padding to help systems which uses beginning of file for identification of file type.</t>
 
-<t>Document header with hexadecimal values.</t>
+<t>Document header with hexadecimal values:</t>
 
 <texttable title="Document Header Bytes">
   <preamble>Structure of file header</preamble>
@@ -352,7 +352,9 @@ in this document are to be interpreted as described in
 
 <section anchor="type_context" title="Type Context">
 
-<t>For each block, there is type context which provides mapping of particular block type (as defined above) to particular declaration/definition. Context is typically same for block and it's children, except for **declaration** block and it's **formatDeclaration** parameter, which affects context of **documentRoot** block and also incrementally affects group and block definitions which can use block types already defined in currently processed declaration.</t>
+<t>For each block, there is type context which provides mapping of particular block type (as defined above) to particular declaration/definition (similar to XML Namespaces context). Context is the same for block and all it's children, except for "Document Declaration" block which is used to change context.</t>
+
+<t>Range of groups and range of blocks for each group is speficied.</t>
 
 </section>
 
@@ -439,7 +441,7 @@ For subblocks of this block there is permitted range of values in the interval g
 
  <t>Format Definition (3)
 
-This block allows to specify the basic structure of format specification. Specifies the sequence of parameters using either **join** or **consist** operation.
+This block allows to specify the basic structure of format specification. Specifies the sequence of parameters using either join or consist operation.
 
 <figure title="Format Definition">
  <artwork><![CDATA[
@@ -484,7 +486,7 @@ Group declaration allows you use either declaration from catalog or local group 
  <t>Group Definition (7)
 
 This block allows to specify the basic structure of group specification. Specifies the sequence of parameters using either
-**join** or **consist** operation.
+join or consist operation.
 
 <figure title="Group Definition">
  <artwork><![CDATA[
@@ -528,7 +530,7 @@ Block declaration allows you use either declaration from catalog or local block 
 
  <t>Block Definition (11)
 
-This block allows to specify the basic structure of block specification. Specifies the sequence of parameters using either **join**, **consist**, **list join** or **list consist** operation.
+This block allows to specify the basic structure of block specification. Specifies the sequence of parameters using either join, consist, list join or list consist operation.
 
 <figure title="Block Definition">
  <artwork><![CDATA[
@@ -611,55 +613,80 @@ Block allows to define parameters count for particular specification definition.
 <section anchor="todo" title="Todo">
 
 <section anchor="examples_of_blocks" title="Examples of Blocks">
-	
-<t>Fixed size Node block with one attribute</t>
 
-<texttable title="Layers">
-  <preamble>Fixed size Node block with one attribute</preamble>
+<t>Fixed size node block with one attribute</t>
+<texttable title="Stream Data">
   <ttcol>Byte</ttcol><ttcol>Value</ttcol>
-
   <c>02</c><c>AttributePartSize</c>
   <c>00</c><c>DataPartSize</c>
-  <c>00</c><c>Attribute 1</c>
+  <c>77</c><c>Attribute 1 of value 0x77</c>
 </texttable>
 
 <t>Terminated node block with one attribute</t>
-
-<texttable title="Layers">
-  <preamble>Fixed size Node block with one attribute</preamble>
+<texttable title="Stream Data">
   <ttcol>Byte</ttcol><ttcol>Value</ttcol>
-
   <c>02</c><c>AttributePartSize</c>
   <c>7F</c><c>DataPartSize</c>
   <c>05</c><c>Attribute 1</c>
   <c>00</c><c>Terminator</c>
 </texttable>
 
-<t>Fixed size empty data block</t>
-
-<texttable title="Layers">
-  <preamble>Fixed size Node block with one attribute</preamble>
+<t>Fixed size data block</t>
+<texttable title="Stream Data">
   <ttcol>Byte</ttcol><ttcol>Value</ttcol>
-
   <c>01</c><c>AttributePartSize</c>
-  <c>00</c><c>DataPartSize</c>
+  <c>01</c><c>DataPartSize</c>
+  <c>BB</c><c>One byte of data 0xBB</c>
 </texttable>
 
 <t>Terminated empty data block</t>
-
-<texttable title="Layers">
-  <preamble>Fixed size Node block with one attribute</preamble>
+<texttable title="Stream Data">
   <ttcol>Byte</ttcol><ttcol>Value</ttcol>
-
   <c>01</c><c>AttributePartSize</c>
   <c>7F</c><c>DataPartSize</c>
   <c>00</c><c>Data block escape</c>
   <c>00</c><c>Termination value</c>
 </texttable>
 
+<t>Fixed block with one child</t>
+<texttable title="Stream Data">
+  <ttcol>Byte</ttcol><ttcol>Value</ttcol>
+  <c>02</c><c>AttributePartSize</c>
+  <c>03</c><c>DataPartSize</c>
+  <c>66</c><c>Attribute 1 of value 0x66</c>
+  <c>  02</c><c>AttributePartSize</c>
+  <c>  00</c><c>DataPartSize</c>
+  <c>  77</c><c>Attribute 1 of value 0x77</c>
+</texttable>
+
 </section>
 
-<section anchor="appendix_parsing" title="Appendix 1: Parsing">
+<section anchor="appendix_abstraction" title="Appendix 1: Abstraction">
+
+<t>Concept of data used in this protocol is using set theory, where set must be countable as well for each member of data there must exist mapping to countable set.</t>
+
+<t>At the same time data definitions are similar to table columns definition used in relation databases, except that infinite number of items is also supported.</t>
+
+<t>Protocol processing is based on broad concept of dataflow paradigm, which typically state that there are input data, process and output data.</t>
+
+<t>Additional requirement here is, that process must be deterministic (for same input return the same output), but other than that, it can be run in any manner - from local function in memory up to remote process in cloud.</t>
+
+</section>
+
+<section anchor="appendix_parsing" title="Appendix 2: Parsing">
+
+<t>Similar to parsing of textual formats, it's possible to provide parsing capability for binary protocol.
+
+<list style="symbols">
+<t>Object Model Parsing</t>
+<t>Pull Parsing</t>
+<t>Event Parsing</t>
+<t>Hybrid Approaches</t>
+</list>
+
+</t>
+
+<section anchor="appendix_parsing_level_0" title="Level 0 Parsing">
 
 <t>To process level 0 protocol following 4 types of tokens are used:
 
@@ -690,9 +717,11 @@ Block allows to define parameters count for particular specification definition.
 
 </section>
 
+</section>
+
 <section anchor="IANA" title="IANA Considerations">
 
-<t>TBD</t>
+<t>In the current early state of the development of the protocol, just basic media type for general files is defined: application/x-xbup</t>
 
 </section>
 
