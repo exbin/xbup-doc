@@ -29,7 +29,7 @@ Extensible Binary Universal Protocol (XBUP)
 </address>
 </author>
 
-<date year="2020" month="March"/>
+<date year="2020" month="June"/>
 
 <area>General</area>
 <workgroup>(TBD)</workgroup>
@@ -42,7 +42,7 @@ Extensible Binary Universal Protocol (XBUP)
 </abstract>
 
 <note title="Contributing">
-<t>This document is being worked on by ExBin Project, aiming to gather comments and to raise interest in this project.</t>
+<t>This document is being worked on by <eref target="https://exbin.org">ExBin Project</eref>, aiming to gather comments and to raise interest in this project.</t>
 <t>To participate on the development of this project, visit <eref target="https://xbup.exbin.org/?participate">https://xbup.exbin.org/?participate</eref>.</t>
 </note>
 
@@ -71,16 +71,16 @@ Extensible Binary Universal Protocol (XBUP)
 </list>
 </t>
 
-<t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of specific mark-up language. See "Formats comparison" section for more information about this topic.</t>
+<t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of a specific mark-up language. See <xref target="format_comparison">Formats comparison</xref> for more information.</t>
 
 <section anchor="goals" title="Goals">
 
 <t>The primary goal of this project is to create a communication protocol / data format with the following characteristics, ordered by priority:
 
 <list style="symbols">
- <t>Universal - Capable of representation of any type of data, suitable for wide use including streaming, long-term storage and parallel access</t>
+ <t>Universal - Capable of representation of any type of data, suitable for wide use including streaming, long-term storage and parallel accessing</t>
  <t>Independent - Not tightly linked to a particular spoken language, product, company, processing architecture or programming language</t>
- <t>Declarative - Self sufficient for data type definition and with ability to build data types on top of each other and to combine them together</t>
+ <t>Declarative - Self sufficient for data type definition and with the ability to build data types on top of each other and to combine them together</t>
  <t>Normative - Providing reference form for data representation</t>
  <t>Flexible - Support for data transformations, compatibility and extensibility handling</t>
  <t>Efficient - Effective data compacting / compression support for plain binary and structured data</t>
@@ -97,8 +97,7 @@ Extensible Binary Universal Protocol (XBUP)
  <t>Multimedia files - Audio, video, animation, 3D</t>
  <t>Filesystem structure - Allow to represent data in the form of filesystem or as a compressed archive</t>
  <t>Application API - Remote or local method call execution, supporting parameters and result passing and error handling</t>
- <t>Serialization protocol - Provide ability to serialize structured data</t>
- <t>Long-term storage - Provide way to define data with external or integrated specification</t>
+ <t>Serialization protocol - Provide ability to serialize non-structured data</t>
  <t>Huge data - Use dynamic numeric values to allow support for data in terabytes range or greater</t>
  <t>Random access - Segmented, paged, fragmented data</t>
  <t>Parallel processing - Atomicity, structural data for database representation</t>
@@ -106,19 +105,14 @@ Extensible Binary Universal Protocol (XBUP)
 </list>
 </t>
 
-<t>While there are various binary formats and markup languages available, this project aims to take somewhat different approach to data representation.</t>
+<t>From the users point of view, protocol should provide new capabilities or enable new development in various areas:
 
-<t>
 <list style="symbols">
- <t>While SGML, XML and related technologies were huge inspiration for this project, it seems that it wouldn't be feasible to use them as base for the binary variant due to attribute vs. child tag duality and use of Unicode string as a primitive data type in contrast to countable set used by this project</t>
-
- <t>Using binary format is basically a necessity to make protocol reasonable usable for universal data like for example audio or video even thou text formats (for example JSON, YAML) provide easy of use and readability advantages</t>
-
- <t>Compare to wide range of existing binary formats with fixed block structure (for example RIFF), this project aims to provide more unified access to all data structures and their definitions</t>
-
- <t>Compare to formats based on serialization of data primitives (for example Protocol Buffers, CBOR) this project aims to provide capability for data definitions which would make transmitting primitive types unnecessary</t>
-
- <t>Multi-level approach should allow to simplify and improve use compare to other dynamic binary formats (for example HDF5, ASN.1 and EBML)</t>
+ <t>Browseable binary content - Provide capability for viewing and editation of data, including visual and graphical tools and textual tools with multiple available syntaxes and supported languages</t>
+ <t>Strong building blocks - Provide well specified data representation and ability to construct even complex data structures from combining data type definitions from wide libraries</t>
+ <t>Flexible modular applications - With the ability to provide both independent API and data interchange format and with automatic transformation between both of them, it should be possible to utilize the protocol to enhance approach for modular applications design</t>
+ <t>Long-term storage - Provide way to define data with external or integrated specification</t>
+ <t>Comprehensive scientific protocol - With the multiple levels of protocol and capability to define unlimited number of additional properties, it should be possible to utilize the protocol for definition and storage of specialized scientific data</t>
 </list>
 </t>
 
@@ -661,7 +655,7 @@ Block allows to define parameters count for particular specification definition.
 
 </section>
 
-<section anchor="appendix_abstraction" title="Appendix 1: Abstraction">
+<section anchor="abstraction" title="Appendix 1: Abstraction">
 
 <t>Concept of data used in this protocol is using set theory, where set must be countable as well for each member of data there must exist mapping to countable set.</t>
 
@@ -673,7 +667,7 @@ Block allows to define parameters count for particular specification definition.
 
 </section>
 
-<section anchor="appendix_parsing" title="Appendix 2: Parsing">
+<section anchor="parsing" title="Appendix 2: Parsing">
 
 <t>Similar to parsing of textual formats, it's possible to provide parsing capability for binary protocol.
 
@@ -717,6 +711,26 @@ Block allows to define parameters count for particular specification definition.
 
 </section>
 
+<section anchor="format_comparison" title="Appendix 3: Format Comparison">
+
+<t>While there are various binary formats and markup languages available, this project aims to take somewhat different approach to data representation.</t>
+
+<t>
+<list style="symbols">
+ <t>While SGML, XML and related technologies were huge inspiration for this project, it seems that it wouldn't be feasible to use them as base for the binary variant due to attribute vs. child tag duality and use of Unicode string as a primitive data type in contrast to countable set used by this project</t>
+
+ <t>Using binary format is basically a necessity to make protocol reasonable usable for universal data like for example audio or video even thou text formats (for example JSON, YAML) provide easy of use and readability advantages</t>
+
+ <t>Compare to wide range of existing binary formats with fixed block structure (for example RIFF), this project aims to provide more unified access to all data structures and their definitions</t>
+
+ <t>Compare to formats based on serialization of data primitives (for example Protocol Buffers, CBOR) this project aims to provide capability for data definitions which would make transmitting primitive types unnecessary</t>
+
+ <t>Multi-level approach should allow to simplify and improve use compare to other dynamic binary formats (for example HDF5, ASN.1 and EBML)</t>
+</list>
+</t>
+
+</section>
+
 </section>
 
 <section anchor="IANA" title="IANA Considerations">
@@ -727,7 +741,7 @@ Block allows to define parameters count for particular specification definition.
 
 <section anchor="Security" title="Security Considerations">
 
-<t>TBD</t>
+<t>Security was not considered at current level of the development.</t>
 
 </section>
 
