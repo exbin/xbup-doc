@@ -129,6 +129,8 @@ NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL"
 in this document are to be interpreted as described in
 <xref target="RFC2119"/>.</t>
 
+<t>The term "byte" is used in its now-customary sense as a synonym for "octet" - sequence of 8 bits.</t>
+   
 </section>
 </section>
 
@@ -403,22 +405,23 @@ in this document are to be interpreted as described in
 
 <t>List variants of the operations ends with brackets "[]".</t>
 
+<t>From the <xref target="abstraction">abstraction perspective</xref> type definition as data definition is in default mode done using consist operation (as child blocks), this allows to define data type as set of singular child types or sets of child types including infinite number of them, but additionaly members must be well ordered (list). Join operation is from this point of view doesn't change much, except it's restricted to finite sets.</t>  
+
 </section>
 
-<section anchor="basic_blocks_definition" title="Basic Blocks Definition">
+<section anchor="basics" title="Basic Blocks Definition">
 
-<t>Following blocks are defined as build-in. TODO: Move to appendix?</t>
+<t>Following blocks are defined as build-in group 0, but also defined in catalog.</t>
 
-<t>
-<list style="symbols">
+<section anchor="basic_unspecified" title="Unspecified (0)">
 
- <t>Unspecified (0)<vspace/>
+<t>This block is used for unspecified block values or data padding. Can be used to represent nil / null values.</t>
 
- This block is used for unspecified block values or data padding. Can be used to represent nil / null values.</t>
+</section>
 
- <t>Document Declaration (1)<vspace/>
+<section anchor="basic_document_declaration" title="Document Declaration (1)">
 
- Declaration block determines the allowed range of groups. This block should be located at the beginning of each file, if the application didn't provide any static/special meaning, but it might be used anywhere inside document as well.
+<t>Declaration block determines the allowed range of groups. This block should be located at the beginning of each file, if the application didn't provide any static/special meaning, but it might be used anywhere inside document as well.</t>
 
 <figure title="Document Declaration">
  <artwork><![CDATA[
@@ -430,11 +433,13 @@ in this document are to be interpreted as described in
 ]]></artwork>
 </figure>
 
-For subblocks of this block there is permitted range of values in the interval group preserveGroups + 1 .. preserveGroups + groupsCount + 1. preservedGroups + groupsCount + 1. If the value reserveGroups = 0, takes the highest not yet reserved group in the current or parental blocks + 1. For all values of zero and the application of rules of cutting the block of zeros coincides with the data block.</t>
+<t>For subblocks of this block there is permitted range of values in the interval group preserveGroups + 1 .. preserveGroups + groupsCount + 1. preservedGroups + groupsCount + 1. If the value reserveGroups = 0, takes the highest not yet reserved group in the current or parental blocks + 1. For all values of zero and the application of rules of cutting the block of zeros coincides with the data block.</t>
 
- <t>Format Declaration (2)<vspace/>
+</section>
 
- Format declaration allows you use either declaration from catalog or local format definition or both.
+<section anchor="basic_format_declaration" title="Format Declaration (2)">
+
+<t>Format declaration allows you use either declaration from catalog or local format definition or both.</t>
 
 <figure title="Format Declaration">
  <artwork><![CDATA[
@@ -444,11 +449,12 @@ For subblocks of this block there is permitted range of values in the interval g
   FormatDefinition formatDefinition
 ]]></artwork>
 </figure>
-</t>
 
- <t>Format Definition (3)
+</section>
 
-This block allows to specify the basic structure of format specification. Specifies the sequence of parameters using either join or consist operation.
+<section anchor="basic_format_definition" title="Format Definition (3)">
+
+<t>This block allows to specify the basic structure of format specification. Specifies the sequence of parameters using either join or consist operation.</t>
 
 <figure title="Format Definition">
  <artwork><![CDATA[
@@ -456,29 +462,36 @@ This block allows to specify the basic structure of format specification. Specif
   +RevisionDefinition[] revisions
 ]]></artwork>
 </figure>
- </t>
 
- <t>Format Join Parameter (4)
+</section>
+
+<section anchor="basic_format_join_parameter" title="Format Join Parameter (4)">
+
+<t>Join parameter for format definition.</t>
 
 <figure title="Format Join Parameter">
  <artwork><![CDATA[
   +FormatDeclaration formatDeclaration
 ]]></artwork>
 </figure>
- </t>
 
- <t>Format Consist Parameter (5)
+</section>
+
+<section anchor="basic_format_consist_parameter" title="Format Consist Parameter (5)">
+
+<t>Consist parameter for format definition.</t>
 
 <figure title="Format Consist Parameter">
  <artwork><![CDATA[
   +GroupDeclaration groupDeclaration
 ]]></artwork>
 </figure>
- </t>
 
- <t>Group Declaration (6)
+</section>
 
-Group declaration allows you use either declaration from catalog or local group definition or both.
+<section anchor="basic_group_declaration" title="Group Declaration (6)">
+
+<t>Group declaration allows you use either declaration from catalog or local group definition or both.</t>
 
 <figure title="Group Declaration">
  <artwork><![CDATA[
@@ -488,12 +501,13 @@ Group declaration allows you use either declaration from catalog or local group 
   GroupDefinition groupDefinition
 ]]></artwork>
 </figure>
-</t>
 
- <t>Group Definition (7)
+</section>
 
-This block allows to specify the basic structure of group specification. Specifies the sequence of parameters using either
-join or consist operation.
+<section anchor="basic_group_definition" title="Group Definition (7)">
+
+<t>This block allows to specify the basic structure of group specification. Specifies the sequence of parameters using either
+join or consist operation.</t>
 
 <figure title="Group Definition">
  <artwork><![CDATA[
@@ -501,31 +515,38 @@ join or consist operation.
   +RevisionDefinition[] revisions
 ]]></artwork>
 </figure>
-</t>
 
- <t>Group Join Parameter (8)
+</section>
+
+<section anchor="basic_group_join_parameter" title="Group Join Parameter (8)">
+
+<t>Join parameter for group definition.</t>
 
 <figure title="Group Join Parameter">
  <artwork><![CDATA[
   +GroupDeclaration groupDeclaration
 ]]></artwork>
 </figure>
-</t>
 
- <t>Group Consist Parameter (9)
+</section>
+
+<section anchor="basic_group_consist_parameter" title="Group Consist Parameter (9)">
+
+<t>Consist parameter for group definition.</t>
 
 <figure title="Group Consist Parameter">
  <artwork><![CDATA[
   +BlockDeclaration blockDeclaration
 ]]></artwork>
 </figure>
-</t>
 
- <t>Group Declaration (10)
+</section>
 
-Block declaration allows you use either declaration from catalog or local block definition or both.
+<section anchor="basic_block_declaration" title="Block Declaration (10)">
 
-<figure title="Group Declaration">
+<t>Block declaration allows you use either declaration from catalog or local block definition or both.</t>
+
+<figure title="Block Declaration">
  <artwork><![CDATA[
   +CatalogBlockSpecPath catalogBlockSpecPath - Specification
     of format defined as path in catalog
@@ -533,11 +554,12 @@ Block declaration allows you use either declaration from catalog or local block 
   BlockDefinition blockDefinition
 ]]></artwork>
 </figure>
-</t>
 
- <t>Block Definition (11)
+</section>
 
-This block allows to specify the basic structure of block specification. Specifies the sequence of parameters using either join, consist, list join or list consist operation.
+<section anchor="basic_block_definition" title="Block Definition (11)">
+
+<t>This block allows to specify the basic structure of block specification. Specifies the sequence of parameters using either join, consist, list join or list consist operation.</t>
 
 <figure title="Block Definition">
  <artwork><![CDATA[
@@ -546,57 +568,68 @@ This block allows to specify the basic structure of block specification. Specifi
   +RevisionDefinition[] revisions
 ]]></artwork>
 </figure>
-</t>
 
- <t>Block Join Parameter (12)
+</section>
+
+<section anchor="basic_block_join_parameter" title="Block Join Parameter (12)">
+
+<t>Join parameter for block definition.</t>
 
 <figure title="Block Join Parameter">
  <artwork><![CDATA[
   +BlockDeclaration blockDeclaration
 ]]></artwork>
 </figure>
-</t>
+
+</section>
+
+<section anchor="basic_block_consist_parameter" title="Block Consist Parameter (13)">
   
- <t>Block Consist Parameter (13)
+<t>Consist parameter for block definition.</t>
 
 <figure title="Block Consist Parameter">
  <artwork><![CDATA[
   +BlockDeclaration blockDeclaration
 ]]></artwork>
 </figure>
-</t>
 
- <t>Block List Join Parameter (14)
+</section>
+
+<section anchor="basic_block_list_join_parameter" title="Block List Join Parameter (14)">
+
+<t>List join parameter for block definition.</t>
 
 <figure title="Block List Join Parameter">
  <artwork><![CDATA[
   +BlockDeclaration blockDeclaration
 ]]></artwork>
 </figure>
-</t>
 
- <t>Block List Consist Parameter (15)
+</section>
+
+<section anchor="basic_block_list_consist_parameter" title="Block List Consist Parameter (15)">
+
+<t>List consist parameter for block definition.</t>
 
 <figure title="Block List Consist Parameter">
  <artwork><![CDATA[
   +BlockDeclaration blockDeclaration
 ]]></artwork>
 </figure>
-</t>
 
- <t>Revision Definition (16)
+</section>
 
-Block allows to define parameters count for particular specification definition.
+<section anchor="basic_revision_definition" title="Revision Definition (16)">
+
+<t>Revision allows to define parameters count for particular specification definition.</t>
 
 <figure title="Revision Definition">
  <artwork><![CDATA[
   +Natural parametersCount
 ]]></artwork>
 </figure>
-</t>
 
-</list>
-</t>
+</section>
 
 </section>
 
@@ -736,7 +769,7 @@ Block allows to define parameters count for particular specification definition.
 
  <t>Compare to wide range of existing binary formats with fixed block structure (for example RIFF), this project aims to provide more unified access to all data structures and their definitions</t>
 
- <t>Compare to formats based on serialization of data primitives (for example Protocol Buffers, CBOR <xref target="RFC7049"/>) this project aims to provide capability for data definitions which would make transmitting primitive types unnecessary</t>
+ <t>Compare to formats based on serialization of data primitives (for example Protocol Buffers <xref target="ProtoBuf"/>, CBOR <xref target="RFC7049"/>) this project aims to provide capability for data definitions which would make transmitting primitive types unnecessary</t>
 
  <t>Multi-level approach should allow to simplify and improve use compare to other dynamic binary formats (for example HDF5 <xref target="HDF5"/>, ASN.1 <xref target="ASN.1"/> and EBML <xref target="EBML"/>)</t>
 </list>
