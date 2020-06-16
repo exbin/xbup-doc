@@ -3,6 +3,7 @@
 <!ENTITY RFC2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY RFC3117 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3117.xml">
 <!ENTITY RFC4627 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4627.xml">
+<!ENTITY RFC7049 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7049.xml">
 ]>
 
 <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?>
@@ -43,7 +44,7 @@ Extensible Binary Universal Protocol (XBUP)
 </abstract>
 
 <note title="Contributing">
-<t>This document is being worked on by <eref target="https://exbin.org">ExBin Project</eref>, aiming to gather comments and to raise interest in this project.</t>
+<t>This document is being worked on by <eref target="https://exbin.org">ExBin Project</eref>, published here in order to gather comments and to raise interest in this project.</t>
 <t>To participate on the development of this project, visit <eref target="https://xbup.exbin.org/?participate">https://xbup.exbin.org/?participate</eref>.</t>
 </note>
 
@@ -63,7 +64,7 @@ Extensible Binary Universal Protocol (XBUP)
 </list>
 </t>
 
-<t>Secondary features includes some capabilities inspired by markup languages like SGML/XML and data representation languages like YAML, JSON <xref target="RFC4627"/> and similar binary formats like ASN.1, HDF5 and efficient XML.
+<t>Secondary features includes some capabilities inspired by markup languages like SGML/XML <xref target="XML"/> and data representation languages like YAML <xref target="YAML"/>, JSON <xref target="RFC4627"/> and similar binary formats like ASN.1 <xref target="ASN.1"/>, HDF5 <xref target="HDF5"/>, efficient XML <xref target="EfficientXML"/> or Protocol Buffers <xref target="ProtoBuf"/>.
 <list style="symbols">
  <t>Extensibility</t>
  <t>Unconstrained values</t>
@@ -74,7 +75,7 @@ Extensible Binary Universal Protocol (XBUP)
 
 <t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of a specific mark-up language. See <xref target="format_comparison">Formats comparison</xref> for more information.</t>
 
-<t>This protocol technically overlaps in functionality with many currently widely used protocols and formats including those defined by various RFCs and is very different compare to currently used internet protocols. Therefore it should be considered as somewhat discruptive and various aspects should be inspected, whether potential advantages this protocol provides overweight complexity and complications it can cause, see <xref target="RFC3117"/> for design consideration.</t>
+<t>This protocol technically overlaps in functionality with many currently widely used protocols and formats including those defined by various RFCs and is very different in nature compare to currently used internet protocols. Therefore it should be considered as somewhat discruptive and various aspects should be inspected, whether potential advantages this protocol could provide overweight complexity and complications it brings with, see <xref target="RFC3117"/> for design consideration.</t>
 
 <section anchor="goals" title="Goals">
 
@@ -115,13 +116,13 @@ Extensible Binary Universal Protocol (XBUP)
  <t>Strong building blocks - Provide well specified data representation and ability to construct even complex data structures from combining data type definitions from wide libraries</t>
  <t>Flexible modular applications - With the ability to provide both independent API and data interchange format and with automatic transformation between both of them, it should be possible to utilize the protocol to enhance approach for modular applications design</t>
  <t>Long-term storage - Provide way to define data with external or integrated specification</t>
- <t>Comprehensive scientific protocol - With the multiple levels of protocol and capability to define unlimited number of additional properties, it should be possible to utilize the protocol for definition and storage of specialized scientific data</t>
+ <t>Comprehensive scientific protocol - With the multiple levels of expresiveness and capability to define unlimited number of additional properties, it should be possible to utilize the protocol for definition and storage of specialized scientific data</t>
 </list>
 </t>
 
 </section>
 
-<section title="Terminology">
+<section anchor="terminology" title="Terminology">
 
 <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
 NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL"
@@ -133,9 +134,9 @@ in this document are to be interpreted as described in
 
 <section anchor="specification" title="XBUP Specification">
 
-<t>XBUP is multi-layer protocol for representation of data in bit/byte stream, where each layer is build on top of previous layer providing new capabilities (new constraints and/or features).</t>
+<t>XBUP is multi-layer protocol for representation of data in bit/byte stream, where each layer is build on top of previous layer providing new capabilities, like new constraints and/or features. Typically, higher levels also declare back entities used in lower levels.</t>
 
-<t>Applications can support only specific level of XBUP protocol when full support is not necessary.</t>
+<t>Applications can support only up to specific level of XBUP protocol when full support is not necessary.</t>
 
 <t>Layers are indexed as levels by depth starting with level 0.</t>
 
@@ -159,7 +160,7 @@ in this document are to be interpreted as described in
 <t>
 <list style="symbols">
 
- <t>Attribute - Value encoded using UBNumber encoding</t>
+ <t>UBNumber encoded value</t>
 
  <t>Blob - Sequence of bits (bytes) with unspecified length or length specified by some attribute</t>
 </list>
@@ -175,7 +176,7 @@ in this document are to be interpreted as described in
 
 <t>To decode value, non-zero bits are counted for length up to 8 bits and then rest of bits is used as value. Value is also shifted so that there is only one code for each number.</t>
 
-<t>Examples of the UBNatural - codes sequence of bits = value represented value in basic natural non-negative integer number:
+<t>Examples of the UBNatural - codes sequence of bits = value represented value in basic natural non-negative integer number:</t>
 
 <figure title="UBNumber codes and values">
  <artwork><![CDATA[
@@ -193,7 +194,6 @@ in this document are to be interpreted as described in
   ...
 ]]></artwork>
 </figure>
-</t>
 
 <t>Various interpretations can be mapped on UBNumber encoding. For level 0 following two mappings are used:
 
@@ -235,66 +235,82 @@ in this document are to be interpreted as described in
 
 <section anchor="block" title="Block">
 
-<t>There are 3 kinds of blocks: Node Block, Data Block and Terminator</t>
-
-<t>Each block starts with single attribute:
+<t>Each block starts with single value:</t>
 
 <figure title="">
  <artwork><![CDATA[
   UBNatural attributePartSize
 ]]></artwork>
 </figure>
-</t>
 
-<t>If attributePartSize equals 0 then this block is called "Terminator" and block ends.</t>
+<t>Value attributePartSize is not allowed to equal 0 for the block as it is used for "Terminator" handling (see below).</t>
 
-<t>Otherwise it is followed by blob of the length specified by attributePartSize in bytes. Data in attribute part are interpreted as a nonempty sequence of attributes encoded in UBNumber encoding.</t>
+<t>Block continues with attribute part which is blob of the length specified by attributePartSize in bytes.</t>
 
-<t>First attribute in attribute part represents value:
+<t>First value in attribute part represents:</t>
 
 <figure title="">
  <artwork><![CDATA[
   UBENatural dataPartSize
 ]]></artwork>
 </figure>
-</t>
 
-<t>If dataPartSize value fills exactly whole attribute part then this block is called "Data Block".</t>
+<t>Rest of the data (if any) in the attribute part is interpreted as a nonempty sequence of attribute values encoded in any UBNumber encoding. Binary blob called data part follows after attribute part (is optional / could be empty).</t>
 
-<t>Binary blob called data part follows after attribute part and has length in bytes specified by dataPartSize value or if dataPartSize equals infinity, bytes in data part are processed and when byte with value zero is used as escape code and, following byte represents how many bytes of zero it represents or end of the data part if it equals zero as well.</t>
-
-<t>If dataPartSize value fills only part of the attribute part then this block is called "Node Block".</t>
-
-<t>Binary blob called data part follows after attribute part. Data in data part are interpreted as a sequence of (child) blocks.</t>
-
-<t>Data part has length in bytes specified by dataPartSize value or if dataPartSize equals infinity, sequence of blocks must be terminated by terminator block.</t>
+<t>If the dataPartSize value fills exactly whole attribute part (there is exactly zero attributes in attribute part) then this block is called "Data Block" else block is called "Node Block".</t>
 
 <t>After data part block ends.</t>
 
-<t>
 <figure title="">
  <artwork><![CDATA[
-  +---------------------------------------+
-  | == First block's attribute ========== |
-  |                                       |
-  | UBNatural attributePartSize           |
-  +---------------------------------------+
-  | == Attribute part (optional) ======== |
-  |                                       |
-  | UBENatural dataPartSize               |
-  | UBNumber attribute 1                  |
-  | ...                                   |
-  | UBNumber attribute n                  |
-  +---------------------------------------+
-  | == Data part (optional) ============= |
-  |                                       |
-  | Single data blob or child blocks      |
-  +---------------------------------------+
+  +-------------------------------------+
+  | == Block ========================== |
+  |                                     |
+  | UBNatural attributePartSize         |
+  +-------------------------------------+
+  | == Attribute part ================= |
+  |                                     |
+  | UBENatural dataPartSize             |
+  | UBNumber attribute 1                |
+  | ...                                 |
+  | UBNumber attribute n                |
+  +-------------------------------------+
+  | == Data part (optional) =========== |
+  |                                     |
+  | Single data blob or child blocks    |
+  +-------------------------------------+
 ]]></artwork>
 </figure>
+
+<t>Effectively, transferred data are represented by a sequence of attributes and child blocks or data blob, while attributePartSize and dataPartSize values are present for the structural purpose.</t>
+
+<t>See <xref target="examples_of_blocks">examples of blocks</xref>.</t>
+
+</section>
+
+<section anchor="node_block" title="Node Block">
+
+<t>When there is at least one attribute value in attribute part, block is called node block. Data in data part are interpreted as a sequence of (child) blocks.</t>
+
+<t>Data part has length in bytes specified by dataPartSize value or if dataPartSize equals infinity, sequence of child blocks must be infinite or terminated by terminator (single zero byte value).</t>
+
+<t>If there are no child blocks, block is called leaf block.</t>
+
+</section>
+
+<section anchor="data_block" title="Data Block">
+
+<t>When there is no attribute value in attribute part, block is called data block. Data in data part are interpreted as a binary blob.</t>
+
+<t>Data part has length in bytes specified by dataPartSize value or if dataPartSize equals infinity, data part is processed by byte and each value zero is used as a escape code, where directly following byte means:
+
+<list style="symbols">
+<t>Value 0 denotes end of the data part</t>
+<t>Value 1 to 255 denotes sequence of zero bytes of given count and processing continues</t>
+</list>
 </t>
-  
-<t>See [block examples].</t>
+
+<t>If there are data in data part, block is called empty block.</t>
 
 </section>
 
@@ -310,7 +326,7 @@ in this document are to be interpreted as described in
 
  <t>In each block the end of last attribute corresponds to the end of the attribute part (Attribute overflow)</t>
 
- <t>In each block the end of last subblock corresponds to the end of the data block part (Block overflow)</t>
+ <t>In each block the end of last subblock/child block corresponds to the end of the data part (Block overflow)</t>
 
  <t>The terminal block is present only in blocks where it belongs to (Unexpected terminator)</t>
 
@@ -330,18 +346,14 @@ in this document are to be interpreted as described in
 
 <t>First two attributes in node block are interpreted as follows (somewhat similar to XML Namespaces):</t>
 
-<t>
 <figure title="Block type attributes">
  <artwork><![CDATA[
   UBNatural - TypeGroup
   UBNatural - BlockType
 ]]></artwork>
 </figure>
-</t>
 
-<t>These two values determines blocks type.</t>
-
-<t>Block types are organized into groups where TypeGroup value specifies to which group block type belongs and BlockType value specifies particular block type in the corresponding group.</t>
+<t>These two values determines block type. Block types are organized into groups where TypeGroup value specifies to which group block type belongs and BlockType value specifies particular block type in the corresponding group.</t>
 
 <t>TypeGroup with value 0 is basic build-in group and cannot be overridden. Basic blocks provides ability to specify meaning of other groups via block type declarations, definitions or links to catalog or external source.</t>
 
@@ -380,7 +392,6 @@ in this document are to be interpreted as described in
 
 <t>Following syntax is used:</t>
 
-<t>
 <figure title="Block type attributes">
  <artwork><![CDATA[
   any - Single block
@@ -389,7 +400,6 @@ in this document are to be interpreted as described in
   +block_type_name - Append definition
 ]]></artwork>
 </figure>
-</t>
 
 <t>List variants of the operations ends with brackets "[]".</t>
 
@@ -720,15 +730,15 @@ Block allows to define parameters count for particular specification definition.
 
 <t>
 <list style="symbols">
- <t>While SGML, XML and related technologies were huge inspiration for this project, it seems that it wouldn't be feasible to use them as base for the binary variant due to attribute vs. child tag duality and use of Unicode string as a primitive data type in contrast to countable set used by this project</t>
+ <t>While SGML, XML <xref target="XML"/> and related technologies were huge inspiration for this project, it seems that it wouldn't be feasible to use them as base for the binary variant due to attribute vs. child tag duality and use of Unicode string as a primitive data type in contrast to countable set used by this project</t>
 
- <t>Using binary format is basically a necessity to make protocol reasonable usable for universal data like for example audio or video even thou text formats (for example JSON, YAML) provide easy of use and readability advantages</t>
+ <t>Using binary format is basically a necessity to make protocol reasonable usable for universal data like for example audio or video even thou text formats (for example JSON <xref target="RFC4627"/>, YAML <xref target="YAML"/>) provide easy of use and readability advantages</t>
 
  <t>Compare to wide range of existing binary formats with fixed block structure (for example RIFF), this project aims to provide more unified access to all data structures and their definitions</t>
 
- <t>Compare to formats based on serialization of data primitives (for example Protocol Buffers, CBOR) this project aims to provide capability for data definitions which would make transmitting primitive types unnecessary</t>
+ <t>Compare to formats based on serialization of data primitives (for example Protocol Buffers, CBOR <xref target="RFC7049"/>) this project aims to provide capability for data definitions which would make transmitting primitive types unnecessary</t>
 
- <t>Multi-level approach should allow to simplify and improve use compare to other dynamic binary formats (for example HDF5, ASN.1 and EBML)</t>
+ <t>Multi-level approach should allow to simplify and improve use compare to other dynamic binary formats (for example HDF5 <xref target="HDF5"/>, ASN.1 <xref target="ASN.1"/> and EBML <xref target="EBML"/>)</t>
 </list>
 </t>
 
@@ -771,6 +781,90 @@ Block allows to define parameters count for particular specification definition.
 &RFC3117;
 
 &RFC4627;
+
+&RFC7049;
+
+<reference anchor="ASN.1" target="https://www.itu.int/rec/T-REC-X.690">
+  <front>
+    <title>Information Technology -- ASN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)</title>
+    <author fullname="International Telecommunication Union"/>
+    <date year="1994"/>
+  </front>
+  <annotation>ITU-T Recommendation X.690</annotation>
+</reference>
+
+<reference anchor="YAML" target="http://www.yaml.org/spec/1.2/spec.html">
+  <front>
+    <title>YAML Ain't Markup Language (YAML[TM]) Version 1.2, 3rd Edition</title>
+    <author initials="O." surname="Ben-Kiki" fullname="Oren Ben-Kiki"/>
+    <author initials="C." surname="Evans" fullname="Clark Evans"/>
+    <author initials="I." surname="Net" fullname="Ingy dot Net"/>
+    <date year="2009" month="October"/>
+  </front>
+</reference>
+
+<reference anchor="XML" target="https://www.w3.org/TR/2008/REC-xml-20081126/">
+  <front>
+    <title>Extensible Markup Language (XML) 1.0 (Fifth Edition)</title>
+    <author initials="T." surname="Bray" fullname="Tim Bray"/>
+    <author initials="J." surname="Paoli" fullname="Jean Paoli"/>
+    <author initials="C. M." surname="Sperberg-McQueen" fullname="C. M. Sperberg-McQueen"/>
+    <author initials="E." surname="Maler" fullname="Eve Maler"/>
+    <author initials="F." surname="Yergeau" fullname="Francois Yergeau"/>
+    <date year="2008" month="November"/>
+  </front>
+  <annotation>W3C Recommendation REC-xml-20081126</annotation>
+</reference>
+
+<reference anchor="EfficientXML" target="https://www.w3.org/TR/2014/REC-exi-20140211/">
+  <front>
+    <title>Efficient XML Interchange (EXI) Format 1.0 (Second Edition)</title>
+    <author initials="J." surname="Schneider" fullname="John Schneider"/>
+    <author initials="T." surname="Kamiya" fullname="Takuki Kamiya"/>
+    <author initials="D." surname="Peintner" fullname="Daniel Peintner"/>
+    <author initials="R." surname="Kyusakov" fullname="Rumen Kyusakov"/>
+    <date year="2014" month="February"/>
+  </front>
+</reference>
+
+<reference anchor="HDF5" target="https://support.hdfgroup.org/HDF5/doc/H5.format.html">
+  <front>
+    <title>HDF5 File Format Specification Version 3.0</title>
+    <author fullname="The HDF Group"/>
+    <date year="2016" month="April"/>
+  </front>
+</reference>
+
+<reference anchor="EBML" target="https://datatracker.ietf.org/doc/draft-ietf-cellar-ebml/">
+  <front>
+    <title>Extensible Binary Meta Language</title>
+    <author initials="S." surname="Lhomme" fullname="Steve Lhomme" />
+    <author initials="D." surname="Rice" fullname="Dave Rice" />
+    <author initials="M." surname="Bunkus" fullname="Moritz Bunkus"/>
+    <date year="2020"/>
+  </front>
+  <seriesInfo name='Work in Progress,' value='draft-ietf-cellar-ebml'/>
+</reference>
+
+<reference anchor="IEEE.754.1985" target="">
+  <front>
+    <title>Standard for Binary Floating-Point Arithmetic</title>
+    <author>
+      <organization>Institute of Electrical and Electronics Engineers</organization>
+    </author>
+    <date year="1985" month="August"></date>
+  </front>
+</reference>
+
+<reference anchor="ProtoBuf" target="https://developers.google.com/protocol-buffers/">
+  <front>
+    <title>Protocol Buffers</title>
+    <author>
+      <organization>Google</organization>
+    </author>
+    <date year="2020"></date>
+  </front>
+</reference>
 
 </references>
 
