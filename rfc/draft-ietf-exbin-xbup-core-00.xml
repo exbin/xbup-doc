@@ -392,7 +392,7 @@ in this document are to be interpreted as described in
 </list>
 </t>
 
-<t>Following syntax is used:</t>
+<t>Following syntax is used in this document (no final syntax is decided yet):</t>
 
 <figure title="Block type attributes">
  <artwork><![CDATA[
@@ -403,9 +403,9 @@ in this document are to be interpreted as described in
 ]]></artwork>
 </figure>
 
-<t>List variants of the operations ends with brackets "[]".</t>
+<t>List variants of the operations ends with brackets "[]" after type name.</t>
 
-<t>From the <xref target="abstraction">abstraction perspective</xref> type definition as data definition is in default mode done using consist operation (as child blocks), this allows to define data type as set of singular child types or sets of child types including infinite number of them, but additionaly members must be well ordered (list). Join operation is from this point of view doesn't change much, except it's restricted to finite sets.</t>  
+<t>From the abstraction perspective (more about <xref target="abstraction">abstraction</xref>) type definition as data definition is in default mode done using consist operation (as child blocks), this allows to define data type as set of singular child types or sets of child types including infinite number of them, but additionaly members must be well ordered (list). Join operation is from this point of view doesn't change much, except it's restricted to finite sets.</t>  
 
 </section>
 
@@ -637,7 +637,28 @@ join or consist operation.</t>
 
 <t>To specify basic data types, catalog of block type definitions is established.</t>
 
-<t>Catalog is structured as a tree of definitions, where each block type has a unique identifier (sequence of natural numbers).</t>
+<t>Catalog is structured as a tree of definitions, where each block type has a unique identifier (sequence of natural numbers). Tree nodes are denoted by ownership base and are suppose to follow similar pattern like internet domain names.</t>
+
+<t>Additional to block, group and format specifications, catalog can contain basically any other data which will be properly specified on further protocol levels, for example:
+
+<list style="symbols">
+
+<t>Name of the type in multiple languages</t>
+<t>Documentation for given type</t>
+<t>Icon</t>
+<t>Author / ownership</t>
+<t>Custom viewer/editor</t>
+
+</list>
+</t>
+
+<t>For basic access, catalog should be accesible as single document stored in XBUP format.</t>
+
+</section>
+
+<section anchor="additional_catalog" title="Additional Catalog">
+
+<t>Additional catalogs can be addressed from external sources.</t>
 
 </section>
 
@@ -645,12 +666,64 @@ join or consist operation.</t>
 
 <section anchor="level_2" title="Level 2: Transformations">
 
+<t>In general, block transformation is data flow from one block type to another block type (more about <xref target="abstraction">abstraction</xref>). Transformation can be used for multiple tasks and cover various operations with data.</t>
+
+<t>This level introduces capability to define transformations in catalog and automatically performs conversion between blocks.</t>
+
+<t>Transformations can be also used for:
+
+<list style="symbols">
+
+<t>Paging</t>
+<t>Compression</t>
+<t>Encryption</t>
+<t>Specify operation between multiple blocks</t>
+<t>TODO</t>
+
+</list>
+</t>
+
+<t>TODO</t>
+
+</section>
+
+<section anchor="level_3" title="Level 3: Ontologies">
+
+<t>Following level can additionaly specify more about meaning of the data:
+
+<list style="symbols">
+
+<t>Restrict number of items in list</t>
+<t>Restrict type of any type</t>
+<t>Specify restricted document structure</t>
+<t>Specify relations between blocks</t>
+
+</list>
+</t>
+
+</section>
+
+<section anchor="data_types" title="Data Types">
+
+<t>Following section defines various data types considered for specification in catalog.</t> 
+
+<section anchor="type_natural" title="Natural">
+
+<t>Natural type for UBNumber encoding is to use non-negative integer mapping.</t>
+
+</section>
+
+<section anchor="type_integer" title="Integer">
+
+<t>Integer type is stored in UBNumber encoding using 2-complement form similar to how it is used in computing.</t>
 
 </section>
 
 </section>
 
-<section anchor="todo" title="Todo">
+</section>
+
+<section anchor="appendixes" title="Appendixes">
 
 <section anchor="examples_of_blocks" title="Examples of Blocks">
 
