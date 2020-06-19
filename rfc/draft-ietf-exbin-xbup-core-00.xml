@@ -136,7 +136,7 @@ in this document are to be interpreted as described in
 
 <section anchor="specification" title="XBUP Specification">
 
-<t>XBUP is multi-layer protocol for representation of data in bit/byte stream, where each layer is build on top of previous layer providing new capabilities, like new constraints and/or features. Typically, higher levels also declare back entities used in lower levels.</t>
+<t>XBUP is multi-layer protocol for representation of data in bit/byte stream, where each layer is build on top of previous layer providing new capabilities, like new constraints and/or features. Typically, higher levels also declare retrospectivelly entities used in lower levels.</t>
 
 <t>Applications can support only up to specific level of XBUP protocol when full support is not necessary.</t>
 
@@ -214,7 +214,7 @@ in this document are to be interpreted as described in
 
 <t>To store document in the file in file system or for use in the undeclared data stream, additional "Document header" should be present.</t>
 
-<t>Document header contains information about protocol version shall be included. For the version 0.2 of the protocol, it is 6 bytes long data blob. Explanation of the each value is non-conformant, primary use is padding to help systems which uses beginning of file for identification of file type.</t>
+<t>Document header contains information about protocol version. For the version 0.2 of the protocol, it is 6 bytes long data blob. Explanation of each value is non-conformant, primary use is padding to help systems which uses beginning of file for identification of file type.</t>
 
 <t>Document header with hexadecimal values:</t>
 
@@ -231,13 +231,13 @@ in this document are to be interpreted as described in
   <c>02</c><c>UBNatural encoded minor version</c>
 </texttable>
 
-<t>Primary block called "Root Block" follows and any data after root block are optional blob called "Tail Data".</t>
+<t>Primary block called "Root Block" follows after header. Any data after root block are optional blob called "Tail Data".</t>
 
 </section>
 
 <section anchor="block" title="Block">
 
-<t>Each block starts with single value:</t>
+<t>Each block starts with the value:</t>
 
 <figure title="">
  <artwork><![CDATA[
@@ -247,7 +247,7 @@ in this document are to be interpreted as described in
 
 <t>Value attributePartSize is not allowed to equal 0 for the block as it is used for "Terminator" handling (see below).</t>
 
-<t>Block continues with attribute part which is blob of the length specified by attributePartSize in bytes.</t>
+<t>Block continues with attribute part which is blob of the length in bytes specified by attributePartSize.</t>
 
 <t>First value in attribute part represents:</t>
 
@@ -294,7 +294,7 @@ in this document are to be interpreted as described in
 
 <t>When there is at least one attribute value in attribute part, block is called node block. Data in data part are interpreted as a sequence of (child) blocks.</t>
 
-<t>Data part has length in bytes specified by dataPartSize value or if dataPartSize equals infinity, sequence of child blocks must be infinite or terminated by terminator (single zero byte value).</t>
+<t>Data part has length in bytes specified by dataPartSize value or if dataPartSize equals infinity, sequence of child blocks can be infinite or terminated by terminator (single zero byte value).</t>
 
 <t>If there are no child blocks, block is called leaf block.</t>
 
@@ -312,7 +312,7 @@ in this document are to be interpreted as described in
 </list>
 </t>
 
-<t>If there are data in data part, block is called empty block.</t>
+<t>If there is no data in data part, block is called empty block.</t>
 
 </section>
 
@@ -355,7 +355,7 @@ in this document are to be interpreted as described in
 ]]></artwork>
 </figure>
 
-<t>These two values determines block type. Block types are organized into groups where TypeGroup value specifies to which group block type belongs and BlockType value specifies particular block type in the corresponding group.</t>
+<t>These two values determine block type. Block types are organized into groups where TypeGroup value specifies to which group block type belongs and BlockType value specifies particular block type in the corresponding group.</t>
 
 <t>TypeGroup with value 0 is basic build-in group and cannot be overridden. Basic blocks provides ability to specify meaning of other groups via block type declarations, definitions or links to catalog or external source.</t>
 
@@ -371,7 +371,7 @@ in this document are to be interpreted as described in
 
 <section anchor="block_type_definition" title="Block Type Definition">
 
-<t>Block type is defined as a finite sequence of operations where each operation defines one or more attributes and/or child blocks. Operation can define unspecified or refer build-in or previously defined types. There are variants for singular item and list of items, 8 operations in total:
+<t>Block type is defined as a finite sequence of operations where each operation defines one or more attributes and/or child blocks. Operation can refer build-in or previously defined types or no type (for attribute and any). There are variants for singular item and list of items, 8 operations in total:
 
 <list style="symbols">
  <t>Single block - Single child block of any type.</t>
@@ -382,7 +382,7 @@ in this document are to be interpreted as described in
 
  <t>Append definition - Appends all attributes and all child blocks of referred type.</t>
 
- <t>List of any blocks - One attribute of type UBENatural to define count of blocks of any type and child blocks of that count. When count equals infinity, list of blocks ends with empty block.</t>
+ <t>List of blocks - One attribute of type UBENatural to define count of blocks of any type and child blocks of that count. When count equals infinity, list of blocks ends with empty block.</t>
 
  <t>List of attributes - One attribute of type UBNatural to define count of attributes of any type and attributes of that count.</t>
 
@@ -398,12 +398,15 @@ in this document are to be interpreted as described in
  <artwork><![CDATA[
   any - Single block
   attribute - Single attribute
-  block_type_name - Consist of definition
-  +block_type_name - Append definition
+  Block_type_name - Consist of definition
+  +Block_type_name - Append definition
+
+  []any - List of blocks
+  []attribute - List of attributes
+  []Block_type_name - List of consist of definition
+  +[]Block_type_name - List of append definition
 ]]></artwork>
 </figure>
-
-<t>List variants of the operations ends with brackets "[]" after type name.</t>
 
 <t>From the abstraction perspective (more about <xref target="abstraction">abstraction</xref>) type definition as data definition is in default mode done using consist operation (as child blocks), this allows to define data type as set of singular child types or sets of child types including infinite number of them, but additionaly members must be well ordered (list). Join operation is from this point of view doesn't change much, except it's restricted to finite sets.</t>  
 
