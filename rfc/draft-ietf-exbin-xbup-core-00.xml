@@ -2,6 +2,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 <!ENTITY RFC2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY RFC3117 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3117.xml">
+<!ENTITY RFC3629 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3629.xml">
 <!ENTITY RFC4627 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4627.xml">
 <!ENTITY RFC7049 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7049.xml">
 ]>
@@ -31,10 +32,10 @@ Extensible Binary Universal Protocol (XBUP)
 </address>
 </author>
 
-<date year="2020" month="June"/>
+<date year="2020" month="August"/>
 
 <area>General</area>
-<workgroup>(TBD)</workgroup>
+<workgroup>(NONE)</workgroup>
 <keyword>Binary</keyword>
 <keyword>Protocol</keyword>
 
@@ -73,7 +74,7 @@ Extensible Binary Universal Protocol (XBUP)
 </list>
 </t>
 
-<t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of a specific mark-up language. See <xref target="format_comparison">Formats comparison</xref> for more information.</t>
+<t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of a specific mark-up language. See <xref target="appendix_comparison">Formats comparison</xref> for more information.</t>
 
 <t>This protocol technically overlaps in functionality with many currently widely used protocols and formats including those defined by various RFCs and is very different in nature compare to currently used internet protocols. Therefore it should be considered as somewhat discruptive and various aspects should be inspected, whether potential advantages this protocol could provide overweight complexity and complications it brings with, see <xref target="RFC3117"/> for design consideration.</t>
 
@@ -84,7 +85,7 @@ Extensible Binary Universal Protocol (XBUP)
 <list style="symbols">
  <t>Universal - Capable of representation of any type of data, suitable for wide use including streaming, long-term storage and parallel accessing</t>
  <t>Independent - Not tightly linked to a particular spoken language, product, company, processing architecture or programming language</t>
- <t>Declarative - Self sufficient for data type definition and with the ability to build data types on top of each other and to combine them together</t>
+ <t>Declarative - Self sufficient for data type definition and with the ability to build data types by combining existing ones</t>
  <t>Normative - Providing reference form for data representation</t>
  <t>Flexible - Support for data transformations, compatibility and extensibility handling</t>
  <t>Efficient - Effective data compacting / compression support for plain binary and structured data</t>
@@ -163,24 +164,24 @@ in this document are to be interpreted as described in
 <list style="symbols">
 
  <t>UBNumber encoded value</t>
-
  <t>Blob - Sequence of bits (bytes) with unspecified length or length specified by some attribute</t>
+
 </list>
 </t>
 
-<t>Nodes are represented as one or more blocks of bits with child blocks representing child nodes of the tree.</t>
+<t>Sequence of those primitive types forms a block. Single block represents node of the tree and can contain child blocks which are representing child nodes.</t>
 
 <section anchor="ubnumber_encoding" title="UBNumber Encoding">
 
-<t>UBNumber is encoding which combines unary and binary encoding to represent values with dynamic length. It is typically representing natural non-negative integer number (or value of any other type with deterministic mapping to well ordered / countably infinite set).</t>
+<t>UBNumber is encoding which combines unary and binary encoding with varying length of units of bits (octets). It is typically representing natural non-negative integer number (or value of any other type with deterministic mapping to well ordered / countably infinite set). Encoding is applied recursively when unary part fills all bits of the first byte.</t>
 
-<t>Encoding is similar to UTF-8, except that UBNumber is applied recursively when unary part fills all bits of the first byte.</t>
+<t>Encoding is somehat similar to <xref target="RFC3629">UTF-8</xref> which has also varying length.</t>
 
 <t>To decode value, non-zero bits are counted for length up to 8 bits and then rest of bits is used as value. Value is also shifted so that there is only one code for each number.</t>
 
 <t>Examples of the UBNatural - codes sequence of bits = value represented value in basic natural non-negative integer number:</t>
 
-<figure title="UBNumber codes and values">
+<figure title="UBNatural codes and values">
  <artwork><![CDATA[
   0 0000000                                 = 0
   0 0000001                                 = 1
@@ -202,7 +203,7 @@ in this document are to be interpreted as described in
 <list style="symbols">
  <t>UBNatural encoding using directly value from UBNumber basic mapping</t>
 
- <t>UBENatural where value 7Fh is reserved for infinity constant and higher values are shifted by one</t>
+ <t>UBENatural where value 7Fh is reserved for infinity constant and higher values are decreased by one</t>
 </list>
 </t>
 
@@ -245,7 +246,7 @@ in this document are to be interpreted as described in
 ]]></artwork>
 </figure>
 
-<t>Value attributePartSize is not allowed to equal 0 for the block as it is used for "Terminator" handling (see below).</t>
+<t>Value attributePartSize is not allowed to equal 0 for the block as 0 is used for termination handling (see below).</t>
 
 <t>Block continues with attribute part which is blob of the length in bytes specified by attributePartSize.</t>
 
@@ -257,9 +258,9 @@ in this document are to be interpreted as described in
 ]]></artwork>
 </figure>
 
-<t>Rest of the data (if any) in the attribute part is interpreted as a nonempty sequence of attribute values encoded in any UBNumber encoding. Binary blob called data part follows after attribute part (is optional / could be empty).</t>
+<t>Rest of the data (if any) in the attribute part is interpreted as a nonempty sequence of attribute values encoded in any UBNumber encoding. Binary blob called data part follows after attribute part - is optional / can be empty.</t>
 
-<t>If the dataPartSize value fills exactly whole attribute part (there is exactly zero attributes in attribute part) then this block is called "Data Block" else block is called "Node Block".</t>
+<t>If the dataPartSize value fills exactly whole space of the attribute part (there are no attributes in attribute part) then this block is called "Data Block" otherwise block is called "Node Block".</t>
 
 <t>After data part block ends.</t>
 
@@ -284,7 +285,7 @@ in this document are to be interpreted as described in
 ]]></artwork>
 </figure>
 
-<t>Effectively, transferred data are represented by a sequence of attributes and child blocks or data blob, while attributePartSize and dataPartSize values are present for the structural purpose.</t>
+<t>Effectively, transferred data are represented as a sequence of attributes and child blocks or data blob, while attributePartSize and dataPartSize values are present for the structural purpose.</t>
 
 <t>See <xref target="examples_of_blocks">examples of blocks</xref>.</t>
 
@@ -346,7 +347,7 @@ in this document are to be interpreted as described in
 
 <section anchor="block_type" title="Block Type">
 
-<t>First two attributes in node block are interpreted as follows (somewhat similar to XML Namespaces):</t>
+<t>First two attributes in node block are interpreted as follows (somewhat similar to <xref target="XMLNamespaces">XML Namespaces</xref>):</t>
 
 <figure title="Block type attributes">
  <artwork><![CDATA[
@@ -659,7 +660,7 @@ join or consist operation.</t>
 
 </section>
 
-<section anchor="additional_catalog" title="Additional Catalog">
+<section anchor="additional_catalogs" title="Additional Catalogs">
 
 <t>Additional catalogs can be addressed from external sources.</t>
 
@@ -699,10 +700,13 @@ join or consist operation.</t>
 <t>Restrict number of items in list</t>
 <t>Restrict type of any type</t>
 <t>Specify restricted document structure</t>
+<t>Restrict allowed transformations</t>
 <t>Specify relations between blocks</t>
 
 </list>
 </t>
+
+<t>This level introduces entities and relations to the catalog.</t>
 
 </section>
 
@@ -710,15 +714,77 @@ join or consist operation.</t>
 
 <t>Following section defines various data types considered for specification in catalog.</t> 
 
-<section anchor="type_natural" title="Natural">
+<section anchor="type_boolean" title="Boolean">
 
-<t>Natural type for UBNumber encoding is to use non-negative integer mapping.</t>
+<t>For boolean logical value typical entities for "True" and "False" are declared.</t>
+<t>Boolean can be also stored as attribute 0/1 or 0/1 in blob value.</t>
+
+<t>TODO</t>
 
 </section>
 
-<section anchor="type_integer" title="Integer">
+<section anchor="type_natural" title="Natural Number">
 
-<t>Integer type is stored in UBNumber encoding using 2-complement form similar to how it is used in computing.</t>
+<t>Natural numbers represent non-negative integer values, also called unsigned integer.</t>
+<t>Natural type is also used as primary mapping for UBNumber encoding.</t>
+<t>Value can be stored as single attribute or blob value.</t>
+<t>Alternativelly value can be limited to specific maximum or blob length, typically specified in bits, for example natural value in 16, 32, 24, 64 bits, possibly even with swapped parts (endian etc.).</t>
+
+<t>TODO</t>
+
+</section>
+
+<section anchor="type_integer" title="Integer Number">
+
+<t>Integer value extends range to all integer values including negative values.</t>
+<t>Integer can be stored using UBNumber encoding using 2-complement form.</t>
+<t>Value can be stored as single attribute or blob value.</t>
+<t>Alternativelly value can be limited to specific minimum and maximum or blob length, typically specified in bits, for example integer value in 16, 32, 24, 64 bits, possibly even with swapped parts (endian etc.).</t>
+
+<t>TODO</t>
+
+</section>
+
+<section anchor="type_real" title="Real Number">
+
+<t>Real numbers have fractional part. Also called float or double.</t>
+<t>Basic supported form is to use two integer attributes, one to represent base and other for mantisa. This will allow to store any real number of finite precision.</t>
+<t>Alternative type is using <xref target="IEEE.754.1985"/> stored in blob.</t>
+
+<t>TODO</t>
+
+</section>
+
+<section anchor="type_string" title="String">
+
+<t>Text string can be represented using various encodings.</t>
+<t>Basic string type is using UTF-8 encoding by default.</t>
+<t>Alternative type allows to specify used encoding using either IANA MIME name or encoding MIB index.</t>
+
+<t>TODO</t>
+
+</section>
+
+<section anchor="type_time" title="Time">
+
+<t>Various types are defined to specify concrete date, time, timezone...</t>
+<t>Types for time interval / range</t>
+
+<t>TODO</t>
+
+</section>
+
+<section anchor="type_url" title="URL - Uniform Resource Locator">
+
+<t>Basic URL type is using string representation of the URL.</t>
+
+<t>TODO</t>
+
+</section>
+
+<section anchor="type_coordinates" title="Coordinates">
+
+<t>Types to represent coordinates, like position on planet via latitude, longitude, altitude, elevation, rotation, GPS coordinates, distance.</t>
 
 </section>
 
@@ -787,9 +853,11 @@ join or consist operation.</t>
 
 <t>Additional requirement here is, that process must be deterministic (for same input return the same output), but other than that, it can be run in any manner - from local function in memory up to remote process in cloud.</t>
 
+<t>TODO</t>
+
 </section>
 
-<section anchor="parsing" title="Appendix 2: Parsing">
+<section anchor="appendix_parsing" title="Appendix 2: Parsing">
 
 <t>Similar to parsing of textual formats, it's possible to provide parsing capability for binary protocol.
 
@@ -802,7 +870,7 @@ join or consist operation.</t>
 
 </t>
 
-<section anchor="appendix_parsing_level_0" title="Level 0 Parsing">
+<section anchor="parsing_level_0" title="Level 0 Parsing">
 
 <t>To process level 0 protocol following 4 types of tokens are used:
 
@@ -831,9 +899,47 @@ join or consist operation.</t>
 
 </section>
 
+<section anchor="parsing_level_1" title="Level 1 Parsing">
+
+<t>To process level 1 protocol following 5 types of tokens are used:
+
+<list style="symbols">
+
+ <t>begin (terminationMode flag)</t>
+ <t>type (block type)</t>
+ <t>attribute (UBNumber value)</t>
+ <t>data (Binary data)</t>
+ <t>end</t>
+
+</list>
+</t>
+
+<t>Newly added type token serves the purpose of identifying type of block. There are few methods how to represent type and it's possible to convert between them:
+
+<list style="symbols">
+
+ <t>Two attributes for groupId and blockId</t>
+ <t>Pointer to block type in current type context</t>
+ <t>Pointer to block type in main catalog</t>
+
+</list>
+</t>
+
 </section>
 
-<section anchor="format_comparison" title="Appendix 3: Format Comparison">
+<section anchor="parsing_level_2" title="Level 2 Parsing">
+
+<t>With support for transformation additional interface to request specific transformation is available.</t>
+
+<t>Typical parsing on this level is performed in a manner, that specific block type ranges are requested for specific blocks and parsers provide automatically transformed data.</t>
+
+<t>TODO</t>
+
+</section>
+
+</section>
+
+<section anchor="appendix_comparison" title="Appendix 3: Comparison to Other Formats">
 
 <t>While there are various binary formats and markup languages available, this project aims to take somewhat different approach to data representation.</t>
 
@@ -853,11 +959,39 @@ join or consist operation.</t>
 
 </section>
 
+<section anchor="appendix_ui" title="Appendix 4: User Interface">
+
+<t>With unified tree structure it should be possible to provide tool which can process generic document encoded using XBUP protocol.</t>
+
+<t>Following capability should be possible to include:
+<list style="symbols">
+
+ <t>Show document as visual tree</t>
+
+ <t>Show document as text using various syntaxes (including editing)</t>
+
+ <t>Support catalog including external definitions</t>
+
+</list>
+</t>
+
+<t>TODO</t>
+
+</section>
+
+<section anchor="appendix_algorithms" title="Appendix 5: Algorithms">
+
+<t>TODO</t>
+
+</section>
+
 </section>
 
 <section anchor="IANA" title="IANA Considerations">
 
 <t>In the current early state of the development of the protocol, just basic media type for general files is defined: application/x-xbup</t>
+
+<t>TODO</t>
 
 </section>
 
@@ -882,6 +1016,8 @@ join or consist operation.</t>
 <references title="Normative References">
 
 &RFC2119;
+
+&RFC3629;
 
 </references>
 
@@ -923,6 +1059,19 @@ join or consist operation.</t>
     <date year="2008" month="November"/>
   </front>
   <annotation>W3C Recommendation REC-xml-20081126</annotation>
+</reference>
+
+<reference anchor="XMLNamespaces" target="https://www.w3.org/TR/2009/REC-xml-names-20091208/">
+  <front>
+    <title>Namespaces in XML 1.0 (Third Edition)</title>
+    <author initials="T." surname="Bray" fullname="Tim Bray"/>
+    <author initials="D." surname="Hollander" fullname="Dave Hollander"/>
+    <author initials="A." surname="Layman" fullname="Andrew Layman"/>
+    <author initials="R." surname="Tobin" fullname="Richard Tobin"/>
+    <author initials="H. S." surname="Thompson" fullname="Henry S. Thompson"/>
+    <date year="2009" month="December"/>
+  </front>
+  <annotation>W3C Recommendation REC-xml-names-20091208</annotation>
 </reference>
 
 <reference anchor="EfficientXML" target="https://www.w3.org/TR/2014/REC-exi-20140211/">
