@@ -11,11 +11,10 @@
 <?rfc strict="yes" ?>
 
 <rfc
-  category="std"
+  category="exp"
   docName="draft-ietf-exbin-xbup-core-00"
   ipr="trust200902"
-  consensus="no"
-  submissionType="IETF"
+  submissionType="independent"
   xml:lang="en"
 >
 
@@ -32,7 +31,7 @@ Extensible Binary Universal Protocol (XBUP)
 </address>
 </author>
 
-<date year="2020" month="August"/>
+<!--<date year="2020" month="September"/>-->
 
 <area>General</area>
 <workgroup>(NONE)</workgroup>
@@ -42,6 +41,7 @@ Extensible Binary Universal Protocol (XBUP)
 <abstract>
 <t>The Extensible Binary Universal Protocol (XBUP) is a prototype of general purpose binary data protocol and file format with primary focus on data abstraction and transformation.</t>
 <t>This proposal describes specification of version 0.2 of bottom levels of the protocol and set of basic data types and the recommended API.</t>
+<t>NOTICE: This is not official or finished document and is not yet enrolled for any official track to be registered as IETF RFC.</t>
 </abstract>
 
 <note title="Contributing">
@@ -177,7 +177,7 @@ in this document are to be interpreted as described in
 
 <t>Encoding is somehat similar to <xref target="RFC3629">UTF-8</xref> which has also varying length.</t>
 
-<t>To decode value, non-zero bits are counted for length up to 8 bits and then rest of bits is used as value. Value is also shifted so that there is only one code for each number.</t>
+<t>To decode value, non-zero bits are counted for length up to 8 bits and then rest of bits is used as value + additional sequence of n bytes where n equals to length. Value is also shifted so that there is only one code for each number. For bit value 0xFF which corresponds to length 8, additional UBNatural value is added next. This new value contains additional length value.</t>
 
 <t>Examples of the UBNatural - codes sequence of bits = value represented value in basic natural non-negative integer number:</t>
 
@@ -195,6 +195,14 @@ in this document are to be interpreted as described in
   10 111111 | 11111111                      = 407Fh = 16511
   110 00000 | 00000000 | 00000000           = 4080h = 16512
   ...
+  11111110 11111111 .. 11111111             = 10204081020407Fh
+           \_____ 7 times ____/
+  ...
+  11111111 00000000 00000000 .. 00000000    = 102040810204080h
+           \+len 0/ \_____ 8 times ____/
+  ...
+  11111111 00000001 00000000 .. 00000000    = 10102040810204080h
+           \+len 1/ \_____ 9 times ____/
 ]]></artwork>
 </figure>
 
@@ -336,6 +344,14 @@ in this document are to be interpreted as described in
  <t>End of file is before the end of the root block (Unexpected end of data)</t>
 </list>
 </t>
+
+</section>
+
+<section anchor="level_0_summary" title="Summary">
+
+<t>To sum it up, data in protocol are structured as a tree of blocks. Block is either data blob or sequence of numbers (instances of any well defined countable set) and child blocks.</t>
+
+<t>While this might seem somewhat inadequate, it should be perfectly sufficient way to represent any data. More complex types can be either constructed using deeper tree structure or compacted into binary blob, but it should be possible to derive data type via transformation to basic data elements when needed.</t> 
 
 </section>
 
@@ -712,18 +728,44 @@ join or consist operation.</t>
 
 <section anchor="data_types" title="Data Types">
 
-<t>Following section defines various data types considered for specification in catalog.</t> 
+<t>Following section defines various data types considered for specification in catalog.</t>
 
-<section anchor="type_boolean" title="Boolean">
+<t>Typically, where exists automatic transformation between types in each group, either full or with some exceptions.</t>
+
+<section anchor="type_group_boolean" title="Boolean">
 
 <t>For boolean logical value typical entities for "True" and "False" are declared.</t>
 <t>Boolean can be also stored as attribute 0/1 or 0/1 in blob value.</t>
 
 <t>TODO</t>
 
+<section anchor="type_ubboolean" title="UBBoolean">
+
+<t>Basic variant using single attribute to store 0 or 1 for false/true.</t>
+
+<figure title="UBBoolean Definition">
+ <artwork><![CDATA[
+  +Natural value
+]]></artwork>
+</figure>
+
 </section>
 
-<section anchor="type_natural" title="Natural Number">
+<section anchor="type_databoolean" title="DataBoolean">
+
+<t>Variant using data blob to store single byte 0 or 1 for false/true. When compacting, single bit could be actually used.</t>
+
+<figure title="DataBoolean Definition">
+ <artwork><![CDATA[
+  Blob value
+]]></artwork>
+</figure>
+
+</section>
+
+</section>
+
+<section anchor="type_group_natural" title="Natural Number">
 
 <t>Natural numbers represent non-negative integer values, also called unsigned integer.</t>
 <t>Natural type is also used as primary mapping for UBNumber encoding.</t>
@@ -734,7 +776,7 @@ join or consist operation.</t>
 
 </section>
 
-<section anchor="type_integer" title="Integer Number">
+<section anchor="type_group_integer" title="Integer Number">
 
 <t>Integer value extends range to all integer values including negative values.</t>
 <t>Integer can be stored using UBNumber encoding using 2-complement form.</t>
@@ -745,7 +787,7 @@ join or consist operation.</t>
 
 </section>
 
-<section anchor="type_real" title="Real Number">
+<section anchor="type_group_real" title="Real Number">
 
 <t>Real numbers have fractional part. Also called float or double.</t>
 <t>Basic supported form is to use two integer attributes, one to represent base and other for mantisa. This will allow to store any real number of finite precision.</t>
@@ -753,9 +795,45 @@ join or consist operation.</t>
 
 <t>TODO</t>
 
+<section anchor="type_ubreal" title="UBReal">
+
+<t>Basic variant using two UBInteger attributes to represent any real number with finite binary fraction.</t>
+
+<figure title="UBReal Definition">
+ <artwork><![CDATA[
+  +UBInteger base
+  +UBInteger mantissa
+]]></artwork>
+</figure>
+
+<t>To eliminate redundancy, method of adding invisible bit before decimal point is used - with extra decrement for zero value.</t>
+
+<figure title="UBReal algorithm">
+ <artwork><![CDATA[
+  if (Base = 0 and Mantissa = 0) the Value := 0 else {
+    Value := (Base * 2 + 1) * (2 ^ Mantissa)
+    if (Base > 0 and Mantissa = 0) then Value := Value - 2
+  }
+]]></artwork>
+</figure>
+
 </section>
 
-<section anchor="type_string" title="String">
+<section anchor="type_datareal" title="DataReal">
+
+<t>Variant using data blob to store real numbers.</t>
+
+<figure title="DataReal Definition">
+ <artwork><![CDATA[
+  Blob value
+]]></artwork>
+</figure>
+
+</section>
+
+</section>
+
+<section anchor="type_group_string" title="String">
 
 <t>Text string can be represented using various encodings.</t>
 <t>Basic string type is using UTF-8 encoding by default.</t>
@@ -763,9 +841,33 @@ join or consist operation.</t>
 
 <t>TODO</t>
 
+<section anchor="type_string" title="String">
+
+<t>Basic UTF-8 encoded string stored as binary blob.</t>
+
+<figure title="String Definition">
+ <artwork><![CDATA[
+  Blob value
+]]></artwork>
+</figure>
+
 </section>
 
-<section anchor="type_time" title="Time">
+<section anchor="type_utf16string" title="Utf16String">
+
+<t>Basic UTF-16 encoded string stored as binary blob.</t>
+
+<figure title="UTF16String Definition">
+ <artwork><![CDATA[
+  Blob value
+]]></artwork>
+</figure>
+
+</section>
+
+</section>
+
+<section anchor="type_group_time" title="Time">
 
 <t>Various types are defined to specify concrete date, time, timezone...</t>
 <t>Types for time interval / range</t>
@@ -774,15 +876,17 @@ join or consist operation.</t>
 
 </section>
 
-<section anchor="type_url" title="URL - Uniform Resource Locator">
+<section anchor="type_group_url" title="URL - Uniform Resource Locator">
 
 <t>Basic URL type is using string representation of the URL.</t>
+
+<t>URL can be used to specify additional external catalogs.</t>
 
 <t>TODO</t>
 
 </section>
 
-<section anchor="type_coordinates" title="Coordinates">
+<section anchor="type_group_coordinates" title="Coordinates">
 
 <t>Types to represent coordinates, like position on planet via latitude, longitude, altitude, elevation, rotation, GPS coordinates, distance.</t>
 
@@ -830,7 +934,7 @@ join or consist operation.</t>
   <c>00</c><c>Termination value</c>
 </texttable>
 
-<t>Fixed block with one child</t>
+<t>Fixed size block with one child</t>
 <texttable title="Stream Data">
   <ttcol>Byte</ttcol><ttcol>Value</ttcol>
   <c>02</c><c>AttributePartSize</c>
@@ -929,7 +1033,7 @@ join or consist operation.</t>
 
 <section anchor="parsing_level_2" title="Level 2 Parsing">
 
-<t>With support for transformation additional interface to request specific transformation is available.</t>
+<t>With support for transformations, additional interface to request specific transformation is available.</t>
 
 <t>Typical parsing on this level is performed in a manner, that specific block type ranges are requested for specific blocks and parsers provide automatically transformed data.</t>
 
@@ -974,6 +1078,8 @@ join or consist operation.</t>
 
 </list>
 </t>
+
+<t>Aim here is to provide comprehend tool to view and edit documents on different levels similar to what text editors provides for binary files representing text using typical encodings.</t>
 
 <t>TODO</t>
 
