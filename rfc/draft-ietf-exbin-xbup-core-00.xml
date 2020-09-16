@@ -181,7 +181,7 @@ in this document are to be interpreted as described in
 
 <t>Examples of the UBNatural - codes sequence of bits = value represented value in basic natural non-negative integer number:</t>
 
-<figure title="UBNatural codes and values">
+<figure title="UBNatural example codes and values">
  <artwork><![CDATA[
   0 0000000                                 = 0
   0 0000001                                 = 1
@@ -209,7 +209,7 @@ in this document are to be interpreted as described in
 <t>Various interpretations can be mapped on UBNumber encoding. For level 0 following two mappings are used:
 
 <list style="symbols">
- <t>UBNatural encoding using directly value from UBNumber basic mapping</t>
+ <t>UBNatural encoding using directly value from UBNumber basic mapping as listed above</t>
 
  <t>UBENatural where value 7Fh is reserved for infinity constant and higher values are decreased by one</t>
 </list>
@@ -268,9 +268,9 @@ in this document are to be interpreted as described in
 
 <t>Rest of the data (if any) in the attribute part is interpreted as a nonempty sequence of attribute values encoded in any UBNumber encoding. Binary blob called data part follows after attribute part - is optional / can be empty.</t>
 
-<t>If the dataPartSize value fills exactly whole space of the attribute part (there are no attributes in attribute part) then this block is called "Data Block" otherwise block is called "Node Block".</t>
+<t>If the dataPartSize value fills exactly whole space of the attribute part (there are no more attributes in attribute part) then this block is called "Data Block" otherwise block is called "Node Block".</t>
 
-<t>After data part block ends.</t>
+<t>After data part section, block ends.</t>
 
 <figure title="">
  <artwork><![CDATA[
@@ -305,7 +305,7 @@ in this document are to be interpreted as described in
 
 <t>Data part has length in bytes specified by dataPartSize value or if dataPartSize equals infinity, sequence of child blocks can be infinite or terminated by terminator (single zero byte value).</t>
 
-<t>If there are no child blocks, block is called leaf block.</t>
+<t>If there are no child blocks, node block is also called leaf block.</t>
 
 </section>
 
@@ -321,7 +321,7 @@ in this document are to be interpreted as described in
 </list>
 </t>
 
-<t>If there is no data in data part, block is called empty block.</t>
+<t>If there is no data in data part, data block is also called empty block.</t>
 
 </section>
 
@@ -341,7 +341,7 @@ in this document are to be interpreted as described in
 
  <t>The terminal block is present only in blocks where it belongs to (Unexpected terminator)</t>
 
- <t>End of file is before the end of the root block (Unexpected end of data)</t>
+ <t>End of file / data stream is before the end of the root block (Unexpected end of data)</t>
 </list>
 </t>
 
@@ -349,9 +349,22 @@ in this document are to be interpreted as described in
 
 <section anchor="level_0_summary" title="Summary">
 
-<t>To sum it up, data in protocol are structured as a tree of blocks. Block is either data blob or sequence of numbers (instances of any well defined countable set) and child blocks.</t>
+<t>To sum it up, data in protocol are structured as a tree of blocks.</t>
 
-<t>While this might seem somewhat inadequate, it should be perfectly sufficient way to represent any data. More complex types can be either constructed using deeper tree structure or compacted into binary blob, but it should be possible to derive data type via transformation to basic data elements when needed.</t> 
+<t>
+<list style="symbols">
+ <t>Block is either data blob or sequence of numbers (instances of any well defined countable set) and child blocks</t>
+
+ <t>Block can have specified size - this allows to skip block processing, but also requires to know block size in advance when encoding</t>
+ 
+ <t>For block with unknown size, it's possible to use infinity size + termination, but then all parent blocks also require to have infinity size</t>
+
+ <t>Data block has no attributes, so either have to be wrapped or meaning should be understandable from the content / context</t>
+
+ </list>
+</t>
+
+<t>In theory, this should provide sufficient capability to represent any data and allow to specify data types as equal class citizens. More complex types can be either constructed using deeper tree structure or compacted into binary blob, but it should be possible to derive data type via transformation to basic data elements when needed.</t> 
 
 </section>
 
@@ -359,7 +372,9 @@ in this document are to be interpreted as described in
 
 <section anchor="level_1" title="Level 1: Block Types">
 
-<t>Level 1 introduces block types and catalog of types. Since this level, if attribute is defined, but not present, it's value is considered as zero as in the form of UBNumber encoding.</t>
+<t>Level 1 introduces block types, how to specify type of the block and catalog of types.</t>
+
+<t>Since this level, if attribute is defined, but not present, it's value is considered as zero as in the form of UBNumber encoding.</t>
 
 <section anchor="block_type" title="Block Type">
 
@@ -817,6 +832,40 @@ join or consist operation.</t>
 ]]></artwork>
 </figure>
 
+<figure title="UBReal example codes and values">
+<artwork><![CDATA[
+  ...
+  (10)111111 11111111  (0)0000000          = -81h
+  (0)1000000  (0)0000000                   = -7Fh
+  (0)1000001  (0)0000000                   = -7Dh
+  ...
+  (0)1111110  (0)0000000                   = -3
+  (0)1111111  (0)0000000                   = -1
+  (0)0000000  (0)0000000                   = 0 (1)
+  (0)0000001  (0)0000000                   = 1 (3)
+  (0)0000010  (0)0000000                   = 3 (5)
+  ...
+  (0)0111111  (0)0000000                   = 7Dh (7Fh)
+  (10)000000 00000000  (0)0000000          = 7Fh (81h)
+  ...
+]]></artwork>
+</figure>
+
+<t>Examples with non-zero mantissa:</t>
+
+<figure title="UBReal example codes and values">
+<artwork><![CDATA[
+  (0)1111111  (0)0000001                   = -2
+  (0)0000000  (0)0000001                   = 2
+  (0)0000001  (0)0000001                   = 6
+  (0)0000010  (0)0000001                   = 10
+  (0)0000000  (0)0000010                   = 4
+  (0)0000000  (0)0000011                   = 8
+  (0)0000000  (0)1111111                   = 0.5
+  (0)0000001  (0)1111111                   = 1.5
+]]></artwork>
+</figure>
+
 </section>
 
 <section anchor="type_datareal" title="DataReal">
@@ -826,6 +875,78 @@ join or consist operation.</t>
 <figure title="DataReal Definition">
  <artwork><![CDATA[
   Blob value
+]]></artwork>
+</figure>
+
+</section>
+
+<section anchor="type_ubratio" title="UBRatio">
+
+<t>Variant of real number with fixed range using single UBNatural attribute to represent any real number with finite binary fraction in range &lt;0, 1&gt;.</t>
+
+<figure title="UBRatio Definition">
+ <artwork><![CDATA[
+  +UBNatural value
+]]></artwork>
+</figure>
+
+<t>Method of reverting value is used.</t>
+
+<figure title="UBRatio algorithm">
+ <artwork><![CDATA[
+  Value := Input
+  if not (Value=0 or Value=1) then (
+    Value := Value + 1
+    while (Value = Trunc(Value)) do ( Value := Value * 2)
+    Value := Trunc(Value/2) + 1
+  )
+]]></artwork>
+</figure>
+
+<figure title="UBRatio example codes and values">
+<artwork><![CDATA[
+  (0)0000000  0                          = 0     = 0
+  (0)0000001  1                          = 1     = 1
+  (0)0000010  0.1                        = 1/2   = 0.5
+  (0)0000011  0.01                       = 1/4   = 0.25
+  (0)0000100  0.11                       = 3/4   = 0.75
+  (0)0000101  0.001                      = 1/8   = 0.125
+  (0)0000110  0.011                      = 3/8   = 0.375
+  (0)0000111  0.101                      = 5/8   = 0.625
+  (0)0001000  0.111                      = 7/8   = 0,875
+  (0)0001001  0.0001                     = 1/16  = 0,0625
+  (0)0001010  0.0011                     = 3/16  = 0,1875
+  (0)0001011  0.0101                     = 5/16  = 0,3125
+  ...
+]]></artwork>
+</figure>
+
+</section>
+
+<section anchor="type_ubfixedpoint" title="UBFixedPoint">
+
+<t>Variant of real number with fixed precision is simply stored as UBInteger and using specific scaling. There can be also non-negative variant using UBNatural attribute.</t>
+
+<figure title="UBFixedPoint Definition">
+ <artwork><![CDATA[
+  +UBInteger value
+]]></artwork>
+</figure>
+
+<t>Values are simply multiplied by scale, for example for ratio 1/100.</t>
+
+<figure title="UBFixedPoint algorithm">
+ <artwork><![CDATA[
+  Value := Input * 0.01
+]]></artwork>
+</figure>
+
+<figure title="UBFixedPoint example codes and values">
+<artwork><![CDATA[
+  (0)0000000                             = 0
+  (0)0000001                             = 0.01
+  (0)0000010                             = 0.02
+  ...
 ]]></artwork>
 </figure>
 
