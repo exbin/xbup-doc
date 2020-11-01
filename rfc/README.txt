@@ -8,7 +8,7 @@ Homepage: https://xbup.exbin.org
 Building
 --------
 
-See. build.sh
+Use: build.sh
 
 License
 -------

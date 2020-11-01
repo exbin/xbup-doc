@@ -100,9 +100,9 @@ Extensible Binary Universal Protocol (XBUP)
 
 <list style="symbols">
  <t>Multimedia files - Audio, video, animation, 3D</t>
- <t>Filesystem structure - Allow to represent data in the form of filesystem or as a compressed archive</t>
- <t>Application API - Remote or local method call execution, supporting parameters and result passing and error handling</t>
  <t>Serialization protocol - Provide ability to serialize non-structured data</t>
+ <t>Application API - Remote or local method call execution, supporting parameters and result passing and error handling</t>
+ <t>Filesystem structure - Allow to represent data in the form of filesystem or as a compressed archive</t>
  <t>Huge data - Use dynamic numeric values to allow support for data in terabytes range or greater</t>
  <t>Random access - Segmented, paged, fragmented data</t>
  <t>Parallel processing - Atomicity, structural data for database representation</t>
@@ -114,10 +114,10 @@ Extensible Binary Universal Protocol (XBUP)
 
 <list style="symbols">
  <t>Browseable binary content - Provide capability for viewing and editation of data, including visual and graphical tools and textual tools with multiple available syntaxes and supported languages</t>
- <t>Strong building blocks - Provide well specified data representation and ability to construct even complex data structures from combining data type definitions from wide libraries</t>
  <t>Flexible modular applications - With the ability to provide both independent API and data interchange format and with automatic transformation between both of them, it should be possible to utilize the protocol to enhance approach for modular applications design</t>
- <t>Long-term storage - Provide way to define data with external or integrated specification</t>
  <t>Comprehensive scientific protocol - With the multiple levels of expresiveness and capability to define unlimited number of additional properties, it should be possible to utilize the protocol for definition and storage of specialized scientific data</t>
+ <t>Strong building blocks - Provide well specified data representation and ability to construct even complex data structures from combining data type definitions from wide libraries</t>
+ <t>Long-term storage - Provide way to define data with external or integrated specification</t>
 </list>
 </t>
 
