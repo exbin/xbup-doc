@@ -2,6 +2,23 @@ Welcome to the introductory presentation about extensible binary universal proto
 This presentation will conver conceptual aspects and will end with short demo of the tools in the current prototype implementation.
 
 -
-XBUP is concept of a binary data protocol which has strong focus on abstraction as the primary concept across multiple levels. While on the lowest level data are basically represented as tree of binary blobs, protocol defines mechanisms to build complex data types on higher levels and also includes transformations layer for automatic or manual data conversions and compatibility handling. On each level
+XBUP is concept of a binary data protocol which has strong focus on abstraction as the primary concept across multiple levels. While on the lowest level data are basically represented as tree of binary blobs, protocol defines mechanisms to build complex data types on higher levels and also includes transformations layer for automatic or manual data conversions and compatibility handling.
+
+-
+Goals for the protocol are:
+universal - to support as wide types of data as possible, delivery methods like storage, streaming, parallel processing
+independent - this means no dependency on specific platform, architecture or programming language as well as depency on some product, company, country or even spoken language
+declarative - protocol should be self sufficient for data type definition and with the ability to build data types by combining existing ones
+normative - there should be an option to provide reference form for the data representation
+flexible - compatibility and extensibility should be included and it should be possible to use part of the protocol for specific needs
+efficient - there should be ability to compact and compress data to various degree and support data indexing and caching
+
+-
+As to what the motivation is behind this project, it would be great to have structured binary data with well defined meaning which could be easily viewed and edited and manipulated with including both graphical and textual tools with support for multiple languages and syntaxes.
+Another use for this protocol could be to provide both independent API and data interchange format and with automatic transformation between both of them, and it should be possible to utilize the protocol to enhance approach for modular applications design.
+With the multiple levels of expresiveness and capability to define unlimited number of additional properties, it should be also possible to utilize the protocol for definition and storage of specialized scientific data
+and as the protocol should support both external or integrated specification, it might be possible to use it for long storage with.
+
+-
 
 -
