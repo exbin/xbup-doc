@@ -22,3 +22,6 @@ and as the protocol should support both external or integrated specification, it
 -
 
 -
+As an example, lets consider image format. While bitmap image might seem to be simple, there is still factors like color model, palette and compression to consider. But much more complexity to image format could be introduced with metadata related to image creation, especially with modern smartphones which boost wide variety of sensors. If unified method for storage would be available, same metadata format could be used for different formats as well, for example for audio or video recordings and so on.
+
+-
