@@ -1,10 +1,10 @@
-Welcome to the introductory presentation about extensible binary universal protocol project.
-This presentation will conver conceptual aspects and will end with short demo of the tools in the current prototype implementation.
+Welcome to the introductory presentation about extensible binary universal protocol.
+This presentation will conver conceptual aspects of the project and will end with short demo of the tools in the current prototype implementation.
 
 -
 XBUP is concept of a binary data protocol which has strong focus on abstraction as the primary concept across multiple levels. While on the lowest level data are basically represented as tree of binary blobs, protocol defines mechanisms to build complex data types on higher levels and also includes transformations layer for automatic or manual data conversions and compatibility handling.
 
--
+-- Goals
 Goals for the protocol are:
 universal - to support as wide types of data as possible, delivery methods like storage, streaming, parallel processing
 independent - this means no dependency on specific platform, architecture or programming language as well as depency on some product, company, country or even spoken language
@@ -13,15 +13,22 @@ normative - there should be an option to provide reference form for the data rep
 flexible - compatibility and extensibility should be included and it should be possible to use part of the protocol for specific needs
 efficient - there should be ability to compact and compress data to various degree and support data indexing and caching
 
--
+-- Motivation
 As to what the motivation is behind this project, it would be great to have structured binary data with well defined meaning which could be easily viewed and edited and manipulated with including both graphical and textual tools with support for multiple languages and syntaxes.
 Another use for this protocol could be to provide both independent API and data interchange format and with automatic transformation between both of them, and it should be possible to utilize the protocol to enhance approach for modular applications design.
 With the multiple levels of expresiveness and capability to define unlimited number of additional properties, it should be also possible to utilize the protocol for definition and storage of specialized scientific data
 and as the protocol should support both external or integrated specification, it might be possible to use it for long storage with.
 
--
+-- Usable for
+With this capabilities, it should be possible to use the format for example for multimedia files, like audio, video, animations or 3D data. It might be also possible to use format for serialization of non-structured data as well as remote or local method execution calls. It should be also possible to use format to store data and metadata for filesystem or compressed archive and dynamic numeric values should allow to support data in basically unlimited sized. Transformation layer should allow to also handle segmented, paged or fragmented data as well as operation atomicity for parallel access for structural data or even database use. 
 
--
+-- Example: Bitmap Picture
 As an example, lets consider image format. While bitmap image might seem to be simple, there is still factors like color model, palette and compression to consider. But much more complexity to image format could be introduced with metadata related to image creation, especially with modern smartphones which boost wide variety of sensors. If unified method for storage would be available, same metadata format could be used for different formats as well, for example for audio or video recordings and so on.
 
--
+-- Universal Data Representation
+Next slides attempts to explain more technical details starting with the basic goal to build universal protocol. Basic premise is that it should be possible to include any resonable binary data, but still attempt to adhere to the structure of the data when possible. Primary point of view for abstraction should be ordered set and sequence as defined in set theory.
+
+-- UB Encoding
+Data in protocol are organized as a sequence of octets - also called bytes. To represent single value from countable set, following encoding is used, which combines unary encoding to encode length and binary encoding to represent value. On current slide, there is list of binary codes on the left side representing specific non-negative integer values on the right side. Values are shifted so that there is only single code for each value.
+
+-- Block Tree Structure
