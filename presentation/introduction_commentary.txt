@@ -29,6 +29,22 @@ As an example, lets consider image format. While bitmap image might seem to be s
 Next slides attempts to explain more technical details starting with the basic goal to build universal protocol. Basic premise is that it should be possible to include any resonable binary data, but still attempt to adhere to the structure of the data when possible. Primary point of view for abstraction should be ordered set and sequence as defined in set theory.
 
 -- UB Encoding
-Data in protocol are organized as a sequence of octets - also called bytes. To represent single value from countable set, following encoding is used, which combines unary encoding to encode length and binary encoding to represent value. On current slide, there is list of binary codes on the left side representing specific non-negative integer values on the right side. Values are shifted so that there is only single code for each value.
+Data in protocol are organized as a sequence of octets - also called bytes. To represent single value from countable set, following varying length encoding is used. It combines unary encoding to encode length and binary encoding to represent value. On current slide, there is list of binary codes on the left side representing specific non-negative integer values on the right side. Values are shifted so that there is only single code for each value.
 
 -- Block Tree Structure
+Tree structure built using blocks is used which should be good enough for normal cases. Goal here is to use as simple approach as possible while still providing sufficient capability to represent many different structures of data, which should be mapped to tree using pointers. As the data stream can also carry infinite stream of data, support for sequences with length not known in advance or infinite should be included.
+
+-- File Structure
+Single document is typically represented as a single block, but there can be additional optional tail data present. There is also option for file header which contains information about protocol version and contains padding data to avoid issues in systems which uses file type detection by beginning of the file. File header is not necessary when protocol version is known already, for example in multiple data streams connecting to single service.
+
+-- Data Block
+Block consists of sequence of values encoded using mentioned encoding and sequence of child blocks or single data blob of general data.
+
+-- Data Block Detail
+
+
+-- Examples of Blocks
+
+
+-- Examples of Blocks 2
+
