@@ -38,13 +38,40 @@ Tree structure built using blocks is used which should be good enough for normal
 Single document is typically represented as a single block, but there can be additional optional tail data present. There is also option for file header which contains information about protocol version and contains padding data to avoid issues in systems which uses file type detection by beginning of the file. File header is not necessary when protocol version is known already, for example in multiple data streams connecting to single service.
 
 -- Data Block
-Block consists of sequence of values encoded using mentioned encoding and sequence of child blocks or single data blob of general data.
+Block consists of two parts: sequence of values encoded using unary-binary encoding and sequence of child blocks or single data blob of general data.
 
 -- Data Block Detail
-
+There are actually two values at the beginning of the block which are used to specify size of space available. If there are no additional values second part is considered as general data blob instead of a list of child nodes. There is also support for blocks with infinite or dynamic size which have to be terminated with zero mark.
 
 -- Examples of Blocks
-
+Here you can see few very crude examples of blocks as hexadecimal codes of the byte values. 
 
 -- Examples of Blocks 2
+Might be slightly easier to understand with highlighting size of first part red, size of second part blue and child blocks as yellow.
+
+-- Examples of Blocks 3
+
+-- Data Type Definition
+As next step first two attribute values in the data blocks are used for point to a specific data type definition. Rest of the attribute values and child blocks then corresponds to the defined sequence of values of the type. Types can be organized into catalog of types and linked to document. Protocol itself defines one main catalog which contains set of basic block types which can be used both directly in documents or referred to build more complex types. Catalog can also contain functions or methods definition for various purposes like data transformations or remote calls.
+
+-- Example of Block Type
+Data types can create structure of dependecies and have additional properties which can allow additional methods for handling specified type. Type can for example specify not just that value is number, but also unit of measurement, which will prevent mixing different units and allow conversion, often automatically.
+
+-- Data Transformations
+As part of the protocol, there is also support for data transformations included. Transformations can be used for automatic conversion between different data types or versions and can be provided to applications as a background system service or separate library. This should allow to provide new functionality without necessity to get new version of the applications if desired and is for example used in multimedia frameworks for adding new codecs and container formats.
+
+-- Example Use of Service
+Example here shows simplified case for bitmap editor application which uses service to open files. This arrangement allows to add support for additional image file types with different compression without necessity to modify the application itself.
+
+-- Execution Nodes
+Transformation services can be also executed remotelly if desired and combined together as computation nodes to form some kind of data processing cluster.
+
+-- Next Steps
+
+
+-- Editor
+
+
+-- Demo
+
 
