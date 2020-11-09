@@ -64,14 +64,19 @@ As part of the protocol, there is also support for data transformations included
 Example here shows simplified case for bitmap editor application which uses service to open files. This arrangement allows to add support for additional image file types with different compression without necessity to modify the application itself.
 
 -- Execution Nodes
-Transformation services can be also executed remotelly if desired and combined together as computation nodes to form some kind of data processing cluster.
-
--- Next Steps
-
+Transformation services can be also executed remotelly if desired and combined together as computation nodes to form some kind of data processing cluster. Execution nodes can also provide local copy of catalog of types for faster handling. On the other hand, remote nodes can be used for database or backup purposes.  
 
 -- Editor
-
+One of the basic tools is document editor. It should show document as a tree, text or as binary data and provide support for catalog. Editor can be extended with various visualization tools for for example viewing pictures, playing multimedia or editing specific structured data as well with custom syntaxes or manual and automatic transformations.
 
 -- Demo
+Prototype implementation is written in Java and editor tool has currently only limited functionality. TODO
 
+-- Next Steps
+Project is still in early stage and lot of work need to be done. While libraries and support for catalog are partially covered in the prototype implemented, work on execution service barely started. Support for transformations and programming language are still just a concept as well as definition of wide range of types and data formats.
 
+-- Questions
+If you are interested about this project, you can visit project's website and browse documentation or try current prototype implementation. Project is open source using Apache license with codes available on GitHub. You can also discuss about project on Element chat or write an email.
+
+-- End
+That's all. Thanks for watching.
