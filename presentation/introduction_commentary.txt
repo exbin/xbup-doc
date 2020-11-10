@@ -1,14 +1,14 @@
 Welcome to the introductory presentation about extensible binary universal protocol.
 This presentation will conver conceptual aspects of the project and will end with short demo of the tools in the current prototype implementation.
 
--
+- What is it
 XBUP is concept of a binary data protocol which has strong focus on abstraction as the primary concept across multiple levels. While on the lowest level data are basically represented as tree of binary blobs, protocol defines mechanisms to build complex data types on higher levels and also includes transformations layer for automatic or manual data conversions and compatibility handling.
 
 -- Goals
 Goals for the protocol are:
 universal - to support as wide types of data as possible, delivery methods like storage, streaming, parallel processing
 independent - this means no dependency on specific platform, architecture or programming language as well as depency on some product, company, country or even spoken language
-declarative - protocol should be self sufficient for data type definition and with the ability to build data types by combining existing ones
+ declarative - protocol should be self sufficient for data type definition and with the ability to build data types by combining existing ones
 normative - there should be an option to provide reference form for the data representation
 flexible - compatibility and extensibility should be included and it should be possible to use part of the protocol for specific needs
 efficient - there should be ability to compact and compress data to various degree and support data indexing and caching
@@ -70,7 +70,7 @@ Transformation services can be also executed remotelly if desired and combined t
 One of the basic tools is document editor. It should show document as a tree, text or as binary data and provide support for catalog. Editor can be extended with various visualization tools for for example viewing pictures, playing multimedia or editing specific structured data as well with custom syntaxes or manual and automatic transformations.
 
 -- Demo
-Prototype implementation is written in Java and editor tool has currently only limited functionality. TODO
+Prototype implementation is written in Java and editor tool has currently only limited functionality. For short demo basic tool contains few sample documents which can be used to test type handling. Data block can be viewed as properties list, type information, textual form or as binary data. When available for specific data type, custom viewer or row editor can be shown. Editor also contains browser for local catalog which is updated from central repository and can be browsed. Catalog can be currently edited for testing purposes. There is also some basic support for adding and editing blocks.
 
 -- Next Steps
 Project is still in early stage and lot of work need to be done. While libraries and support for catalog are partially covered in the prototype implemented, work on execution service barely started. Support for transformations and programming language are still just a concept as well as definition of wide range of types and data formats.
