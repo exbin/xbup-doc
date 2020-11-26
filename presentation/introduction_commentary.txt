@@ -1,5 +1,5 @@
 Welcome to the introductory presentation about extensible binary universal protocol.
-This presentation will conver conceptual aspects of the project and will end with short demo of the tools in the current prototype implementation.
+This presentation covers concepts and technical aspects of the project and ends with short demo of the editor tool included in the current prototype implementation.
 
 -- What it is
 XBUP is concept of a binary data protocol which has strong focus on abstraction as the primary concept across multiple levels. While on the lowest level data are basically represented as tree of binary blobs, protocol defines mechanisms to build complex data types on higher levels and also includes transformations layer for automatic or manual data conversions and compatibility handling.
