@@ -78,15 +78,15 @@ One of the basic tools is document editor. It can show document as a tree, text 
 Editor can be extended with various visualization tools for for example viewing pictures, playing multimedia or editing specific structured data as well with custom syntaxes or manual and automatic transformations.
 
 -- [22] Demo
-Prototype implementation is written in Java and editor tool has currently only limited functionality.
+Prototype implementation is written in Java and few included tools have currently only very limited functionality.
 
-For short demo basic tool contains few sample documents which can be used to test type handling.
+Editor contains few sample documents which can be used to check out document tree and see stored data.
 
-Data block can be viewed as properties list, type information, textual form or as binary data. When available for specific data type, custom viewer or row editor can be shown.
+Data blocks can be viewed as a property list, show type information, textual form or as binary data.
 
-Editor also contains browser for local catalog which is updated from central repository and can be browsed.
+When available for specific data type, custom viewer or row editor can be shown.
 
-Catalog can be currently edited for testing purposes.
+Editor also contains browser for local catalog which is updated from central repository and can be browsed and even currently edited for testing purposes.
 
 There is also some basic support for adding and editing blocks.
 
