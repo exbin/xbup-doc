@@ -8,17 +8,17 @@ XBUP is concept of a binary data protocol which has strong focus on abstraction 
 -- [03] Goals
 Goals for the protocol are:
 Universal - To support as wide types of data as possible, delivery methods like storage, streaming, parallel processing.
-Independent - This means no dependency on specific platform, architecture or programming language as well as dependency on some product, company, country or even spoken language.
+Independent - This means no dependency on any specific platform, architecture or programming language and neither dependency on some product, company, country or spoken language.
 Declarative - Protocol should be self sufficient for data type definition and with the ability to build data types by combining existing ones.
 Normative - There should be an option to provide reference form for the data representation.
-Flexible - Compatibility and extensibility should be included and it should be possible to use part of the protocol for specific needs.
-Efficient - There should be ability to compact and compress data to various degree and support data indexing and caching.
+Flexible - Compatibility and extensibility should be included and it should be possible to use only part of the protocol if desired.
+Efficient - There should be support for data indexing and caching and an ability to compact or to compress data to various levels.
 
 -- [04] Motivation
-As to what motivation is behind this project, it would be great to have structured binary data with well defined meaning which could be easily viewed and edited and manipulated with including both graphical and textual tools with support for multiple languages and syntaxes.
+As to what motivation is behind this project, it would be great to have structured binary data format with well defined meaning which could be easily viewed or modified with both graphical and textual tools and with support for multiple languages and syntaxes.
 Another use for this protocol could be to provide both independent API and data interchange format and with automatic transformation between both of them, and it should be possible to utilize the protocol to enhance approach for modular application design.
-With the multiple levels of expressiveness and capability to define unlimited number of additional properties, it should be also possible to utilize the protocol for definition and storage of specialized scientific data.
-And as the protocol should support both external or included specification, it should be possible to construct self-contained package usable for long-term storage.
+With multiple levels of expressiveness and capability to define unlimited number of additional properties, it should be also possible to utilize the protocol for definition and storage of specialized scientific data.
+As the protocol should support both external or included specification, it should be possible to construct self-contained package usable for long-term storage.
 
 -- [05] Usable for
 These capabilities should make it possible to use the format for example for multimedia files, like audio, video, animations or 3D objects, data serialization of non-structured data as well as remote or local method execution calls. It should be also possible to use the format to store data and metadata for filesystem or compressed archives. Dynamic numeric values should allow to support data in basically unlimited sizes and transformation layer should allow to handle segmented, paged or fragmented data as well as atomicity of actions for parallel access for structural or maybe even database data. 
@@ -33,10 +33,10 @@ Next slides attempt to explain more technical details starting with the basic go
 Data in protocol are organized as a sequence of octets - also called bytes. To represent single value from countable set, varying length encoding is used. It combines unary encoding to encode length and binary encoding to represent value. On current slide, there is list of example non-negative integer values on the right side and matching binary codes on the left side. Values are shifted so that there is only single code for each value.
 
 -- [09] Block Tree Structure
-Tree structure built using blocks is used which should be sufficient for any normal case. Goal here is to use as simple approach as possible while still providing sufficient capability to represent many different structures of data, which should be mapped to tree using pointers. As the data stream can also carry infinite stream of data, support for sequences with length not known in advance or infinite should be included.
+Tree structure is built using block with children blocks. This simple approach should provide sufficient capability to represent wide range of different structures of data. More complex data can be mapped to tree using pointers and references. As the data stream can also carry infinite stream of data, support for sequences with infinite length is included, usable also when length is not known in advance.
 
 -- [10] File Structure
-Single document is typically represented as a single block, but there can be additional optional tail data present. There is also option for file header which contains information about protocol version and contains padding data to avoid issues in systems which uses file type detection by beginning of the file. File header is not necessary when protocol version is known already, for example in multiple data streams connecting to single service.
+Single document is typically represented as a single block, but there can be additional optional tail data present. There is also option for file header which contains information about protocol version and contains padding data to avoid issues in systems which uses file type detection by reading beginning of the file. File header is not necessary when protocol version is known already, for example in multiple data streams connecting to single service.
 
 -- [11] Data Block
 Block consists of two parts: sequence of values encoded using unary-binary encoding and sequence of child blocks or single data blob of general data.
@@ -53,7 +53,7 @@ Might be slightly easier to understand this with highlighting size of first part
 -- [15] Examples of Blocks 3
 
 -- [16] Data Type Definition
-As next step first two attribute values in the data blocks are used as a reference to specific data type. Rest of the attribute values and child blocks then corresponds to the defined sequence of value types as specified it the type declaration.
+As next step first two attribute values in the data blocks are used as a reference to specific data type. Rest of the attribute values and child blocks then corresponds to the defined sequence of value types as specified in the type declaration.
 Types can be organized into catalog of types and linked to document. Protocol itself defines one main catalog which contains set of basic block types which can be used both directly in documents or referred to so that more complex types can be constructed.
 Catalog can also contain functions or methods definitions for various purposes like data transformations or remote calls.
 
