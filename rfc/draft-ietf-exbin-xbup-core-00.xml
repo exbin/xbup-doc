@@ -1188,7 +1188,7 @@ join or consist operation.</t>
 
 <t>With unified tree structure it should be possible to provide tool which can process generic document encoded using XBUP protocol.</t>
 
-<t>Following capability should be possible to include:
+<t>Following capabilities should be implemented:
 <list style="symbols">
 
  <t>Show document as visual tree</t>
@@ -1196,6 +1196,8 @@ join or consist operation.</t>
  <t>Show document as text using various syntaxes (including editing)</t>
 
  <t>Support catalog including external definitions</t>
+ 
+ <t>Support for transformations including working with data in transformed form</t>
 
 </list>
 </t>
