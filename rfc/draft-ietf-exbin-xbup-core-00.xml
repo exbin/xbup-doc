@@ -76,7 +76,7 @@ Extensible Binary Universal Protocol (XBUP)
 
 <t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of a specific mark-up language. See <xref target="appendix_comparison">Formats comparison</xref> for more information.</t>
 
-<t>This protocol technically overlaps in functionality with many currently widely used protocols and formats including those defined by various RFCs and is very different in nature compare to currently used internet protocols. Therefore it should be considered as somewhat discruptive and various aspects should be inspected, whether potential advantages this protocol could provide overweight complexity and complications it brings with, see <xref target="RFC3117"/> for design consideration.</t>
+<t>This protocol technically overlaps in functionality with many currently widely used protocols and formats including those defined by various RFCs. It has also somewhat different nature compare to currently used typically text-based internet protocols (on higher layers). Therefore various aspects should be evaluated, whether potential advantages this protocol could provide overweight complexity and other possible issues, see <xref target="RFC3117"/> for design consideration.</t>
 
 <section anchor="goals" title="Goals">
 
@@ -96,7 +96,7 @@ Extensible Binary Universal Protocol (XBUP)
 
 <section anchor="motivation" title="Motivation">
 
-<t>Project should provide universal protocol as a more feature-rich alternative to currently used binary protocols. It should provide general methods for handling data of various character and types including:
+<t>Project should provide universal protocol as a more feature-rich alternative to currently used binary protocols. It should provide general methods for handling data of various form and types including:
 
 <list style="symbols">
  <t>Multimedia files - Audio, video, animation, 3D</t>
