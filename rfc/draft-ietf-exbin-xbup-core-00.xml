@@ -440,7 +440,9 @@ in this document are to be interpreted as described in
 ]]></artwork>
 </figure>
 
-<t>From the abstraction perspective (more about <xref target="abstraction">abstraction</xref>) type definition as data definition is in default mode done using consist operation (as child blocks), this allows to define data type as set of singular child types or sets of child types including infinite number of them, but additionaly members must be well ordered (list). Join operation is from this point of view doesn't change much, except it's restricted to finite sets.</t>  
+<t>From the abstract point of view (more about <xref target="abstraction">abstraction</xref>) type definition is simply ordered list of child singular types or sets of child types including infinite number of them.</t>  
+
+<t>At the same time data definitions are similar to the table columns definition used in relation databases, except that infinite number of items is also supported.</t>
 
 </section>
 
@@ -705,6 +707,10 @@ join or consist operation.</t>
 
 <t>This level introduces capability to define transformations in catalog and automatically performs conversion between blocks.</t>
 
+<t>Protocol processing is based on broad concept of dataflow paradigm, which typically state that there are input data, process and output data.</t>
+
+<t>Additional requirement here is, that process must be deterministic (for same input returns the same output), but other than that, it can be run in any manner - as a local function in memory up to remote process in cloud.</t>
+
 <t>Transformations can be also used for:
 
 <list style="symbols">
@@ -718,7 +724,35 @@ join or consist operation.</t>
 </list>
 </t>
 
+<t>Additional properties can be specified for the transformation, like for example:
+
+<list style="symbols">
+
+<t>Time complexity</t>
+<t>Space complexity</t>
+<t>...</t>
+
+</list>
+</t>
+
 <t>TODO</t>
+
+<section anchor="automatic_conversion" title="Automatic Conversion">
+<t>Support for transformations is used for automatic conversion of data when applications accesses this data with tools supporting this level of the protocol.</t>
+
+<t>Typically application requests data to be send in a specific format, which it can process from a system service or a providing library and data are converted to the requested form.</t>
+
+<t>Depending on the accessing method, transformations can be provided omni- or bi-direction. Processing service can also handle additional requirements for combination of various conversions.</t>
+
+<t>General policy is to allow to include any type of data along side the main required type even when data are in transformed state, therefore it's still possible to include data outside the current specialized form for universal storage.</t>
+
+</section>
+
+<section anchor="paging" title="Paging">
+
+<t>Support for basic data paging is available in basic catalog. Paging is solved using single data blob which is split into pages of the same size. Either each block of the full block structure can be stored in a way, that each block starts in new page or specific behavior can be defined via algorithm.</t>
+
+</section>
 
 </section>
 
@@ -1015,6 +1049,14 @@ join or consist operation.</t>
 
 </section>
 
+<section anchor="algorithms" title="Algorithms">
+
+<t>Algorithms in the protocol are based on data-flow concept similar to what is used for transformations. This allows to define algorithms in wide range of paradigms including functional, logical and imperative.</t>
+
+<t></t>
+
+</section>
+
 </section>
 
 <section anchor="appendixes" title="Appendixes">
@@ -1070,13 +1112,15 @@ join or consist operation.</t>
 
 <section anchor="abstraction" title="Appendix 1: Abstraction">
 
-<t>Concept of data used in this protocol is using set theory, where set must be countable as well for each member of data there must exist mapping to well-ordered countable set.</t>
+<t>With the primary focus on abstraction, data in the protocol are considered more as abstract entities than a specific method for data representation.</t>
 
-<t>At the same time data definitions are similar to table columns definition used in relation databases, except that infinite number of items is also supported.</t>
+<t>Catalog is then viewed more as a set of general entities with unique identifier - using set theory terminology, it's well-ordered countable of items.</t>
 
-<t>Protocol processing is based on broad concept of dataflow paradigm, which typically state that there are input data, process and output data.</t>
+<t>On level 1 of the protocol, some of the items have specific meaning for definition of type and some are used to identify ownership and type definition.</t>
 
-<t>Additional requirement here is, that process must be deterministic (for same input return the same output), but other than that, it can be run in any manner - from local function in memory up to remote process in cloud.</t>
+<t>Level 2 introduces transformation method item to define data conversion between two specific types (input and output) and various related items which allows to specify additional properties of types and transformations.</t>
+
+<t>Higher levels then define additional new meanings of categories of items for additional relations and also introduces dynamic processes to generate them.</t>
 
 <t>TODO</t>
 
@@ -1204,11 +1248,7 @@ join or consist operation.</t>
 
 <t>Aim here is to provide comprehend tool to view and edit documents on different levels similar to what text editors provides for binary files representing text using typical encodings.</t>
 
-<t>TODO</t>
-
-</section>
-
-<section anchor="appendix_algorithms" title="Appendix 5: Algorithms">
+<t>Additionaly, support for multiple syntaxes should allow to evolve syntax over time while underlying abstract concepts remain the same or it should be possible to adjust them via automatic transformations without constriction to syntax compatibility.</t>
 
 <t>TODO</t>
 
