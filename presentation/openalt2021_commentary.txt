@@ -1,0 +1,300 @@
+Na této přednášce se Vám pokusím popsat projekt rozšiřitelného binárního univerzálního protokolu.
+
+Jde spíše o experiment či domácí výzkum, na kterém pracuji občas ve svém volném čase než o reálný produkt.
+
+Popíšeme si koncept a technické aspekty projektu a krátké demo editor, který je součástí implementace.
+
+== O projektu
+
+V kostce jde o binární datový protokol, který by měl být použitelný také jako souborový formát.
+
+Pro základní reprezentaci dat se používá stromová struktura, ale pomocí odkazování je možné realizovat i složitější data.
+
+Kromě vestavěných datových typů je možné definovat vlastní a připojovat katalogy / knihovny dalších typů z externích zdrojů.
+
+Součástí protokolu je i služba pro datové transformace, která umožňuje převod mezi různými typy dat.
+
+Tím bych mohl popis projektu skončit, ale dovolím si v této přednášce zajít trochu více do hloubky.
+
+== Proč binárně
+
+Hlavní motivací je vytvoření co nejjednoduššího strukturovaného binárního formátu ve kterém je možné definovat význam dat.
+
+V současné době se pro tyto účely používají častěji spíše textové formáty,
+ale jejich hlavní slabinou je, že je v nich problematické ukládat binární data.
+
+Binární formáty jsou tak často používany pro ukládání obrázků, zvuků, videí
+a multimédií obecně a jiných dat, které je obtížné vyjádřit ve formě textu.
+
+Typicky také zabírají o něco méně místa a jsou méně náročné na výpočetní prostředky,
+protože jsou blíže architektuře procesorů.
+
+Je možné aplikovat i kompresi dat pro ještě menší datové objemy, která je u textových formátů také možná, ale vyžaduje další nástroje.
+(např. ODP ODF jako zazipované XML)
+
+Typický textový soubor je také uložen v jednom konkrétním jazyce.
+To může být problematické, pokud jde zrovna o jazyk, kterému uživatel nerozumí.
+
+== Nevýhody binárního protokolu
+
+Velkou výhodou textových formátů je i to, že na základní práci s nimi stačí jediná aplikace.
+Binární formáty tak nejsou vhodné pro ty, kteří si netroufnou opustit bezpečí textového editoru.
+
+Snahou tedy je pro protokol vytvořit vhodný nástroj, který by uživatelům umožňoval srovnatelný komfort pro práci s binárními dokumenty.
+Ideálně poskytující grafické i textové nástrojů a s podporou více jazyků a syntaxí.
+
+Podobně bude pro kritické poskytnout vhodné nástroje pro vývojáře,
+které co nejvíce zjednoduší návrh a údržbu nových formátů postavených nad protokolem.   
+
+Cílem tedy je co nejvíce rozvinout výhody binárního přístupu a pokusit se co nejvíce potlačit problémy,
+které použítí binárního protokolu nevyhnutelně přináší.
+
+== Existující textové formáty
+
+Na tomto slajdu je uveden seznam několika známějších formátů ze stovek až tisíců existujících textových formátů. 
+
+Velkou inspirací je rozhodně XML a s ním související technologie jako jsou například XML schéma a XQuery.
+
+Určitě je vhodné se poohlédnout po možnostech těchto formátů a inspirovat se jejich schopnostmi.
+
+== Existující binární formáty
+
+Samozřejmě se nabízí také otázka, zda nepoužít pro potřeby univerzálního protokolu nějaké už existující řešení.
+
+Zajímavý je například protokol HDF5, který definuje celou řadu speciálních binárních struktur pro reprezentaci komplexních vědeckých dat
+jako jsou například rozsáhlá vizuální data a vícerozměrné datové pole i v řádu terabajtů.
+
+Formáty uvedené na pravé straně jsou spíše serializační - formát typicky definuje několik základních typů jako jsou
+celá a reálná čísla, textové řetězce, seznamy a slovníky a umožňuje případně definovat složitější typy. 
+
+Podobně řada formátů zavádí dynamické číselné typy, které umožňují ukládat neomezeně velké čísla.
+
+== Cíle protokolu
+
+Cíle protokolu jsou:
+Univerzální – podpora co nejširší sady typů dat bez omezení rozsahu či velikosti
+        použitelné pro uložení do souboru, streamování, paralelní zpracování.
+Nezávislost – To znamená, že není závislá na žádné konkrétní platformě, architektuře nebo programovacím jazyce
+       ani není závislá na nějakém produktu, společnosti, zemi nebo mluveném jazyce.
+Deklarativní - Protokol by měl být soběstačný pro definici datových typů a měl by mít schopnost vytvářet datové typy kombinací existujících.
+Normativní – Měla by existovat možnost poskytnout referenční formu pro reprezentaci dat.
+Flexibilní – Měla by být zahrnuta kompatibilita a rozšiřitelnost a v případě potřeby by mělo být možné použít pouze část protokolu.
+Efektivní – Měla by existovat podpora pro indexování dat, použití mezipamětí a možnost komprimovat data různými algoritmy.
+
+== Motivace
+
+Zmíňené cíle jsou poněkud ambiciózní, ale asi musí být, aby mohly
+umožnit použití formátu například pro multimediální soubory, jako jsou
+audio, video, animace nebo 3D scény, serializaci dat nestrukturovaných dat a také vzdálené nebo lokální volání metod.
+
+Dalším využitím tohoto protokolu by mohlo být poskytnutí jak nezávislého API
+
+Mělo by být také možné použít formát pro ukládání dat a metadat pro souborový systém nebo komprimované archivy.
+(obdoba ZIP)
+
+S několika úrovněmi expresivity a schopností definovat neomezené množství dalších vlastností by mělo být možné
+využít protokol i pro definici a ukládání specializovaných vědeckých dat.
+
+Protože protokol by měl podporovat jak externí, tak i vloženou specifikaci,
+mělo by být možné sestavit samostatný balíček použitelný pro dlouhodobé skladování.
+
+== Příklad: Bitmapový obrázek
+
+Jako příklad uveďme formát obrázku. Typicky se používají formáty JPEG či PNG, ale i ty by měl být protokol schopný nahradit. 
+
+I když se bitmapový obrázek může zdát jednoduchý, stále je třeba vzít v úvahu faktory, jako je barevný model, paleta a komprese.
+
+Mnohem složitější formát obrazu by však mohl přinést metadata související s vytvářením obrazu, zejména s moderními smartphony,
+které podporují širokou škálu senzorů.
+
+Pokud by byl k dispozici jednotný způsob ukládání, mohl by být stejný formát metadat použit i pro různé formáty,
+například pro audio nebo video nahrávky a tak dále.
+
+== Univerzální reprezentace dat
+
+Dostáváme se k vlastnímu protokolu.
+
+Základním předpokladem je, že by mělo být možné zahrnout jakákoliv binární data
+
+Data v protokolu jsou organizována tradičně jako sekvence bajtů.
+
+Používá se kombinace unárního a binárního kódování
+
+Náš protokol se snaží být co nejjednodušší.
+
+pokusíme se jej konstruovat odspodu z co nejmenšího množství prvků a po vrstvách přidávat další funkcionalitu.
+
+Základním prvkem pro nás bude bitová posloupnost (blob) a
+definujeme pro něj základní mapování na celé nezáporné číslo.
+
+== Dynamické kódování čísel
+
+Abychom nebyli omezeni na konkrétní velikost čísla, použijeme dynamické kódování.
+
+V základním tvaru se použije jeden bajt, ale první část 
+
+Unární kód je posloupnost jedniček zakončených nulou.
+
+určuje kolik bajtů se použije.
+
+Na pravé straně je seznam příkladů nezáporných celočíselných hodnot a na levé straně odpovídající binární kódy.
+
+Hodnoty jsou posunuty tak, že pro každou hodnotu existuje pouze jeden jediný kód.
+
+== Bloková stromová struktura
+
+Jako základní struktura se používá strom. Ta už se v mnoha formátech osvědčila.
+
+Základem stromu je blok, který se skládá z posloupnosti hodnot v dynamickém kódování a
+posloupnosti dalších podkloků, které další tvoří uzly a listy stromu.
+
+Tento jednoduchý přístup by měl poskytnout dostatečnou schopnost reprezentovat širokou škálu různých struktur dat.
+
+Složitější data lze mapovat do stromu pomocí odkazů.
+
+Vzhledem k tomu, že můžeme chtít přenášet i potenciálně nekonečný tok dat, je zahrnuta i podpora pro sekvence s nekonečnou délkou.
+
+== Struktura souboru
+
+Jeden dokument je typicky reprezentován jediným kořenovým blokem, ale mohou být přítomny další nepovinné koncové údaje.
+
+K dispozici je také volitelná hlavička souboru, která obsahuje informace o verzi protokolu a obsahuje výplňová data,
+aby se předešlo problémům v systémech, které používají detekci typu souboru čtením začátku souboru.
+
+Záhlaví souboru není nutné, když je již známá verze protokolu, například ve více datových tocích připojujících se k jedné službě.
+
+== Datový blok
+
+Blok se skládá ze dvou částí: sekvence hodnot kódovaných pomocí dynamického kódování
+a sekvence podbloků nebo jeden datový blob obecných dat.
+
+== Datový blok detailněji
+
+Na začátku bloku jsou ve skutečnosti dvě hodnoty - červená a modrá, které se používají k určení velikosti dostupného prostoru.
+
+Pokud neexistují žádné další hodnoty, druhá část se považuje za obecný datový blob namísto seznamu podřízených uzlů.
+
+K dispozici je také podpora pro bloky s nekonečnou nebo dynamickou velikostí, které musí být ukončeny nulou.
+
+== Příklady bloků
+
+Zde můžete vidět několik velmi hrubých příkladů bloků jako hexadecimálních kódů hodnot bajtů.
+
+Pro jednoduchost zde očekáváme, že všechny hodnoty jsou celá čísla, nicméně obecně mohou hodnoty přestavovat libovolný jiný typ dat.
+
+== Příklady bloků 2
+
+Může to být o něco snazší, když je velikost první části zvýrazněna červeně, velikost druhé části modrá a podřízené bloky jsou žluté.
+
+== Příklady bloků 3
+
+== Definice typu dat
+
+V tuto chvíli tedy máme definovaný základní strom do kterého můžeme vkládat do blobů neomezené velikosti libovolná data.
+
+Další vrstva protokolu pak používá první dvě hodnoty atributů v datových blocích pro určení datového typ.
+
+Jde v podstatě o obdobu Namespace z XML.
+
+Ostatní hodnoty v bloku pak odpovídají tomu co daný typ definuje.
+
+Typy lze uspořádat do katalogu typů a propojit s dokumentem.
+
+Protokol sám definuje jeden hlavní katalog, který obsahuje množinu základních typů bloků.
+
+Lze je použít přímo nebo na ně odkazovat tak, aby bylo možné konstruovat složitější typy.
+
+Typ lze definovat jako seznam položek podobně jako například tabulky v relačních databázích,
+ale je také možné rozšířit existující typ přidáním nových položek.
+
+== Příklad datového typu
+
+Pomocí dalších vazeb je pak také možné k danému typu přiřadit například jednotku,
+nebo další informace o významu daného typu.
+
+Rozlišení a rozměr jsou dvojice čísel, ale zároveň je určeno že číslo představuje hodnotu s konkrétní jednotkou.
+
+To nám umožňuje omezit práci s hodnotami tak, abychom omezili práci s čísly s nesprávnými jednotkami.
+
+== Katalog / Knihovna
+
+Kromě vlastních definic typů je možné do katalogu ukládat prakticky cokoliv.
+
+Katalog jako základní strukturu používá také strom a je tak možné organizovat jeho obsah podle různých kritérií.
+
+Celý katalog by mělo být možné uložit do protokolu samotného,
+ale pro efektivnější využití by mělo být možné přistupovat k obsahu katalogu po částech podobně jako k databázi.
+
+K jednotlivým položkám je možné přidat názvy, popisy, ikony či dokumentaci
+a to i ve více jazycích.
+
+Katalogy by měly umožnit, podobně jako u XML schémata, souběžný a nezávislý vývoj mnoha různých datových typů různými jednotlivci
+či organizacemi.
+
+== Transformace dat
+
+V tuto chvíli tedy máme protokol ve formě stromu s definovanými typy dat.
+
+Další vrstva protokolu přidává datové operace.
+
+Data u operace nemusejí být omezeny pouze na protokol, ale mohou být např. i mezi komponentami aplikací.  
+
+Aplikace může požádat o data v konkrétním formátu a protokol automaticky data převede.
+Mělo by tak být možné využít protokol k modulárnímu návrhu aplikací.
+
+Transformace mohou být použity pro automatický převod mezi různými datovými typy a jejich verzemi
+a mohou být poskytovány aplikacím jako služba na pozadí nebo samostatná knihovna.
+
+Stejně tak mohou být součástí katalogu.
+
+== Příklad použití služby
+
+Příklad zde ukazuje zjednodušený případ použití pro aplikaci bitmapového editoru, která využívá službu k otevírání souborů.
+
+Bitmapový editor přistupuje k obrázku aniž by sám musel znát formát a kompresi, kterou tento obrázek používá.
+
+Toto uspořádání umožňuje přidat podporu pro další formáty obrazových souborů s různou kompresí bez nutnosti úpravy samotné aplikace.
+
+Stávající aplikace pro podobné účely používají dynamické knihovny. 
+
+Podobné uspořádání se používá i u multimediálních frameworků jako např. DirectShow, GStreamer či VLC.
+
+== Editor
+
+Jedním ze základních nástrojů je editor dokumentů.
+
+Může zobrazovat dokument jako strom, text nebo jako binární data a poskytuje podporu pro katalog.
+
+Editor lze rozšířit pomocí pluginů o různé vizualizační nástroje například pro prohlížení obrázků, přehrávání multimédií
+nebo úpravu specifických strukturovaných dat, stejně jako o vlastní syntaxe nebo manuální a automatické transformace.
+
+== Demo
+
+Prototypová implementace je napsána v Javě, má velmi omezenou funkčnost a slouží spíše pro testování konceptů.
+
+Editor obsahuje několik vzorových dokumentů, které lze použít k prohlédnutí stromu dokumentů a zobrazení uložených dat.
+
+Datové bloky lze zobrazit jako seznam vlastností, zobrazit informace o typu, textovou formu nebo jako binární data.
+
+Je-li k dispozici pro konkrétní typ dat, lze zobrazit vlastní prohlížeč nebo editor řádků.
+
+Editor také obsahuje prohlížeč pro lokální katalog, který je aktualizován z centrálního úložiště.
+Lze jej procházet a upravovat pro testovací účely.
+
+K dispozici je také základní podpora pro přidávání a úpravy bloků.
+
+== Další kroky
+
+Projekt je stále v rané fázi vývoje a ještě je na něm hodně práce.
+
+Na všech uvedených bodech se už sice začalo pracovat, ale k funkčnímu celku je daleko.
+
+== Otázky
+
+Pokud vás tento projekt zaujal, můžete navštívit webové stránky projektu.
+
+Projekt je open source se zdrojovými kódy dostupnými na GitHubu pod licencí Apache.
+
+Můžete se také zapojit do diskuze o projektu na Element chatu nebo napsat e-mail.
+
+== Konec
