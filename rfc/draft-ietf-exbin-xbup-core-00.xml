@@ -80,7 +80,7 @@ Extensible Binary Universal Protocol (XBUP)
 
 <section anchor="goals" title="Goals">
 
-<t>The primary goal of this project is to create a communication protocol / data format with the following characteristics, ordered by priority:
+<t>The primary goal of this project is to create a communication protocol / data format with the following characteristics, order by priority:
 
 <list style="symbols">
  <t>Universal - Capable of representation of any type of data, suitable for wide use including streaming, long-term storage and parallel accessing</t>

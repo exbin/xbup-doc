@@ -1,0 +1,113 @@
+Welcome to presentation about the ExBin project.
+ExBin project is an non-commercial initiative to bring evolution in general data storing and processing.
+
+== What It Is
+
+Name of the project reflects two basic aspects this project:
+
+Technology should be extensible to provide freedom for anyone to extend the project with new capabilities
+while having responsibility to:
+
+  - Follow proper design guidelines
+  - Create implementation and user tools
+  - Provide documentation and maintain compatibility
+  - Preserve ability to extend your extension
+
+Second aspect is to use binary data representation to:
+
+  - Support any type of data
+  - Represent any abstract concept
+  - Could be more efficient than text
+
+== Core Technologies
+
+Project stands on 5 base technologies:
+
+- Universal binary data format and communication protocol
+- Data processing framework for data conversions and transformations
+- Multilevel abstract programming language
+- Database system with customizable relational and other capabilities
+- Knowledge base repository with various metadata and ontologies
+
+== Universal Data Protocol
+
+Representation of any possible data with focus on abstraction.
+
+Primary principles:
+
+- Specifies data representation into sequence of bits of binary data
+- Multilayer approach with each new layer build on top of lower ones
+- Primary structure is based on binary blobs organized into tree
+- 
+
+
+
+To address nonfamiliarity of the approach strong focus should be put on usability.
+
+Tools: Provide viewer / editor capable to work with the data at ease
+Provide human friendly alternative methods when possible including textual syntaxes / markup languages and graphical visualisations when possible.
+
+Use of separate layers / modules should allow rapid simultaneous and independent development of various parts of the project by multiple teams at the same time.
+
+== Data Processing Framework
+
+Provide automatic and manual data transformations. Usable for data protocol for automatic conversion of data and data types. 
+
+Ability to form processing clusters and support multiple programming languages and diversive environment.
+
+* Data-flow or service operations
+
+* Ability to combine multiple operations into complex ones
+
+* Possibly visual designer
+
+== Programming Language
+
+Algorithms and data structures represented using universal protocol. Better structure for machine processing including refactoring or general transformations / updates. (independent of tool / IDE)
+
+Aim is to provide language which could be converted (compiled, transputed) into as many enviroments as possible.
+
+- Ability to provide new abstractions and independently on programming language
+
+Allow to convert to and from other programming languages.
+
+* Multilevel
+  
+  Increment of the CPU register including flags:
+     IO parameters as register and flags
+  Bus signals to output bus in number of ticks
+  
+  up to:
+  
+  assign more servers to cloud node/cluster
+
+* Operation isolation
+
+* Deterministic
+  or specified with non-deterministic inputs (like network or random number generator)
+
+* Can specify input/output conditions, complexity or other resources requirements like time and space/memory
+  
+== Database System
+
+* Data represented using protocol - fields as binary blob records
+* Query engine built on top of transformation framework
+* Support for programming concepts
+* Not transactional or relational per se, but
+* Structure of data and all abilites can be dynamically defined
+* Same for caches / indexes
+* Support for clustering of multiple database machines
+
+Examples:
+
+* Single table made from multiple parts split by date - Recent records would have more indexes / caches for faster processing
+* Cache for number of records of given type for faster processing
+* For structured binary or text fields ability to index their values beyond text indexing
+* Support for fields computed using transformation programming language
+* Structure definition stored in machine processible form - allow to transform structure of data
+
+== Knowledge Base Repository
+
+Knowledge stored using previously mentioned technologies.
+
+- These are strengths and weaknesses at the same time.
