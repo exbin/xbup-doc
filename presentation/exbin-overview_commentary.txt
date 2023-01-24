@@ -1,23 +1,22 @@
 Welcome to presentation about the ExBin project.
-ExBin project is an non-commercial initiative to bring evolution in general data storing and processing.
 
 == What It Is
 
+ExBin project is an non-commercial initiative to bring evolution in general data storing and processing by providing set of unified methods to access and convert any structured data. 
+
 Name of the project reflects two basic aspects this project:
 
-Technology should be extensible to provide freedom for anyone to extend the project with new capabilities
-while having responsibility to:
+== Why Binary?
 
-  - Follow proper design guidelines
-  - Create implementation and user tools
-  - Provide documentation and maintain compatibility
-  - Preserve ability to extend your extension
-
-Second aspect is to use binary data representation to:
+// Second aspect is to use binary data representation to:
 
   - Support any type of data
   - Represent any abstract concept
   - Could be more efficient than text
+
+== Extensible
+
+  - 
 
 == Core Technologies
 
@@ -111,3 +110,14 @@ Examples:
 Knowledge stored using previously mentioned technologies.
 
 - These are strengths and weaknesses at the same time.
+
+== Evangelism
+
+Technology should be extensible to provide freedom for anyone to extend the project with new capabilities
+while having responsibility to:
+
+  - Follow proper design guidelines
+  - Create implementation and user tools
+  - Provide documentation and maintain compatibility
+  - Preserve ability to extend your extension
+
