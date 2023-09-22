@@ -39,8 +39,9 @@ Extensible Binary Universal Protocol (XBUP)
 <keyword>Protocol</keyword>
 
 <abstract>
-<t>The Extensible Binary Universal Protocol (XBUP) is a prototype of general purpose binary data protocol and file format with primary focus on data abstraction and transformation.</t>
-<t>This proposal describes specification of version 0.2 of bottom levels of the protocol and set of basic data types and the recommended API.</t>
+<t>The Extensible Binary Universal Protocol (XBUP) is general purpose binary data protocol and file format with primary focus on data abstraction and data transformation.</t>
+<t>This proposal describes specification of the currently developed prototype version, example set of basic data types and the recommended API.</t>
+<t>Protocol is part of the <eref target="https://exbin.org">ExBin Project</eref>, which aims to provide proof-of-concept implementation and support for wider set of functionality.</t>
 <t>NOTICE: This is not official or finished document and is not yet enrolled for any official track to be registered as IETF RFC.</t>
 </abstract>
 
@@ -60,7 +61,7 @@ Extensible Binary Universal Protocol (XBUP)
 <t>Key features:
 <list style="symbols">
  <t>Unified block-tree structure - Minimalist tree structure based on integer and binary blob only</t>
- <t>Build-in and custom data types - Support for data type definitions and catalog of types</t>
+ <t>Custom data types - Support for data type definitions and catalogs of types</t>
  <t>Transformation framework - Automatic and manual data conversions and compatibility handling</t>
 </list>
 </t>
@@ -74,50 +75,17 @@ Extensible Binary Universal Protocol (XBUP)
 </list>
 </t>
 
-<t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of a specific mark-up language. See <xref target="appendix_comparison">Formats comparison</xref> for more information.</t>
-
-<t>This protocol technically overlaps in functionality with many currently widely used protocols and formats including those defined by various RFCs. It has also somewhat different nature compare to currently used typically text-based internet protocols (on higher layers). Therefore various aspects should be evaluated, whether potential advantages this protocol could provide overweight complexity and other possible issues, see <xref target="RFC3117"/> for design consideration.</t>
-
 <section anchor="goals" title="Goals">
 
 <t>The primary goal of this project is to create a communication protocol / data format with the following characteristics, order by priority:
 
 <list style="symbols">
- <t>Universal - Capable of representation of any type of data, suitable for wide use including streaming, long-term storage and parallel accessing</t>
+ <t>Universal - Capable of representation of any type of data, suitable for wide range of use including streaming, long-term storage and parallel accessing</t>
  <t>Independent - Not tightly linked to a particular spoken language, product, company, processing architecture or programming language</t>
  <t>Declarative - Self sufficient for data type definition and with the ability to build data types by combining existing ones</t>
  <t>Normative - Providing reference form for data representation</t>
  <t>Flexible - Support for data transformations, compatibility and extensibility handling</t>
  <t>Efficient - Effective data compacting / compression support for plain binary and structured data</t>
-</list>
-</t>
-
-</section>
-
-<section anchor="motivation" title="Motivation">
-
-<t>Project should provide universal protocol as a more feature-rich alternative to currently used binary protocols. It should provide general methods for handling data of various form and types including:
-
-<list style="symbols">
- <t>Multimedia files - Audio, video, animation, 3D</t>
- <t>Serialization protocol - Provide ability to serialize non-structured data</t>
- <t>Application API - Remote or local method call execution, supporting parameters and result passing and error handling</t>
- <t>Filesystem structure - Allow to represent data in the form of filesystem or as a compressed archive</t>
- <t>Huge data - Use dynamic numeric values to allow support for data in terabytes range or greater</t>
- <t>Random access - Segmented, paged, fragmented data</t>
- <t>Parallel processing - Atomicity, structural data for database representation</t>
- <t>Indexes, error detection and data correction</t>
-</list>
-</t>
-
-<t>From the users point of view, protocol should provide new capabilities or enable new development in various areas:
-
-<list style="symbols">
- <t>Browseable binary content - Provide capability for viewing and editation of data, including visual and graphical tools and textual tools with multiple available syntaxes and supported languages</t>
- <t>Flexible modular applications - With the ability to provide both independent API and data interchange format and with automatic transformation between both of them, it should be possible to utilize the protocol to enhance approach for modular applications design</t>
- <t>Comprehensive scientific protocol - With the multiple levels of expresiveness and capability to define unlimited number of additional properties, it should be possible to utilize the protocol for definition and storage of specialized scientific data</t>
- <t>Strong building blocks - Provide well specified data representation and ability to construct even complex data structures from combining data type definitions from wide libraries</t>
- <t>Long-term storage - Provide way to define data with external or integrated specification</t>
 </list>
 </t>
 
@@ -137,9 +105,9 @@ in this document are to be interpreted as described in
 
 <section anchor="specification" title="XBUP Specification">
 
-<t>XBUP is multi-layer protocol for representation of data in bit/byte stream, where each layer is build on top of previous layer providing new capabilities, like new constraints and/or features. Typically, higher levels also declare retrospectivelly entities used in lower levels.</t>
+<t>XBUP is multi-layer protocol for representation of data in bit/byte stream provided by other protocols / file data etc. Each layer is build on top of previous layer providing new capabilities, like new constraints and/or features. Higher levels can also declare retrospectivelly entities used in lower levels.</t>
 
-<t>Applications can support only up to specific level of XBUP protocol when full support is not necessary.</t>
+<t>Applications can choose to support only up to specific layer of XBUP protocol when full support is not necessary.</t>
 
 <t>Layers are indexed as levels by depth starting with level 0.</t>
 
@@ -162,10 +130,8 @@ in this document are to be interpreted as described in
 
 <t>
 <list style="symbols">
-
  <t>UBNumber encoded value</t>
  <t>Blob - Sequence of bits (bytes) with unspecified length or length specified by some attribute</t>
-
 </list>
 </t>
 
@@ -175,7 +141,7 @@ in this document are to be interpreted as described in
 
 <t>UBNumber is encoding which combines unary and binary encoding with varying length of units of bits (octets). It is typically representing natural non-negative integer number (or value of any other type with deterministic mapping to well ordered / countably infinite set). Encoding is applied recursively when unary part fills all bits of the first byte.</t>
 
-<t>Encoding is somehat similar to <xref target="RFC3629">UTF-8</xref> which has also varying length.</t>
+<t>This is similar to other varying length encoding, for example used in <xref target="RFC3629">UTF-8</xref>.</t>
 
 <t>To decode value, non-zero bits are counted for length up to 8 bits and then rest of bits is used as value + additional sequence of n bytes where n equals to length. Value is also shifted so that there is only one code for each number. For bit value 0xFF which corresponds to length 8, additional UBNatural value is added next. This new value contains additional length value.</t>
 
@@ -206,12 +172,11 @@ in this document are to be interpreted as described in
 ]]></artwork>
 </figure>
 
-<t>Various interpretations can be mapped on UBNumber encoding. For level 0 following two mappings are used:
+<t>Other mappings to represent different values than natural numbers can be also used with UBNumber encoding. For level 0 following two mappings are used:
 
 <list style="symbols">
  <t>UBNatural encoding using directly value from UBNumber basic mapping as listed above</t>
-
- <t>UBENatural where value 7Fh is reserved for infinity constant and higher values are decreased by one</t>
+ <t>UBENatural where value 7Fh is reserved for infinity constant and higher codes are shifted by one</t>
 </list>
 </t>
 
@@ -219,11 +184,11 @@ in this document are to be interpreted as described in
 
 <section anchor="document" title="Document">
 
-<t>Single document is typically represented as a single block, but there can be additional optional tail data present.</t>
+<t>Single document is typically represented as a single block, but data after this block are also considered part of the document.</t>
 
-<t>To store document in the file in file system or for use in the undeclared data stream, additional "Document header" should be present.</t>
+<t>To store document in the file / file system or in data streams protocol version was not negotiated prior, additional "Document header" should be present.</t>
 
-<t>Document header contains information about protocol version. For the version 0.2 of the protocol, it is 6 bytes long data blob. Explanation of each value is non-conformant, primary use is padding to help systems which uses beginning of file for identification of file type.</t>
+<t>Document header contains information about protocol version. For the current version 0.2 of the protocol, it is 6 bytes long data blob. Explanation of each value is non-conformant, primary use is padding to help systems which uses beginning of file for identification of file type.</t>
 
 <t>Document header with hexadecimal values:</t>
 
@@ -240,11 +205,13 @@ in this document are to be interpreted as described in
   <c>02</c><c>UBNatural encoded minor version</c>
 </texttable>
 
-<t>Primary block called "Root Block" follows after header. Any data after root block are optional blob called "Tail Data".</t>
+<t>Primary block called "Root Block" follows after header. Any data after root block are optional data blob called "Tail Data".</t>
 
 </section>
 
 <section anchor="block" title="Block">
+
+<t>Block specifies encoding / decoding method for bytes sequence into sequence of blobs or child blocks and to defere its own size.</t>
 
 <t>Each block starts with the value:</t>
 
@@ -254,7 +221,7 @@ in this document are to be interpreted as described in
 ]]></artwork>
 </figure>
 
-<t>Value attributePartSize is not allowed to equal 0 for the block as 0 is used for termination handling (see below).</t>
+<t>Value attributePartSize is not allowed to equal to 0 for the block as value 0 is used for termination handling (see below).</t>
 
 <t>Block continues with attribute part which is blob of the length in bytes specified by attributePartSize.</t>
 
@@ -295,7 +262,7 @@ in this document are to be interpreted as described in
 
 <t>Effectively, transferred data are represented as a sequence of attributes and child blocks or data blob, while attributePartSize and dataPartSize values are present for the structural purpose.</t>
 
-<t>See <xref target="examples_of_blocks">examples of blocks</xref>.</t>
+<t>See <xref target="appendix_examples_of_blocks">examples of blocks</xref>.</t>
 
 </section>
 
@@ -316,8 +283,8 @@ in this document are to be interpreted as described in
 <t>Data part has length in bytes specified by dataPartSize value or if dataPartSize equals infinity, data part is processed by byte and each value zero is used as a escape code, where directly following byte means:
 
 <list style="symbols">
-<t>Value 0 denotes end of the data part</t>
-<t>Value 1 to 255 denotes sequence of zero bytes of given count and processing continues</t>
+ <t>Value 0 denotes end of the data part</t>
+ <t>Value 1 to 255 denotes sequence of zero bytes of given count and processing continues</t>
 </list>
 </t>
 
@@ -353,18 +320,18 @@ in this document are to be interpreted as described in
 
 <t>
 <list style="symbols">
- <t>Block is either data blob or sequence of numbers (instances of any well defined countable set) and child blocks</t>
+ <t>Block is either data blob or finite sequence of attributes and child blocks</t>
 
- <t>Block can have specified size - this allows to skip block processing, but also requires to know block size in advance when encoding</t>
+ <t>Block can have specified size - this allows to skip block processing, but also requires to know size of the block in advance when encoding</t>
  
- <t>For block with unknown size, it's possible to use infinity size + termination, but then all parent blocks also require to have infinity size</t>
+ <t>For block with unknown size, it's possible to use infinity size + termination or sequence of child blocks cound never end</t>
 
  <t>Data block has no attributes, so either have to be wrapped or meaning should be understandable from the content / context</t>
 
  </list>
 </t>
 
-<t>In theory, this should provide sufficient capability to represent any data and allow to specify data types as equal class citizens. More complex types can be either constructed using deeper tree structure or compacted into binary blob, but it should be possible to derive data type via transformation to basic data elements when needed.</t> 
+<t>In theory, this should provide sufficient capability to represent any data when encoding to blob is available. More complex types can be either constructed using deeper tree structure or compacted into binary blob, but it should be possible to derive data type via transformation to basic data elements when needed.</t> 
 
 </section>
 
@@ -372,13 +339,13 @@ in this document are to be interpreted as described in
 
 <section anchor="level_1" title="Level 1: Block Types">
 
-<t>Level 1 introduces block types, how to specify type of the block and catalog of types.</t>
+<t>Level 1 introduces block types, how to specify type of the block and catalog of types. Approach is somewhat similar to <xref target="XMLNamespaces">XML Namespaces</xref>.</t>
 
-<t>Since this level, if attribute is defined, but not present, it's value is considered as zero as in the form of UBNumber encoding.</t>
+<t>Since this level, if attribute is defined, but not present, it's value is considered as zero code of the UBNumber encoding.</t>
 
 <section anchor="block_type" title="Block Type">
 
-<t>First two attributes in node block are interpreted as follows (somewhat similar to <xref target="XMLNamespaces">XML Namespaces</xref>):</t>
+<t>First two attributes in node block are interpreted as follows:</t>
 
 <figure title="Block type attributes">
  <artwork><![CDATA[
@@ -389,7 +356,7 @@ in this document are to be interpreted as described in
 
 <t>These two values determine block type. Block types are organized into groups where TypeGroup value specifies to which group block type belongs and BlockType value specifies particular block type in the corresponding group.</t>
 
-<t>TypeGroup with value 0 is basic build-in group and cannot be overridden. Basic blocks provides ability to specify meaning of other groups via block type declarations, definitions or links to catalog or external source.</t>
+<t>TypeGroup with value 0 is always basic build-in group (cannot be overridden). Basic blocks provides ability to specify meaning of other groups via block type declarations, definitions or links to catalog or external source.</t>
 
 </section>
 
@@ -440,7 +407,7 @@ in this document are to be interpreted as described in
 ]]></artwork>
 </figure>
 
-<t>From the abstract point of view (more about <xref target="abstraction">abstraction</xref>) type definition is simply ordered list of child singular types or sets of child types including infinite number of them.</t>  
+<t>From the abstract point of view (more about <xref target="appendix_abstraction">abstraction</xref>) type definition is simply ordered list of child singular types or sets of child types including infinite number of them.</t>  
 
 <t>At the same time data definitions are similar to the table columns definition used in relation databases, except that infinite number of items is also supported.</t>
 
@@ -703,13 +670,13 @@ join or consist operation.</t>
 
 <section anchor="level_2" title="Level 2: Transformations">
 
-<t>In general, block transformation is data flow from one block type to another block type (more about <xref target="abstraction">abstraction</xref>). Transformation can be used for multiple tasks and cover various operations with data.</t>
+<t>In general, block transformation is data flow from one block type to another block type (more about <xref target="appendix_abstraction">abstraction</xref>). Transformation can be used for multiple tasks and cover various operations with data.</t>
 
 <t>This level introduces capability to define transformations in catalog and automatically performs conversion between blocks.</t>
 
-<t>Protocol processing is based on broad concept of dataflow paradigm, which typically state that there are input data, process and output data.</t>
+<t>Protocol processing is based on broad concept of dataflow paradigm, which typically state that there are input data, operation and output data.</t>
 
-<t>Additional requirement here is, that process must be deterministic (for same input returns the same output), but other than that, it can be run in any manner - as a local function in memory up to remote process in cloud.</t>
+<t>Additional requirement here is, that operation must be deterministic (for same input returns the same output), but other than that, it can be run in any manner - as a local function in memory up to remote process in cloud.</t>
 
 <t>Transformations can be also used for:
 
@@ -1061,7 +1028,38 @@ join or consist operation.</t>
 
 <section anchor="appendixes" title="Appendixes">
 
-<section anchor="examples_of_blocks" title="Examples of Blocks">
+<section anchor="appendix_motivation" title="Appendix: Motivation">
+
+<t>Project should provide universal protocol as a more feature-rich alternative to currently used binary protocols. It should provide general methods for handling data of various form and types including:
+
+<list style="symbols">
+ <t>Multimedia files - Audio, video, animation, 3D</t>
+ <t>Serialization protocol - Provide ability to serialize non-structured data</t>
+ <t>Application API - Remote or local method call execution, supporting parameters and result passing and error handling</t>
+ <t>Filesystem structure - Allow to represent data in the form of filesystem or as a compressed archive</t>
+ <t>Huge data - Use dynamic numeric values to allow support for data in terabytes range or greater</t>
+ <t>Random access - Segmented, paged, fragmented data</t>
+ <t>Parallel processing - Atomicity, structural data for database representation</t>
+ <t>Indexes, error detection and data correction</t>
+</list>
+</t>
+
+<t>From the users point of view, protocol should provide new capabilities or enable new development in various areas:
+
+<list style="symbols">
+ <t>Browseable binary content - Provide capability for viewing and editation of data, including visual and graphical tools and textual tools with multiple available syntaxes and supported languages</t>
+ <t>Flexible modular applications - With the ability to provide both independent API and data interchange format and with automatic transformation between both of them, it should be possible to utilize the protocol to enhance approach for modular applications design</t>
+ <t>Comprehensive scientific protocol - With the multiple levels of expresiveness and capability to define unlimited number of additional properties, it should be possible to utilize the protocol for definition and storage of specialized scientific data</t>
+ <t>Strong building blocks - Provide well specified data representation and ability to construct even complex data structures from combining data type definitions from wide libraries</t>
+ <t>Long-term storage - Provide way to define data with external or integrated specification</t>
+</list>
+</t>
+
+</section>
+
+<section anchor="appendix_examples_of_blocks" title="Appendix: Examples of Blocks">
+
+<t>Examples of blocks and how their are encoded using XBUP protocol.</t>
 
 <t>Fixed size node block with one attribute</t>
 <texttable title="Stream Data">
@@ -1110,7 +1108,11 @@ join or consist operation.</t>
 
 </section>
 
-<section anchor="abstraction" title="Appendix 1: Abstraction">
+<section anchor="appendix_abstraction" title="Appendix: Abstraction">
+
+<t>Primary focus on abstraction makes this protocol somewhat different compare to other similar binary formats which focus on efficiency, serialization or binary representation of a specific mark-up language. See <xref target="appendix_comparison">Formats comparison</xref> for more information.</t>
+
+<t>This protocol technically overlaps in functionality with many currently widely used protocols and formats including those defined by various RFCs. It has also somewhat different nature compare to currently used typically text-based internet protocols (on higher layers). Therefore various aspects should be evaluated, whether potential advantages this protocol could provide overweight complexity and other possible issues, see <xref target="RFC3117"/> for design consideration.</t>
 
 <t>With the primary focus on abstraction, data in the protocol are considered more as abstract entities than a specific method for data representation.</t>
 
@@ -1126,7 +1128,7 @@ join or consist operation.</t>
 
 </section>
 
-<section anchor="appendix_parsing" title="Appendix 2: Parsing">
+<section anchor="appendix_parsing" title="Appendix: Parsing">
 
 <t>Similar to parsing of textual formats, it's possible to provide parsing capability for binary protocol.
 
@@ -1208,7 +1210,7 @@ join or consist operation.</t>
 
 </section>
 
-<section anchor="appendix_comparison" title="Appendix 3: Comparison to Other Formats">
+<section anchor="appendix_comparison" title="Appendix: Comparison to Other Formats">
 
 <t>While there are various binary formats and markup languages available, this project aims to take somewhat different approach to data representation.</t>
 
@@ -1228,7 +1230,7 @@ join or consist operation.</t>
 
 </section>
 
-<section anchor="appendix_ui" title="Appendix 4: User Interface">
+<section anchor="appendix_ui" title="Appendix: User Interface">
 
 <t>With unified tree structure it should be possible to provide tool which can process generic document encoded using XBUP protocol.</t>
 
@@ -1307,7 +1309,7 @@ join or consist operation.</t>
   <annotation>ITU-T Recommendation X.690</annotation>
 </reference>
 
-<reference anchor="YAML" target="http://www.yaml.org/spec/1.2/spec.html">
+<reference anchor="YAML" target="https://www.yaml.org/spec/1.2/spec.html">
   <front>
     <title>YAML Ain't Markup Language (YAML[TM]) Version 1.2, 3rd Edition</title>
     <author initials="O." surname="Ben-Kiki" fullname="Oren Ben-Kiki"/>
