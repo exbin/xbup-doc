@@ -1,5 +1,9 @@
 *~
+.idea
+.gradle
 /pages/en/doc/impl
 /media/en/doc/impl
 /rfc/build
 /xbup-doc.wiki
+/tools/wikiToWeb/build/
+/tools/wikiToWeb/dist/

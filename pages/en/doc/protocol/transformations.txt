@@ -1,7 +1,0 @@
-====== Level 2: Transformations ======
-
-FIXME
-
-- Autoconversion
-- Undefined block as non-present
-- Zero attribute as non-present

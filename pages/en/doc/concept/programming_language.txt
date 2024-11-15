@@ -1,8 +1,0 @@
-====== Concept: Programming Language ======
-
-FIXME
-
-It might be useful to have scripting language directly supporting data stored using XBUP protocol.
-
-Idea here is to be able to store algorithms using XBUP protocol.
-

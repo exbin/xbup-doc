@@ -1,8 +1,0 @@
-====== Concept: Database ======
-
-FIXME
-
-XBUP-based database should allow to store data using XBUP blocks and streams with additional indexes and constraints. This database should be able to utilize transformations between blocks to allow storage modes using various forms of data representation.
-
-Also there should be service accepting XBUP-encoded query requests.
-

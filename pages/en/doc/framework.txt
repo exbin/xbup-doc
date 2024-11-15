@@ -1,9 +1,0 @@
-====== XBUP Framework Documentation ======
-
-This document is part of the eXtensible Binary Universal Protocol project documentation. It contains description of framework service.
-
-===== Content =====
-
-  * [[en:doc:framework:structure|Framework Structure]]
-  * [[en:doc:framework:services|Framework Services]]
-  * [[en:doc:framework:interface|Framework Interface]]

@@ -3,7 +3,7 @@
 <!ENTITY RFC2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY RFC3117 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3117.xml">
 <!ENTITY RFC3629 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3629.xml">
-<!ENTITY RFC4627 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4627.xml">
+<!ENTITY RFC8259 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8259.xml">
 <!ENTITY RFC7049 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7049.xml">
 ]>
 
@@ -40,7 +40,7 @@ Extensible Binary Universal Protocol (XBUP)
 
 <abstract>
 <t>The Extensible Binary Universal Protocol (XBUP) is general purpose binary data protocol and file format with primary focus on data abstraction and data transformation.</t>
-<t>This proposal describes specification of the currently developed prototype version, example set of basic data types and the recommended API.</t>
+<t>This proposal describes specification of the currently developed prototype version, example set of basic data types and the experimental API.</t>
 <t>Protocol is part of the <eref target="https://exbin.org">ExBin Project</eref>, which aims to provide proof-of-concept implementation and support for wider set of functionality.</t>
 <t>NOTICE: This is not official or finished document and is not yet enrolled for any official track to be registered as IETF RFC.</t>
 </abstract>
@@ -66,7 +66,7 @@ Extensible Binary Universal Protocol (XBUP)
 </list>
 </t>
 
-<t>Secondary features includes some capabilities inspired by markup languages like SGML/XML <xref target="XML"/> and data representation languages like YAML <xref target="YAML"/>, JSON <xref target="RFC4627"/> and similar binary formats like ASN.1 <xref target="ASN.1"/>, HDF5 <xref target="HDF5"/>, efficient XML <xref target="EfficientXML"/> or Protocol Buffers <xref target="ProtoBuf"/>.
+<t>Secondary features includes some capabilities inspired by markup languages like SGML/XML <xref target="XML"/> and data representation languages like YAML <xref target="YAML"/>, JSON <xref target="RFC8259"/> and similar binary formats like ASN.1 <xref target="ASN.1"/>, HDF5 <xref target="HDF5"/>, efficient XML <xref target="EfficientXML"/> or Protocol Buffers <xref target="ProtoBuf"/>.
 <list style="symbols">
  <t>Extensibility</t>
  <t>Unconstrained values</t>
@@ -1218,7 +1218,7 @@ join or consist operation.</t>
 <list style="symbols">
  <t>While SGML, XML <xref target="XML"/> and related technologies were huge inspiration for this project, it seems that it wouldn't be feasible to use them as base for the binary variant due to attribute vs. child tag duality and use of Unicode string as a primitive data type in contrast to countable set used by this project</t>
 
- <t>Using binary format is basically a necessity to make protocol reasonable usable for universal data like for example audio or video even thou text formats (for example JSON <xref target="RFC4627"/>, YAML <xref target="YAML"/>) provide easy of use and readability advantages</t>
+ <t>Using binary format is basically a necessity to make protocol reasonable usable for universal data like for example audio or video even thou text formats (for example JSON <xref target="RFC8259"/>, YAML <xref target="YAML"/>) provide easy of use and readability advantages</t>
 
  <t>Compare to wide range of existing binary formats with fixed block structure (for example RIFF), this project aims to provide more unified access to all data structures and their definitions</t>
 
@@ -1296,7 +1296,7 @@ join or consist operation.</t>
 
 &RFC3117;
 
-&RFC4627;
+&RFC8259;
 
 &RFC7049;
 

@@ -1,5 +1,0 @@
-====== Level 1: Catalog Interface ======
-
-XBUP protocol uses unified centralized catalog of type specifications. To access this centralized catalog, there is provided interface for catalog service, available on the xbup.org project server.
-
-FIXME
