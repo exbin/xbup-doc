@@ -10,8 +10,6 @@ Structure
 
 Some documentation is stored as content of Dokuwiki data folder. See Dokuwiki (https://dokuwiki.org) project homepage for syntax and related information.
 
- * media - Related resources, like images and sample files
- * pages - Documentation files using dokuwiki syntax
  * rfc - RFC document
  * presentation - Presentations
  * tools - Utility tools for documentation purposes
