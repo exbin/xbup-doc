@@ -23,7 +23,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,6 +62,7 @@ public class Main {
         State preSkip = state;
         boolean hasMark = true;
         boolean qeuedBreak = false;
+        StyleState styleState = new StyleState();
 
         Set<String> excludeChapters = getChapters();
         Set<String> usedImages = new HashSet<>();
@@ -70,7 +73,7 @@ public class Main {
 
             out.write("<div id=\"content\">\n");
             out.write("<?php\n");
-            out.write("include \'pages/inc/doc.php\'\n");
+            out.write("include \'pages/inc/doc.php\';\n");
             out.write("showNavigation();\n");
             out.write("?>\n");
 
@@ -106,7 +109,7 @@ public class Main {
                             }
 
                             state = switchState(out, state, State.CHAPTER);
-                            out.write("<h" + level + " id=\"" + chapterId + "\">" + chapterName + "</h" + level + ">\n");
+                            out.write("\n<h" + level + " id=\"" + chapterId + "\">" + chapterName + "</h" + level + ">\n");
                         }
                         continue;
                     }
@@ -114,19 +117,58 @@ public class Main {
                     if (state == State.SKIP) {
                         continue;
                     }
+                    
+                    if (state == State.CODEBLOCK) {
+                        if (line.startsWith("```")) {
+                            state = switchState(out, state, State.START);
+                        } else {
+                            out.write(line + "\n");
+                        }
+                        continue;
+                    }
 
                     if (line.isEmpty()) {
                         state = switchState(out, state, State.BREAK);
                     } else if (line.startsWith("* ")) {
-                        state = switchState(out, state, State.LIST);
-                        out.write("<li>" + processText(line.substring(2), State.LIST) + "</li>\n");
+                        if (state == State.LIST) {
+                            out.write("</li>\n<li>");
+                        } else {
+                            state = switchState(out, state, State.LIST);
+                        }
+                        out.write(processText(line.substring(2), State.LIST, styleState));
+                    } else if (line.startsWith("  * ")) {
+                        if (state == State.LIST2) {
+                            out.write("</li>\n  <li>");
+                        } else {
+                            state = switchState(out, state, State.LIST2);
+                        }
+                        out.write(processText(line.substring(4), State.LIST, styleState));
+                    } else if (line.startsWith("    * ")) {
+                        if (state == State.LIST3) {
+                            out.write("</li>\n    <li>");
+                        } else {
+                            state = switchState(out, state, State.LIST3);
+                        }
+                        out.write(processText(line.substring(6), State.LIST, styleState));
+                    } else if (line.startsWith("      * ")) {
+                        if (state == State.LIST4) {
+                            out.write("</li>\n      <li>");
+                        } else {
+                            state = switchState(out, state, State.LIST4);
+                        }
+                        out.write(processText(line.substring(8), State.LIST, styleState));
                     } else if (line.startsWith("    ")) {
                         if (state == State.CODE) {
                             out.write("\n");
                         } else {
                             state = switchState(out, state, State.CODE);
                         }
-                        out.write(processText(line.substring(4), State.CODE));
+                        out.write(processText(line.substring(4), State.CODE, styleState));
+                    } else if (line.startsWith("```")) {
+                        state = switchState(out, state, State.CODEBLOCK);
+                        if (line.length() > 3) {
+                            out.write(processText(line.substring(4), State.CODE, styleState));
+                        }
                     } else if (line.startsWith("!")) {
                         state = switchState(out, state, State.IMAGE);
                         int breakPos = line.indexOf("]");
@@ -140,7 +182,7 @@ public class Main {
                             line = line.substring(0, line.length() - 2);
                         }
                         state = switchState(out, state, State.PARAGRAPH);
-                        out.write(processText(line, State.PARAGRAPH));
+                        out.write(processText(line, State.PARAGRAPH, styleState));
                     }
                 }
             } catch (IOException ex) {
@@ -149,7 +191,7 @@ public class Main {
             
             switchState(out, state, State.END);
 
-            out.write("\n\n</div>\n");
+            out.write("\n</div>\n");
             out.write("</body>\n");
             out.write("</html>\n");
 
@@ -196,13 +238,48 @@ public class Main {
 
         switch (oldState) {
             case PARAGRAPH:
-                out.write("</p>\n");
+                out.write("\n</p>\n");
                 break;
             case LIST:
-                out.write("</ul>\n");
+                // TODO
+                if (state == State.LIST2) {
+                    out.write("\n<ul>\n  <li>");
+                    return state;
+                } else if (state == State.LIST3) {
+                    out.write("\n<ul><li><ul>\n    <li>");
+                    return state;
+                } else if (state == State.LIST4) {
+                    out.write("\n<ul><li><ul><li><ul>\n      <li>");
+                    return state;
+                }
+                out.write("</li>\n</ul>\n");
+                break;
+            case LIST2:
+                if (state == State.LIST) {
+                    out.write("</li>\n</ul></li>\n<li>");
+                    return state;
+                } else if (state == State.LIST3) {
+                    out.write("\n<ul>\n    <li>");
+                    return state;
+                } else if (state == State.LIST4) {
+                    out.write("\n<ul><li><ul>\n      <li>");
+                    return state;
+                }
+                out.write("</li>\n</ul></li></ul>\n");
+                break;
+            case LIST3:
+                // TODO
+                out.write("</li>\n</ul></li></ul></li></ul>\n");
+                break;
+            case LIST4:
+                // TODO
+                out.write("</li>\n</ul></li></ul></li></ul></li></ul>\n");
                 break;
             case CODE:
                 out.write("</code></pre>\n");
+                break;
+            case CODEBLOCK:
+                out.write("</pre>\n");
                 break;
             default:
                 break;
@@ -210,13 +287,25 @@ public class Main {
 
         switch (state) {
             case PARAGRAPH:
-                out.write("<p>");
+                out.write("\n<p>\n");
                 break;
             case LIST:
-                out.write("<ul>\n");
+                out.write("\n<ul>\n<li>");
+                break;
+            case LIST2:
+                out.write("\n<ul><li><ul>\n  <li>");
+                break;
+            case LIST3:
+                out.write("\n<ul><li><ul><li><ul>\n    <li>");
+                break;
+            case LIST4:
+                out.write("\n<ul><li><ul><li><ul><li><ul>\n      <li>");
                 break;
             case CODE:
-                out.write("<pre style=\"background-color: rgb(246, 248, 250); padding: 8px;\"><code>");
+                out.write("<pre style=\"background-color: rgb(246, 248, 250); padding: 8px;\"><code>\n");
+                break;
+            case CODEBLOCK:
+                out.write("<pre class=\"code\">\n");
                 break;
             default:
                 break;
@@ -225,10 +314,20 @@ public class Main {
         return state;
     }
 
-    private static final String matches = "\"\'`&<>~[";
+    private static final String matches = "\"\'`&<>~[*";
+    private static final List<String> allowedTags = new ArrayList<>();
+    
+    static {
+        allowedTags.add("abbr");
+        allowedTags.add("table");
+        allowedTags.add("tbody");
+        allowedTags.add("td");
+        allowedTags.add("tr");
+        allowedTags.add("th");
+    }
 
     @Nonnull
-    private static String processText(String text, State state) {
+    private static String processText(String text, State state, StyleState styleState) {
         StringBuilder output = new StringBuilder();
         int pos = 0;
         int batch = 0;
@@ -259,7 +358,34 @@ public class Main {
                         break;
                     }
                     case 4: {
-                        output.append("&lt;");
+                        boolean closeTag = false;
+                        int tagNameLength = 1;
+                        while (pos + tagNameLength < length) {
+                            if ('/' == text.charAt(pos + tagNameLength) && !closeTag) {
+                                closeTag = true;
+                                tagNameLength++;
+                            } else if (Character.isLetter(text.charAt(pos + tagNameLength))) {
+                                tagNameLength++;
+                            } else {
+                                break;
+                            }
+                        }
+
+                        int tagRestLength = tagNameLength;
+                        while (pos + tagRestLength < length) {
+                            if ('>' == text.charAt(pos + tagRestLength)) {
+                                break;
+                            }
+                            tagRestLength++;
+                        }
+                        String tagName = text.substring(pos + (closeTag ? 2 : 1), pos + tagNameLength);
+                        if (pos + tagRestLength < length && allowedTags.contains(tagName)) {
+                            batch += tagRestLength;
+                            pos += tagRestLength;
+                            output.append("<");
+                        } else {
+                            output.append("&lt;");
+                        }
                         break;
                     }
                     case 5: {
@@ -293,13 +419,32 @@ public class Main {
                                     if (isExt) {
                                         output.append("class=\"urlextern\" ");
                                     }
-                                    output.append(" href=\"").append(linkTarget).append("\">").append(linkText).append("</a>");
+                                    output.append("href=\"").append(linkTarget).append("\">").append(linkText).append("</a>");
                                     pos = endPos;
                                 }
                             }
                         } else {
                             output.append("[");
                         }
+                        break;
+                    }
+                    case 8: {
+                        if (state != State.CODE) {
+                            if (length > pos + 1 && text.charAt(pos + 1) == '*') {
+                                if (styleState.strong) {
+                                    pos++;
+                                    output.append("</strong>");
+                                    styleState.strong = false;
+                                } else {
+                                    pos++;
+                                    output.append("<strong>");
+                                    styleState.strong = true;
+                                }
+                                break;
+                            }
+                        }
+
+                        output.append("*");
                         break;
                     }
                 }
@@ -321,13 +466,22 @@ public class Main {
         PARAGRAPH,
         BREAK,
         LIST,
+        LIST2,
+        LIST3,
+        LIST4,
         TABLE,
         CODE,
+        CODEBLOCK,
         IMAGE,
         END
     }
 
     private static enum Align {
         LEFT, RIGHT, CENTER
+    }
+    
+    private static class StyleState {
+        boolean strong = false;
+        boolean italic = false;
     }
 }
