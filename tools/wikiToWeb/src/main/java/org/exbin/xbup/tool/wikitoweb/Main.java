@@ -39,9 +39,26 @@ import javax.annotation.Nonnull;
 public class Main {
 
     static final String OUTPUT_FILES_DIR = "output";
+    static final Map<String, String> PAGES = new HashMap<>();
     static final Map<String, String> PREFIXES = new HashMap<>();
-    
+
     static {
+        PAGES.put("Home", "");
+        PAGES.put("_Sidebar", "");
+        PAGES.put("About", "about");
+        PAGES.put("Motivation", "about");
+        PAGES.put("Goals", "about");
+        PAGES.put("Objectives", "about");
+        PAGES.put("Use Cases", "about");
+        PAGES.put("Project Scope", "about");
+        PAGES.put("Project Logo", "about");
+        PAGES.put("Protocol Specification", "specification");
+        PAGES.put("Tree Structure", "specification");
+        PAGES.put("Block Types", "specification");
+        PAGES.put("Convertibility", "specification");
+        PAGES.put("Ontologies", "specification");
+        PAGES.put("Concepts", "concept");
+
         PREFIXES.put("Concept", "concept");
         PREFIXES.put("Format", "concept/format");
         PREFIXES.put("Formalization", "concept/formalization");
@@ -68,8 +85,30 @@ public class Main {
     }
 
     private static void processFile(File sourceFile, String outputFilePath) {
-        File outputFile = new File(OUTPUT_FILES_DIR + File.separator + outputFilePath);
-        // outputFile.mkdirs();
+        String sourceFileName = sourceFile.getName();
+        int firstSpace = sourceFileName.indexOf(" ");
+        String pathPrefix = "prototype" + File.separator;
+        if (firstSpace > 0) {
+            String sourceFileFirstWord = sourceFileName.substring(0, firstSpace);
+            String newPathPrefix = PREFIXES.get(sourceFileFirstWord);
+            if (newPathPrefix != null) {
+                pathPrefix = newPathPrefix + File.separator;
+                outputFilePath = outputFilePath.substring(firstSpace + 1);
+            }
+        }
+
+        int firstDot = sourceFileName.indexOf(".");
+        String sourceFileFirstWord = sourceFileName.substring(0, firstDot);
+        String newPathPrefix = PAGES.get(sourceFileFirstWord);
+        if (newPathPrefix != null) {
+            pathPrefix = newPathPrefix + File.separator;
+        }
+
+        outputFilePath = outputFilePath.toLowerCase().replace(" ", "_");
+
+        File outputFile = new File(OUTPUT_FILES_DIR + File.separator + pathPrefix + "pages" + File.separator + outputFilePath);
+        File parentFile = outputFile.getParentFile();
+        parentFile.mkdirs();
         State state = State.START;
         State preSkip = state;
         boolean hasMark = true;
@@ -129,7 +168,7 @@ public class Main {
                     if (state == State.SKIP) {
                         continue;
                     }
-                    
+
                     if (state == State.CODEBLOCK) {
                         if (line.startsWith("```")) {
                             state = switchState(out, state, State.START);
@@ -204,7 +243,7 @@ public class Main {
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             switchState(out, state, State.END);
 
             out.write("\n</div>\n");
@@ -257,58 +296,77 @@ public class Main {
                 out.write("\n</p>\n");
                 break;
             case LIST:
-                // TODO
-                if (state == State.LIST2) {
-                    out.write("\n<ul>\n  <li>");
-                    return state;
-                } else if (state == State.LIST3) {
-                    out.write("\n<ul><li><ul>\n    <li>");
-                    return state;
-                } else if (state == State.LIST4) {
-                    out.write("\n<ul><li><ul><li><ul>\n      <li>");
-                    return state;
+                switch (state) {
+                    case LIST2:
+                        out.write("\n<ul>\n  <li>");
+                        return state;
+                    case LIST3:
+                        out.write("\n<ul><li><ul>\n    <li>");
+                        return state;
+                    case LIST4:
+                        out.write("\n<ul><li><ul><li><ul>\n      <li>");
+                        return state;
+                    default:
+                        break;
                 }
+
                 out.write("</li>\n</ul>\n");
                 break;
+
             case LIST2:
-                if (state == State.LIST) {
-                    out.write("</li>\n</ul></li>\n<li>");
-                    return state;
-                } else if (state == State.LIST3) {
-                    out.write("\n<ul>\n    <li>");
-                    return state;
-                } else if (state == State.LIST4) {
-                    out.write("\n<ul><li><ul>\n      <li>");
-                    return state;
+                switch (state) {
+                    case LIST:
+                        out.write("</li>\n</ul></li>\n<li>");
+                        return state;
+                    case LIST3:
+                        out.write("\n<ul>\n    <li>");
+                        return state;
+                    case LIST4:
+                        out.write("\n<ul><li><ul>\n      <li>");
+                        return state;
+                    default:
+                        break;
                 }
+
                 out.write("</li>\n</ul></li></ul>\n");
                 break;
+
             case LIST3:
-                if (state == State.LIST) {
-                    out.write("</li>\n</ul></li></ul></li>\n<li>");
-                    return state;
-                } else if (state == State.LIST2) {
-                    out.write("</li>\n</ul></li>\n  <li>");
-                    return state;
-                } else if (state == State.LIST4) {
-                    out.write("\n<ul><li><ul>\n      <li>");
-                    return state;
+                switch (state) {
+                    case LIST:
+                        out.write("</li>\n</ul></li></ul></li>\n<li>");
+                        return state;
+                    case LIST2:
+                        out.write("</li>\n</ul></li>\n  <li>");
+                        return state;
+                    case LIST4:
+                        out.write("\n<ul><li><ul>\n      <li>");
+                        return state;
+                    default:
+                        break;
                 }
+
                 out.write("</li>\n</ul></li></ul></li></ul>\n");
                 break;
+
             case LIST4:
-                if (state == State.LIST) {
-                    out.write("</li>\n</ul></li></ul></li></ul></li>\n<li>");
-                    return state;
-                } else if (state == State.LIST2) {
-                    out.write("</li>\n</ul></li></ul></li>\n  <li>");
-                    return state;
-                } else if (state == State.LIST3) {
-                    out.write("</li>\n</ul></li>\n    <li>");
-                    return state;
+                switch (state) {
+                    case LIST:
+                        out.write("</li>\n</ul></li></ul></li></ul></li>\n<li>");
+                        return state;
+                    case LIST2:
+                        out.write("</li>\n</ul></li></ul></li>\n  <li>");
+                        return state;
+                    case LIST3:
+                        out.write("</li>\n</ul></li>\n    <li>");
+                        return state;
+                    default:
+                        break;
                 }
+
                 out.write("</li>\n</ul></li></ul></li></ul></li></ul>\n");
                 break;
+
             case CODE:
                 out.write("</code>");
                 break;
@@ -350,7 +408,7 @@ public class Main {
 
     private static final String matches = "\\\"\'`&<>~[*_`";
     private static final List<String> allowedTags = new ArrayList<>();
-    
+
     static {
         allowedTags.add("abbr");
         allowedTags.add("div");
@@ -552,8 +610,9 @@ public class Main {
     private static enum Align {
         LEFT, RIGHT, CENTER
     }
-    
+
     private static class StyleState {
+
         boolean strong = false;
         boolean italic = false;
     }
