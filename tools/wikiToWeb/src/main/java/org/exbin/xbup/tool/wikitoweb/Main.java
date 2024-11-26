@@ -41,6 +41,7 @@ public class Main {
     static final String OUTPUT_FILES_DIR = "output";
     static final Map<String, String> PAGES = new HashMap<>();
     static final Map<String, String> PREFIXES = new HashMap<>();
+    static final Map<String, PageRecord> RECORDS = new HashMap<>();
 
     static {
         PAGES.put("Home", "");
@@ -58,6 +59,10 @@ public class Main {
         PAGES.put("Convertibility", "specification");
         PAGES.put("Ontologies", "specification");
         PAGES.put("Concepts", "concept");
+        PAGES.put("Browser", "browser");
+        PAGES.put("Editor", "editor");
+        PAGES.put("Manager", "manager");
+        PAGES.put("Central Catalog", "catalog");
 
         PREFIXES.put("Concept", "concept");
         PREFIXES.put("Format", "concept/format");
@@ -65,53 +70,69 @@ public class Main {
         PREFIXES.put("Issue", "concept/issue");
         PREFIXES.put("Progress", "concept/progress");
         PREFIXES.put("Subproject", "concept/subproject");
+        PREFIXES.put("Browser", "browser");
+        PREFIXES.put("Editor", "editor");
+        PREFIXES.put("Manager", "manager");
     }
 
     public static void main(String[] args) {
-        File startDir = new File("../../xbup-doc.wiki");
-        File targetDir = new File("out");
-
         FileFilter fileFilter = (File file) -> file.getName().endsWith(".md");
 
+        // First pass to collect all pages
+        File startDir = new File("../../xbup-doc.wiki");
         File[] files = startDir.listFiles(fileFilter);
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            // TODO Convert paths
-            String fileName = file.getName();
-            String outputFilePath = fileName.substring(0, fileName.length() - 3);
-            // File outFile = new File(targetDir + File.separator + files[i].getName());
-            processFile(file, outputFilePath + ".php");
+            String sourceFileName = file.getName();
+            sourceFileName = sourceFileName.substring(0, sourceFileName.length() - 3);
+            String outputFilePath = sourceFileName;
+            int firstSpace = sourceFileName.indexOf(" ");
+            String pathPrefix = "prototype";
+            if (firstSpace > 0) {
+                String sourceFileFirstWord = sourceFileName.substring(0, firstSpace);
+                String newPathPrefix = PREFIXES.get(sourceFileFirstWord);
+                if (newPathPrefix != null) {
+                    pathPrefix = newPathPrefix;
+                    outputFilePath = outputFilePath.substring(firstSpace + 1);
+                }
+            }
+
+            String newPathPrefix = PAGES.get(sourceFileName);
+            if (newPathPrefix != null) {
+                pathPrefix = newPathPrefix;
+            }
+
+            outputFilePath = outputFilePath.toLowerCase().replace(" ", "_");
+
+            PageRecord pageRecord = new PageRecord();
+            pageRecord.pathPrefix = pathPrefix;
+            pageRecord.outputFilePath = outputFilePath;
+            RECORDS.put(sourceFileName, pageRecord);
+//            System.out.println(sourceFileName + ": " + pageRecord.pathPrefix + " - " + pageRecord.outputFilePath);
+        }
+
+        // Second pass to convert to web pages
+        startDir = new File("../../xbup-doc.wiki");
+        files = startDir.listFiles(fileFilter);
+        for (int i = 0; i < files.length; i++) {
+            File file = files[i];
+            processFile(file);
         }
     }
 
-    private static void processFile(File sourceFile, String outputFilePath) {
+    private static void processFile(File sourceFile) {
         String sourceFileName = sourceFile.getName();
-        int firstSpace = sourceFileName.indexOf(" ");
-        String pathPrefix = "prototype" + File.separator;
-        if (firstSpace > 0) {
-            String sourceFileFirstWord = sourceFileName.substring(0, firstSpace);
-            String newPathPrefix = PREFIXES.get(sourceFileFirstWord);
-            if (newPathPrefix != null) {
-                pathPrefix = newPathPrefix + File.separator;
-                outputFilePath = outputFilePath.substring(firstSpace + 1);
-            }
-        }
+        sourceFileName = sourceFileName.substring(0, sourceFileName.length() - 3);
+        PageRecord pageRecord = RECORDS.get(sourceFileName);
+        String pathPrefix = pageRecord.pathPrefix;
+        String outputFilePath = pageRecord.outputFilePath;
 
-        int firstDot = sourceFileName.indexOf(".");
-        String sourceFileFirstWord = sourceFileName.substring(0, firstDot);
-        String newPathPrefix = PAGES.get(sourceFileFirstWord);
-        if (newPathPrefix != null) {
-            pathPrefix = newPathPrefix + File.separator;
-        }
-
-        outputFilePath = outputFilePath.toLowerCase().replace(" ", "_");
-
-        File outputFile = new File(OUTPUT_FILES_DIR + File.separator + pathPrefix + "pages" + File.separator + outputFilePath);
+        File outputFile = new File(OUTPUT_FILES_DIR + File.separator + (pathPrefix.isEmpty() ? "" : pathPrefix + File.separator) + "pages" + File.separator + outputFilePath + ".php");
         File parentFile = outputFile.getParentFile();
         parentFile.mkdirs();
         State state = State.START;
         State preSkip = state;
-        boolean hasMark = true;
+        boolean hasMark = false; // Legacy?
         boolean qeuedBreak = false;
         StyleState styleState = new StyleState();
 
@@ -123,10 +144,12 @@ public class Main {
             OutputStreamWriter out = new OutputStreamWriter(fos, "UTF-8");
 
             out.write("<div id=\"content\">\n");
-            out.write("<?php\n");
-            out.write("include \'pages/inc/doc.php\';\n");
-            out.write("showNavigation();\n");
-            out.write("?>\n");
+            if (pathPrefix.startsWith("specification")) {
+                out.write("<?php\n");
+                out.write("include \'pages/inc/doc.php\';\n");
+                out.write("showNavigation();\n");
+                out.write("?>\n");
+            }
 
             try (FileInputStream inputStream = new FileInputStream(sourceFile)) {
                 InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
@@ -186,28 +209,28 @@ public class Main {
                         } else {
                             state = switchState(out, state, State.LIST);
                         }
-                        out.write(processText(line.substring(2), State.LIST, styleState));
+                        out.write(processText(line.substring(2), State.LIST, styleState, pathPrefix));
                     } else if (line.startsWith("  * ")) {
                         if (state == State.LIST2) {
                             out.write("</li>\n  <li>");
                         } else {
                             state = switchState(out, state, State.LIST2);
                         }
-                        out.write(processText(line.substring(4), State.LIST, styleState));
+                        out.write(processText(line.substring(4), State.LIST, styleState, pathPrefix));
                     } else if (line.startsWith("    * ")) {
                         if (state == State.LIST3) {
                             out.write("</li>\n    <li>");
                         } else {
                             state = switchState(out, state, State.LIST3);
                         }
-                        out.write(processText(line.substring(6), State.LIST, styleState));
+                        out.write(processText(line.substring(6), State.LIST, styleState, pathPrefix));
                     } else if (line.startsWith("      * ")) {
                         if (state == State.LIST4) {
                             out.write("</li>\n      <li>");
                         } else {
                             state = switchState(out, state, State.LIST4);
                         }
-                        out.write(processText(line.substring(8), State.LIST, styleState));
+                        out.write(processText(line.substring(8), State.LIST, styleState, pathPrefix));
 //                    } else if (line.startsWith("    ")) {
 //                        if (state == State.CODE) {
 //                            out.write("\n");
@@ -218,7 +241,7 @@ public class Main {
                     } else if (line.startsWith("```")) {
                         state = switchState(out, state, State.CODEBLOCK);
                         if (line.length() > 3) {
-                            out.write(processText(line.substring(4), State.CODE, styleState));
+                            out.write(processText(line.substring(4), State.CODE, styleState, pathPrefix));
                         }
                     } else if (line.startsWith("!")) {
                         state = switchState(out, state, State.IMAGE);
@@ -234,7 +257,7 @@ public class Main {
                         }
                         boolean eol = !qeuedBreak && state == State.PARAGRAPH;
                         state = switchState(out, state, State.PARAGRAPH);
-                        out.write(processText(line, State.PARAGRAPH, styleState));
+                        out.write(processText(line, State.PARAGRAPH, styleState, pathPrefix));
                         if (eol) {
                             out.write("\n");
                         }
@@ -246,6 +269,7 @@ public class Main {
 
             switchState(out, state, State.END);
 
+            out.write("\n<hr/><small><a href=\"https://github.com/exbin/xbup-doc/wiki/" + sourceFileName.replace(" ", "-") + "\">Page Source</a></small>\n");
             out.write("\n</div>\n");
             out.write("</body>\n");
             out.write("</html>\n");
@@ -420,7 +444,7 @@ public class Main {
     }
 
     @Nonnull
-    private static String processText(String text, State state, StyleState styleState) {
+    private static String processText(String text, State state, StyleState styleState, String pathPrefix) {
         State origState = state;
         StringBuilder output = new StringBuilder();
         int pos = 0;
@@ -499,25 +523,52 @@ public class Main {
                     }
                     case 8: {
                         if (state != State.CODE) {
-                            int breakPos = text.indexOf("]", pos);
-                            if (breakPos < 0) {
-                                // Broken
-                                output.append("[");
-                            } else {
-                                int endPos = text.indexOf(")", breakPos);
-                                if (endPos < 0) {
+                            if (text.length() > pos && text.charAt(pos + 1) == '[') {
+                                int breakPos = text.indexOf("]]", pos + 1);
+                                if (breakPos < 0) {
                                     // Broken
                                     output.append("[");
                                 } else {
-                                    String linkText = text.substring(pos + 1, breakPos);
-                                    String linkTarget = text.substring(breakPos + 2, endPos);
-                                    boolean isExt = linkTarget.startsWith("https://");
+                                    String linkTarget = text.substring(pos + 2, breakPos);
+                                    linkTarget = linkTarget.replaceAll("-", " ");
                                     output.append("<a ");
-                                    if (isExt) {
-                                        output.append("class=\"urlextern\" ");
+                                    if (!RECORDS.containsKey(linkTarget) && !(linkTarget.startsWith("images/") || linkTarget.startsWith("#"))) {
+                                        output.append("class=\"invalid-link\" rel=\"nofollow\" ");
                                     }
-                                    output.append("href=\"").append(linkTarget).append("\">").append(linkText).append("</a>");
-                                    pos = endPos;
+                                    output.append("href=\"").append(convertLinkTarget(linkTarget, pathPrefix)).append("\">");
+                                    output.append(linkTarget).append("</a>");
+                                    pos = breakPos + 2;
+                                }
+                            } else {
+                                int breakPos = text.indexOf("]", pos);
+                                if (breakPos < 0) {
+                                    // Broken
+                                    output.append("[");
+                                } else {
+                                    int endPos = text.indexOf(")", breakPos);
+                                    if (endPos < 0) {
+                                        // Broken
+                                        output.append("[");
+                                    } else {
+                                        String linkText = text.substring(pos + 1, breakPos);
+                                        String linkTarget = text.substring(breakPos + 2, endPos);
+                                        boolean isExt = linkTarget.startsWith("https://");
+                                        output.append("<a ");
+                                        if (isExt) {
+                                            if (!linkTarget.startsWith("https://xbup.exbin.org")) {
+                                                output.append("class=\"urlextern\" ");
+                                            }
+                                            output.append("href=\"").append(linkTarget).append("\">");
+                                        } else {
+                                            linkTarget = linkTarget.replaceAll("-", " ");
+                                            if (!RECORDS.containsKey(linkTarget) && !(linkTarget.startsWith("images/") || linkTarget.startsWith("#"))) {
+                                                output.append("class=\"invalid-link\" rel=\"nofollow\" ");
+                                            }
+                                            output.append("href=\"").append(convertLinkTarget(linkTarget, pathPrefix)).append("\">");
+                                        }
+                                        output.append(linkText).append("</a>");
+                                        pos = endPos;
+                                    }
                                 }
                             }
                         } else {
@@ -590,6 +641,39 @@ public class Main {
         return output.toString();
     }
 
+    @Nonnull
+    private static String convertLinkTarget(String linkTarget, String currentPathPrefix) {
+        if (linkTarget.startsWith("images/")) {
+            return linkTarget;
+        }
+        
+        if (linkTarget.startsWith("#")) {
+            return linkTarget.toLowerCase();
+        }
+
+        PageRecord pageRecord = RECORDS.get(linkTarget);
+        if (pageRecord != null) {
+            String pathPrefix = pageRecord.pathPrefix;
+            if (pathPrefix.equals(currentPathPrefix)) {
+                return "?p=" + pageRecord.outputFilePath;
+            }
+            int currentPathRootEnd = currentPathPrefix.indexOf("/");
+            String currentRootDir = currentPathRootEnd > 0 ? currentPathPrefix.substring(0, currentPathRootEnd) : currentPathPrefix;
+
+            int pathRootEnd = pathPrefix.indexOf("/");
+            String pathRootDir = pathRootEnd > 0 ? pathPrefix.substring(0, pathRootEnd) : pathPrefix;
+            String pathPage = pathRootEnd > 0 ? pathPrefix.substring(pathRootEnd + 1) : "";
+            
+            if (currentRootDir.equals(pathRootDir)) {
+                return "?p=" + (pathPage.isEmpty() ? "" : pathPage + "/") + pageRecord.outputFilePath;
+            }
+            
+            return "../" + pathRootDir + "/?p=" + (pathPage.isEmpty() ? "" : pathPage + "/") + pageRecord.outputFilePath;
+        }
+        
+        return "?p=not-found";
+    }
+
     private static enum State {
         START,
         SKIP,
@@ -615,5 +699,11 @@ public class Main {
 
         boolean strong = false;
         boolean italic = false;
+    }
+
+    private static class PageRecord {
+
+        String pathPrefix;
+        String outputFilePath;
     }
 }
