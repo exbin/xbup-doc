@@ -110,6 +110,18 @@ public class Main {
             RECORDS.put(sourceFileName, pageRecord);
 //            System.out.println(sourceFileName + ": " + pageRecord.pathPrefix + " - " + pageRecord.outputFilePath);
         }
+        RECORDS.put("Format Visual", new PageRecord("concept", "format/visual"));
+        RECORDS.put("Format Audio", new PageRecord("concept", "format/audio"));
+        RECORDS.put("Format Meta", new PageRecord("concept", "format/meta"));
+        RECORDS.put("Format Text", new PageRecord("concept", "format/text"));
+        RECORDS.put("Format Math", new PageRecord("concept", "format/math"));
+        RECORDS.put("Format Programming", new PageRecord("concept", "format/programming"));
+        RECORDS.put("Format Physics", new PageRecord("concept", "format/physics"));
+        RECORDS.put("Format Social", new PageRecord("concept", "format/social"));
+        RECORDS.put("Concept Formalization", new PageRecord("concept", "formalization"));
+        RECORDS.put("Concept Subprojects", new PageRecord("concept", "subprojects"));
+        RECORDS.put("Concept Issues", new PageRecord("concept", "issues"));
+        
 
         // Second pass to convert to web pages
         startDir = new File("../../xbup-doc.wiki");
@@ -127,7 +139,9 @@ public class Main {
         String pathPrefix = pageRecord.pathPrefix;
         String outputFilePath = pageRecord.outputFilePath;
 
-        File outputFile = new File(OUTPUT_FILES_DIR + File.separator + (pathPrefix.isEmpty() ? "" : pathPrefix + File.separator) + "pages" + File.separator + outputFilePath + ".php");
+        int pathPrefixSub = pathPrefix.indexOf("/");
+        String pagesPath = pathPrefixSub > 0 ? pathPrefix.substring(0, pathPrefixSub) + File.separator + "pages" + File.separator + pathPrefix.substring(pathPrefixSub + 1) : (pathPrefix.isEmpty() ? "" : pathPrefix + File.separator) + "pages";
+        File outputFile = new File(OUTPUT_FILES_DIR + File.separator + pagesPath + File.separator + outputFilePath + ".php");
         File parentFile = outputFile.getParentFile();
         parentFile.mkdirs();
         State state = State.START;
@@ -144,9 +158,23 @@ public class Main {
             OutputStreamWriter out = new OutputStreamWriter(fos, "UTF-8");
 
             out.write("<div id=\"content\">\n");
-            if (pathPrefix.startsWith("specification")) {
+            if (pathPrefix.startsWith("specification") || pathPrefix.startsWith("concept")) {
                 out.write("<?php\n");
-                out.write("include \'pages/inc/doc.php\';\n");
+                if (pathPrefixSub > 0) {
+                    String postfix = "";
+                    if ("concept/format".equals(pathPrefix)) {
+                        int formatGroupIndex = outputFilePath.indexOf("_");
+                        if (formatGroupIndex > 0) {
+                            String formatGroup = outputFilePath.substring(0, formatGroupIndex);
+                            if (!"constructions".equals(formatGroup)) {
+                                postfix = "_" + formatGroup;
+                            }
+                        }
+                    }
+                    out.write("include 'pages/" + pathPrefix.substring(pathPrefixSub + 1) + "/_doc" + postfix + ".php';\n");
+                } else {
+                    out.write("include \'pages/inc/doc.php\';\n");
+                }
                 out.write("showNavigation();\n");
                 out.write("?>\n");
             }
@@ -196,7 +224,7 @@ public class Main {
                         if (line.startsWith("```")) {
                             state = switchState(out, state, State.START);
                         } else {
-                            out.write(line + "\n");
+                            out.write(processCodeText(line) + "\n");
                         }
                         continue;
                     }
@@ -302,7 +330,7 @@ public class Main {
 
     @Nonnull
     private static String getChapterId(String chapterName) {
-        return chapterName.toLowerCase().replace(' ', '-');
+        return chapterName.toLowerCase().replace(' ', '-').replace(":", "");
     }
 
     @Nonnull
@@ -430,7 +458,7 @@ public class Main {
         return state;
     }
 
-    private static final String matches = "\\\"\'`&<>~[*_`";
+    private static final String matches = "\\\"\'`&<>~[*_`!";
     private static final List<String> allowedTags = new ArrayList<>();
 
     static {
@@ -460,6 +488,10 @@ public class Main {
                 }
                 switch (match) {
                     case 0: {
+                        if (length > pos + 1) {
+                            output.append(text.charAt(pos + 1));
+                            pos++;
+                        }
                         break;
                     }
                     case 1: {
@@ -530,9 +562,8 @@ public class Main {
                                     output.append("[");
                                 } else {
                                     String linkTarget = text.substring(pos + 2, breakPos);
-                                    linkTarget = linkTarget.replaceAll("-", " ");
                                     output.append("<a ");
-                                    if (!RECORDS.containsKey(linkTarget) && !(linkTarget.startsWith("images/") || linkTarget.startsWith("#"))) {
+                                    if (!isValidLink(linkTarget)) {
                                         output.append("class=\"invalid-link\" rel=\"nofollow\" ");
                                     }
                                     output.append("href=\"").append(convertLinkTarget(linkTarget, pathPrefix)).append("\">");
@@ -552,7 +583,7 @@ public class Main {
                                     } else {
                                         String linkText = text.substring(pos + 1, breakPos);
                                         String linkTarget = text.substring(breakPos + 2, endPos);
-                                        boolean isExt = linkTarget.startsWith("https://");
+                                        boolean isExt = linkTarget.startsWith("https://") || linkTarget.startsWith("http://") || linkTarget.startsWith("ftp://");
                                         output.append("<a ");
                                         if (isExt) {
                                             if (!linkTarget.startsWith("https://xbup.exbin.org")) {
@@ -560,8 +591,7 @@ public class Main {
                                             }
                                             output.append("href=\"").append(linkTarget).append("\">");
                                         } else {
-                                            linkTarget = linkTarget.replaceAll("-", " ");
-                                            if (!RECORDS.containsKey(linkTarget) && !(linkTarget.startsWith("images/") || linkTarget.startsWith("#"))) {
+                                            if (!isValidLink(linkTarget)) {
                                                 output.append("class=\"invalid-link\" rel=\"nofollow\" ");
                                             }
                                             output.append("href=\"").append(convertLinkTarget(linkTarget, pathPrefix)).append("\">");
@@ -629,6 +659,25 @@ public class Main {
                         }
                         break;
                     }
+                    case 12: {
+                        if (length > pos + 1 && text.charAt(pos + 1) == '[') {
+                            int breakPos = text.indexOf("]", pos + 1);
+                            if (breakPos > 0) {
+                                String title = text.substring(pos + 2, breakPos);
+                                int pathEnd = text.indexOf(")", breakPos + 1);
+                                if (pathEnd > 0) {
+                                    String path = text.substring(breakPos + 2, pathEnd);
+                                    // usedImages.add(path);
+                                    output.append("<img src=\"" + path + "\" title=\"" + title + "\" alt=\"" + title + "\" />");
+                                    pos = pathEnd;
+                                    break;
+                                }
+                            }
+                        }
+
+                        output.append("!");
+                        break;
+                    }
                 }
             } else {
                 batch++;
@@ -642,35 +691,90 @@ public class Main {
     }
 
     @Nonnull
+    private static String processCodeText(String text) {
+        StringBuilder output = new StringBuilder();
+        int pos = 0;
+        int length = text.length();
+        while (pos < length) {
+            int tagBegin = text.indexOf("<", pos);
+            int tagEnd = text.indexOf(">", pos);
+            if (tagEnd > 0 && (tagEnd < tagBegin || tagBegin == -1)) {
+                output.append(text.substring(pos, tagEnd));
+                output.append("&gt;");
+                pos = tagEnd + 1;
+                continue;
+            }
+            if (tagBegin >= 0) {
+                if (length > tagBegin + 4 && "span".equals(text.substring(tagBegin + 1, tagBegin + 5))) {
+                    int closeTag = text.indexOf("</span>", tagBegin + 4);
+                    if (closeTag > 0) {
+                        output.append(text.substring(pos, closeTag + 7));
+                        pos = closeTag + 7;
+                        continue;
+                    }
+                }
+                if (length > tagBegin + 3 && "sup".equals(text.substring(tagBegin + 1, tagBegin + 4))) {
+                    int closeTag = text.indexOf("</sup>", tagBegin + 3);
+                    if (closeTag > 0) {
+                        output.append(text.substring(pos, closeTag + 6));
+                        pos = closeTag + 6;
+                        continue;
+                    }
+                }
+                if (length > tagBegin + 3 && "sub".equals(text.substring(tagBegin + 1, tagBegin + 4))) {
+                    int closeTag = text.indexOf("</sub>", tagBegin + 3);
+                    if (closeTag > 0) {
+                        output.append(text.substring(pos, closeTag + 6));
+                        pos = closeTag + 6;
+                        continue;
+                    }
+                }
+
+                output.append(text.substring(pos, tagBegin));
+                output.append("&lt;");
+                pos = tagBegin + 1;
+                continue;
+            }
+
+            output.append(text.substring(pos));
+            break;
+        }
+        
+        return output.toString();
+    }
+
+    private static boolean isValidLink(String linkTarget) {
+        return RECORDS.containsKey(linkTarget.replaceAll("-", " ")) || linkTarget.startsWith("images/") || linkTarget.startsWith("#");
+    }
+
+    @Nonnull
     private static String convertLinkTarget(String linkTarget, String currentPathPrefix) {
         if (linkTarget.startsWith("images/")) {
             return linkTarget;
         }
-        
+
         if (linkTarget.startsWith("#")) {
             return linkTarget.toLowerCase();
         }
 
+        linkTarget = linkTarget.replaceAll("-", " ");
         PageRecord pageRecord = RECORDS.get(linkTarget);
         if (pageRecord != null) {
             String pathPrefix = pageRecord.pathPrefix;
-            if (pathPrefix.equals(currentPathPrefix)) {
-                return "?p=" + pageRecord.outputFilePath;
-            }
             int currentPathRootEnd = currentPathPrefix.indexOf("/");
             String currentRootDir = currentPathRootEnd > 0 ? currentPathPrefix.substring(0, currentPathRootEnd) : currentPathPrefix;
 
             int pathRootEnd = pathPrefix.indexOf("/");
             String pathRootDir = pathRootEnd > 0 ? pathPrefix.substring(0, pathRootEnd) : pathPrefix;
             String pathPage = pathRootEnd > 0 ? pathPrefix.substring(pathRootEnd + 1) : "";
-            
+
             if (currentRootDir.equals(pathRootDir)) {
                 return "?p=" + (pathPage.isEmpty() ? "" : pathPage + "/") + pageRecord.outputFilePath;
             }
-            
+
             return "../" + pathRootDir + "/?p=" + (pathPage.isEmpty() ? "" : pathPage + "/") + pageRecord.outputFilePath;
         }
-        
+
         return "?p=not-found";
     }
 
@@ -702,6 +806,14 @@ public class Main {
     }
 
     private static class PageRecord {
+
+        public PageRecord() {
+        }
+
+        public PageRecord(String pathPrefix, String outputFilePath) {
+            this.pathPrefix = pathPrefix;
+            this.outputFilePath = outputFilePath;
+        }
 
         String pathPrefix;
         String outputFilePath;
